@@ -1,50 +1,31 @@
-import { Injectable, HttpService } from '@nestjs/common';
-import { QueueMessage } from './rabbitmq.interface';
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\tsm-api> npm run start
 
-@Injectable()
-export class RabbitmqService {
+> tsm-api@0.0.1 start
+> nest start
 
-  private readonly username: string = 'tms';
-  private readonly password: string = '26000567855499290979';
+src/rabbitmq/rabbitmq.controller.ts:2:10 - error TS2724: '"./rabbitmq.service"' has no exported member named 'RabbitMQService'. Did you mean 'RabbitmqService'?
 
-  constructor(private readonly httpService: HttpService) {}
+2 import { RabbitMQService } from './rabbitmq.service';
+           ~~~~~~~~~~~~~~~
 
-  async readFromQueue(): Promise<QueueMessage> {
-    try {
-      const response = await this.httpService.post(
-        'http://rabbitmq.next.local/api/queues/%2F/TmsQueue/get',
-        {
-          count: 1,
-          ackmode: 'ack_requeue_true',
-          encoding: 'auto',
-          truncate: 50000,
-        },
-        {
-          headers: {
-            Authorization: `Basic ${Buffer.from(`${this.username}:${this.password}`).toString('base64')}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      ).toPromise();
+  src/rabbitmq/rabbitmq.service.ts:5:14
+    5 export class RabbitmqService {
+                   ~~~~~~~~~~~~~~~
+    'RabbitmqService' is declared here.
+src/rabbitmq/rabbitmq.module.ts:2:10 - error TS2724: '"./rabbitmq.service"' has no exported member named 'RabbitMQService'. Did you mean 'RabbitmqService'?
 
-      if (response.status === 200 && response.data.length > 0) {
-        const data = response.data[0];
-        const payload = JSON.parse(data.payload);
+2 import { RabbitMQService } from './rabbitmq.service';
+           ~~~~~~~~~~~~~~~
 
-        return {
-          ...data,
-          payload
-        };
-      } else {
-        throw new Error('Возникла ошибка при получении данных');
-      }
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-}
+  src/rabbitmq/rabbitmq.service.ts:5:14
+    5 export class RabbitmqService {
+                   ~~~~~~~~~~~~~~~
+    'RabbitmqService' is declared here.
+src/rabbitmq/rabbitmq.service.ts:1:22 - error TS2724: '"@nestjs/common"' has no exported member named 'HttpService'. Did you mean 'HttpServer'?
 
+1 import { Injectable, HttpService } from '@nestjs/common';
+                       ~~~~~~~~~~~
 
+Found 3 error(s).
 
-
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\tsm-api>
