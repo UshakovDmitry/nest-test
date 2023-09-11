@@ -1,93 +1,3 @@
-const test = {
-  Number: '№№00015933',
-  Date: '01.08.2023 9:01:14',
-  Organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-  DocumentStatus: 'Доставляется',
-  Driver: 'Бархудар Асан Арыпұлы',
-  ISR: '',
-  Informal_Document:
-    'Акт регистрации брака TL300000000014 от 01.04.2022 18:36:05',
-  SKU_Weight: '17',
-  ArrayStrings: [
-    {
-      Shipping_Point:
-        'Талгар 3, ул. Абылай хана, дом 111 (склад товара, ожидающего ремонта)',
-      Goods: 'Телевизор KIVI 55U710KB  Smart 4K UHD',
-      Quantity: '1',
-      Item_Status: 'Оформлена',
-      Pickup_Point: '1',
-      Delivery_Point: '2',
-      Pickup_Latitude: '43,305732',
-      Pickup_Longitude: '77,241999',
-      Delivery_Latitude: '43,245609',
-      Delivery_Longitude: '76,90425',
-      Pickup_Time: '01.01.0001 9:43:53',
-      Delivery_Time: '01.01.0001 10:46:44',
-    },
-  ],
-  ContactInformation: {
-    City: 'Алматы',
-    Delivery_Condition: 'Доставка',
-    Date_Time_delivery: '2023-08-05 До 18:00',
-    Time_Window: '09:00-18:00',
-    Latitude: '43,245609',
-    Longitude: '76,90425',
-    Street: 'нет данных',
-    Home: 'нет данных',
-    Phone: '+7(778)021-1316',
-    Apartment: 'нет данных',
-    Contractor: 'нет данных',
-  },
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-interface ITransportRequest {
-  // Номер заявки
-  number: number | string;
-  // Статус заявки
-  status: string;
-  // ISR
-  ISR: string;
-  // Документ основания
-  document: string;
-  // Город
-  city: string;
-  // Улица
-  street: string;
-  // Дом
-  home: string;
-  // Квартира
-  apartment: string;
-  // Координаты
-  latitude: string;
-  longitude: string;
-  // Получатель
-  contractor: string;
-  //Дата и время доставки
-  date_time_delivery: string;
-  // Телефон получателя
-  сontractor_phone: string;
-  // Вес SCU
-  sku_weight: string;
-}
-
-
-import { type TransportComponentModel } from './transport.model';
-
 export class TransportComponentViewModel {
   model: TransportComponentModel;
 
@@ -95,6 +5,28 @@ export class TransportComponentViewModel {
     this.model = model;
     this.getData();
   }
+
+  // ... [Ваши другие методы]
+
+  transformToTransportRequest(data: any): ITransportRequest {
+    return {
+      number: data.Number,
+      status: data.DocumentStatus,
+      ISR: data.ISR,
+      document: data.Informal_Document,
+      city: data.ContactInformation.City,
+      street: data.ContactInformation.Street,
+      home: data.ContactInformation.Home,
+      apartment: data.ContactInformation.Apartment,
+      latitude: data.ContactInformation.Latitude,
+      longitude: data.ContactInformation.Longitude,
+      contractor: data.ContactInformation.Contractor,
+      date_time_delivery: data.ContactInformation.Date_Time_delivery,
+      сontractor_phone: data.ContactInformation.Phone,
+      sku_weight: data.SKU_Weight
+    };
+  }
+
   getData(): void {
     fetch('http://localhost:3000/rabbitmq/read', {
       method: 'GET',
@@ -107,44 +39,13 @@ export class TransportComponentViewModel {
         }
       })
       .then((data) => {
-        console.log(data);
+        const transformedData = this.transformToTransportRequest(data);
+        console.log(transformedData);
       })
       .catch((error) => {
         console.error(error);
       });
-    }
-
-
-
-
-  selectCity(city: string): void {
-    this.filterTableByCity(city);
   }
 
-  filterTableByCity(city: string): void {
-    this.model.currentCity = city;
-    if (city === 'Все города') {
-      this.model.filteredTransport = this.model.transport;
-      return;
-    }
-    this.model.filteredTransport = this.model.transport.filter(
-      (item) => item.city === city,
-    );
-  }
-
-  setLoaders(): void {
-    this.model.isTransport = false;
-    this.model.isLoaders = true;
-  }
-
-  setTransport(): void {
-    this.model.isLoaders = false;
-    this.model.isTransport = true;
-  }
-
-  downloadLoadersAsXLSX(): void {
-    alert('Функционал в разработке');
-
-  }
-
+  // ... [Ваши другие методы]
 }
