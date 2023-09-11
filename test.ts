@@ -61,3 +61,33 @@ import { RabbitMQService } from './rabbitmq.service';
   providers: [RabbitMQService],
 })
 export class AppModule {}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\tsm-api> npx nest g resource  rabbitmq --no-spec
+? What transport layer do you use? (Use arrow keys)
+> REST API
+  GraphQL (code first)
+  GraphQL (schema first)
+  Microservice (non-HTTP)
+  WebSockets
