@@ -1,93 +1,54 @@
-npm install amqplib @nestjs/platform-express
-
-
-// rabbitmq.service.ts
-import { Injectable } from '@nestjs/common';
-import * as amqp from 'amqplib';
-
-@Injectable()
-export class RabbitMQService {
-  private connection;
-  private channel;
-
-  async connect() {
-    this.connection = await amqp.connect('amqp://tms:26000567855499290979@rabbitmq.next.local');
-    this.channel = await this.connection.createChannel();
-  }
-
-  async getFromQueue(queue: string) {
-    if (!this.channel) {
-      await this.connect();
-    }
-
-    return new Promise((resolve, reject) => {
-      this.channel.get(queue, { noAck: true }, (err, msgOrFalse) => {
-        if (err) reject(err);
-        if (msgOrFalse) resolve(msgOrFalse.content.toString());
-        else resolve(null);
-      });
-    });
-  }
-}
-
-
-
-
-// message.controller.ts
-import { Controller, Get } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq.service';
-
-@Controller('message')
-export class MessageController {
-  constructor(private readonly rabbitMQService: RabbitMQService) {}
-
-  @Get()
-  async getFromQueue(): Promise<string> {
-    return await this.rabbitMQService.getFromQueue('TmsQueue');
-  }
-}
-
-
-
-
-// app.module.ts
-import { Module } from '@nestjs/common';
-import { MessageController } from './message.controller';
+import { Module, HttpModule } from '@nestjs/common';
 import { RabbitMQService } from './rabbitmq.service';
 
 @Module({
-  imports: [],
-  controllers: [MessageController],
+  imports: [HttpModule],  // Добавляем HttpModule для возможности делать HTTP запросы
   providers: [RabbitMQService],
+  exports: [RabbitMQService]
 })
-export class AppModule {}
+export class RabbitMQModule {}
 
 
 
 
 
 
+import { Injectable, HttpService } from '@nestjs/common';
 
+@Injectable()
+export class RabbitMQService {
+  private readonly username: string = 'tms';
+  private readonly password: string = '26000567855499290979';
+  private readonly url: string = 'http://rabbitmq.next.local/api/queues/%2F/TmsQueue/get';
 
+  constructor(private readonly httpService: HttpService) {}
 
+  async readFromQueue(): Promise<any> {
+    try {
+      const response = await this.httpService.post(
+        this.url,
+        {
+          count: 1,
+          ackmode: 'ack_requeue_true',
+          encoding: 'auto',
+          truncate: 50000,
+        },
+        {
+          headers: {
+            'Authorization': `Basic ${Buffer.from(`${this.username}:${this.password}`).toString('base64')}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      ).toPromise();
 
+      if (response.status !== 200) {
+        throw new Error('Возникла ошибка при получении данных');
+      }
 
-
-
-
-
-
-
-
-
-
-
-
-
-PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\tsm-api> npx nest g resource  rabbitmq --no-spec
-? What transport layer do you use? (Use arrow keys)
-> REST API
-  GraphQL (code first)
-  GraphQL (schema first)
-  Microservice (non-HTTP)
-  WebSockets
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+}
