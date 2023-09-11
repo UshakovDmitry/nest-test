@@ -1,31 +1,18 @@
-import { Controller, Get } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq.service';
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\tsm-api> npm run start
 
-@Controller('rabbitmq')
-export class RabbitMQController {
-  constructor(private readonly rabbitMQService: RabbitMQService) {}
+> tsm-api@0.0.1 start
+> nest start
 
-  @Get('read')
-  async readFromQueue() {
-    return await this.rabbitMQService.readFromQueue();
-  }
-}
+src/app.module.ts:6:10 - error TS2724: '"./rabbitmq/rabbitmq.module"' has no exported member named 'RabbitmqModule'. Did you mean 'RabbitMQModule'?
 
+6 import { RabbitmqModule } from './rabbitmq/rabbitmq.module';
+           ~~~~~~~~~~~~~~
 
+  src/rabbitmq/rabbitmq.module.ts:12:14
+    12 export class RabbitMQModule {}
+                    ~~~~~~~~~~~~~~
+    'RabbitMQModule' is declared here.
 
-import { Module } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq.service';
-import { RabbitMQController } from './rabbitmq.controller'; // <-- Новый импорт
-import { HttpModule } from '@nestjs/axios';
+Found 1 error(s).
 
-@Module({
-  imports: [HttpModule.register({})],
-  controllers: [RabbitMQController], // <-- Добавьте контроллер здесь
-  providers: [RabbitMQService],
-  exports: [RabbitMQService]
-})
-export class RabbitMQModule {}
-
-
-
-http://localhost:3000/rabbitmq/read
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\tsm-api>
