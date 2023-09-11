@@ -11,3 +11,9 @@ import { RabbitmqModule } from './rabbitmq/rabbitmq.module';
   providers: [AppService],
 })
 export class AppModule {}
+
+
+
+'"./rabbitmq/rabbitmq.module"' has no exported member named 'RabbitmqModule'. Did you mean 'RabbitMQModule'?ts(2724)
+rabbitmq.module.ts(12, 14): 'RabbitMQModule' is declared here.
+import RabbitmqModule
