@@ -1,12 +1,26 @@
-npm install @nestjs/axios axios
+import { Controller, Get } from '@nestjs/common';
+import { RabbitMQService } from './rabbitmq.service';
+
+@Controller('rabbitmq')
+export class RabbitMQController {
+  constructor(private readonly rabbitMQService: RabbitMQService) {}
+
+  @Get('read')
+  async readFromQueue() {
+    return await this.rabbitMQService.readFromQueue();
+  }
+}
+
 
 
 import { Module } from '@nestjs/common';
 import { RabbitMQService } from './rabbitmq.service';
-import { HttpModule } from '@nestjs/axios'; // <-- Измененный импорт
+import { RabbitMQController } from './rabbitmq.controller'; // <-- Новый импорт
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [HttpModule.register({})],  // Используйте .register({}), если вам нужна дополнительная конфигурация
+  imports: [HttpModule.register({})],
+  controllers: [RabbitMQController], // <-- Добавьте контроллер здесь
   providers: [RabbitMQService],
   exports: [RabbitMQService]
 })
@@ -14,14 +28,4 @@ export class RabbitMQModule {}
 
 
 
-
-
-
-
-import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios'; // <-- Измененный импорт
-
-@Injectable()
-export class RabbitMQService {
-  // ... (оставьте как есть)
-}
+http://localhost:3000/rabbitmq/read
