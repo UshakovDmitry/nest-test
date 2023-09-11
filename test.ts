@@ -47,4 +47,11 @@ import { TransportController } from './transport.controller';
 })
 export class TransportModule {}
 
+///////
+import { isString } from "class-validator";
 
+export class TransportDto {
+@isString()
+
+}
+//////////////
