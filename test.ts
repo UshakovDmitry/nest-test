@@ -85,5 +85,23 @@ interface ITransportRequest {
   sku_weight: string;
 }
 
+getData(): void {
+    fetch('http://localhost:3000/rabbitmq/read', {
+      method: 'GET',
+    })
+      .then(async (response) => {
+        if (response.ok) {
+          return await response.json();
+        } else {
+          throw new Error('Возникла ошибка при получении данных');
+        }
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
 
 
