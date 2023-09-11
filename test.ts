@@ -1,58 +1,50 @@
-export interface QueueMessage {
-  payload_bytes: number;
-  redelivered: boolean;
-  exchange: string;
-  routing_key: string;
-  message_count: number;
-  properties: MessageProperties;
-  payload: Payload;
-  payload_encoding: string;
+import { Injectable, HttpService } from '@nestjs/common';
+import { QueueMessage } from './rabbitmq.interface';
+
+@Injectable()
+export class RabbitmqService {
+
+  private readonly username: string = 'tms';
+  private readonly password: string = '26000567855499290979';
+
+  constructor(private readonly httpService: HttpService) {}
+
+  async readFromQueue(): Promise<QueueMessage> {
+    try {
+      const response = await this.httpService.post(
+        'http://rabbitmq.next.local/api/queues/%2F/TmsQueue/get',
+        {
+          count: 1,
+          ackmode: 'ack_requeue_true',
+          encoding: 'auto',
+          truncate: 50000,
+        },
+        {
+          headers: {
+            Authorization: `Basic ${Buffer.from(`${this.username}:${this.password}`).toString('base64')}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      ).toPromise();
+
+      if (response.status === 200 && response.data.length > 0) {
+        const data = response.data[0];
+        const payload = JSON.parse(data.payload);
+
+        return {
+          ...data,
+          payload
+        };
+      } else {
+        throw new Error('Возникла ошибка при получении данных');
+      }
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 }
 
-export interface MessageProperties {
-  headers: {
-    [key: string]: any;
-  };
-}
 
-export interface Payload {
-  Number: string;
-  Date: string;
-  Organization: string;
-  DocumentStatus: string;
-  Driver: string;
-  ISR: string;
-  Informal_Document: string;
-  SKU_Weight: string;
-  ArrayStrings: ArrayString[];
-  ContactInformation: ContactInformation;
-}
 
-export interface ArrayString {
-  Shipping_Point: string;
-  Goods: string;
-  Quantity: string;
-  Item_Status: string;
-  Pickup_Point: string;
-  Delivery_Point: string;
-  Pickup_Latitude: string;
-  Pickup_Longitude: string;
-  Delivery_Latitude: string;
-  Delivery_Longitude: string;
-  Pickup_Time: string;
-  Delivery_Time: string;
-}
 
-export interface ContactInformation {
-  City: string;
-  Delivery_Condition: string;
-  Date_Time_delivery: string;
-  Time_Window: string;
-  Latitude: string;
-  Longitude: string;
-  Street: string;
-  Home: string;
-  Phone: string;
-  Apartment: string;
-  Contractor: string;
-}
