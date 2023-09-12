@@ -1,64 +1,112 @@
-<template>
-    <div class="cell__wrapper">
-        <p> {{ config.value.address }}</p>
-        <div class="coordinates"> 
-            <IconComponent
-              :сonfig="{
-                name: 'gps',
-                color: '#4caf50',
-                width: 20,
-                height: 20,
-              }"></IconComponent>
-            {{ config.value.coordinates }}
-        </div>
-    </div>
-</template>
-  
-<script setup lang="ts">
-import IconComponent from '../../icon/icon.component.vue';
+у меня есть приложение с фронтендом и бекендом
+я делаю хостинг через teamcity
+в моем репозитории есть две папки frontend и backend 
+внутри папки frontend есть Dockerfile 
 
-defineProps<{
-    config: {
-        type: number;
-        value: any;
-    };
-}>();
-</script>
-  
-<style scoped>
-.cell__wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    padding: 0 0 0 30px;
-    font-size: 14px;
-    line-height: 1.2;
-    color: #23362d;
-    box-sizing: border-box;
-    overflow: hidden;
-    white-space: normal; /* Используйте normal вместо nowrap */
+FROM node:19-alpine as builder
+WORKDIR /vue-tms
+COPY package*.json ./
+RUN npm config set registry http://npm.next.local:4873/
+RUN npm install
+COPY . .
+RUN npm run build
+FROM nginx:alpine as production-build
+COPY ./.nginx/nginx.conf /etc/nginx/nginx.conf
+
+RUN rm -rf /usr/share/nginx/html/*
+
+COPY --from=builder /vue-tms/dist /usr/share/nginx/html
+
+EXPOSE 80
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
+
+
+также есть .nginx.conf 
+worker_processes 4;
+
+events { worker_connections 1024; }
+
+http {
+    server {
+        listen 80;
+        root  /usr/share/nginx/html;
+        index  index.html index.htm;
+        include /etc/nginx/mime.types;
+
+        gzip on;
+        gzip_min_length 1000;
+        gzip_proxied expired no-cache no-store private auth;
+        gzip_types text/plain text/css application/json application/javascript application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+        location /api {
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_ssl_server_name on;
+            proxy_set_header X-Real-IP  $remote_addr;
+            proxy_set_header Host-Real-IP  $http_host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-Pcol HTTP;
+            proxy_intercept_errors on;
+            proxy_connect_timeout 24h;
+            proxy_send_timeout 24h;
+            proxy_read_timeout 24h;
+            
+            proxy_pass http://127.0.0.1:4000;
+        }
+        location /swagger {
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_ssl_server_name on;
+            proxy_set_header X-Real-IP  $remote_addr;
+            proxy_set_header Host-Real-IP  $http_host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-Pcol HTTP;
+            proxy_intercept_errors on;
+            
+            proxy_pass http://127.0.0.1:4000;
+        }
+        location /swagger-stats {
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_ssl_server_name on;
+            proxy_set_header X-Real-IP  $remote_addr;
+            proxy_set_header Host-Real-IP  $http_host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Real-Pcol HTTP;
+            proxy_intercept_errors on;
+            
+            proxy_pass http://127.0.0.1:4000;
+        }
+    }
 }
 
-.coordinates {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 5px;
-}
 
-p {
-    word-break: break-word; /* Переносит строку на любом символе */
-    max-height: 2.4em; /* Максимальная высота для двух строк, основываясь на вашем line-height */
-    overflow: hidden; /* Скрывает все, что выходит за пределы */
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* Отображает максимум 2 строки */
-    -webkit-box-orient: vertical;
-}
-</style>
 
-  </style>
-  
+и вот еще код dockerfile из папки backend
+
+FROM node:19-alpine
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm config set registry http://npm.next.local:4873/
+RUN yarn add npm
+RUN yarn install -d
+# run npm install global
+RUN yarn add @nestjs/cli@9.1.5
+RUN yarn add prom-client@14.1.0
+COPY . .
+RUN npm fund
+RUN npm run build
+
+# the command that starts our app
+CMD ["node", "dist/main.js"]
+
+
+
+
+
+
+
+
+
+посмотри есть ли тут ошибки?
+фронтенд запускается а сервер нет
