@@ -110,3 +110,46 @@ CMD ["node", "dist/main.js"]
 
 посмотри есть ли тут ошибки?
 фронтенд запускается а сервер нет
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+http://tms.next.local/api/
+
+
+<html>
+
+<head>
+	<title>502 Bad Gateway</title>
+</head>
+
+<body>
+	<center>
+		<h1>502 Bad Gateway</h1>
+	</center>
+	<hr>
+	<center>nginx/1.25.1</center>
+</body>
+
+</html>
