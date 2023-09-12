@@ -120,7 +120,12 @@ CMD ["node", "dist/main.js"]
 
 
 
-
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\tsm-api> doc
+ker ps
+error during connect: This error may indicate that the docker daemon is not running.
+: Get "http://%2F%2F.%2Fpipe%2Fdocker_engine/v1.24/containers/json": open //./pipe/d
+ocker_engine: The system cannot find the file specified.
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\tsm-api>
 
 
 
