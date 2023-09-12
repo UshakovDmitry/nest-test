@@ -1,31 +1,32 @@
 <template>
     <div class="cell__wrapper">
-     <p> {{ config.value.address }}</p>
-     <div class="coordinates"> 
-        <IconComponent
-          :сonfig="{
-            name: 'gps',
-            color: '#4caf50',
-            width: 20,
-            height: 20,
-          }"></IconComponent>
-        {{ config.value.coordinates }}</div>
+        <p> {{ config.value.address }}</p>
+        <div class="coordinates"> 
+            <IconComponent
+              :сonfig="{
+                name: 'gps',
+                color: '#4caf50',
+                width: 20,
+                height: 20,
+              }"></IconComponent>
+            {{ config.value.coordinates }}
+        </div>
     </div>
-  </template>
+</template>
   
-  <script setup lang="ts">
+<script setup lang="ts">
 import IconComponent from '../../icon/icon.component.vue';
 
-  defineProps<{
+defineProps<{
     config: {
-      type: number;
-      value: any;
+        type: number;
+        value: any;
     };
-  }>();
-  </script>
+}>();
+</script>
   
-  <style scoped>
-  .cell__wrapper {
+<style scoped>
+.cell__wrapper {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -39,14 +40,25 @@ import IconComponent from '../../icon/icon.component.vue';
     color: #23362d;
     box-sizing: border-box;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .coordinates {
+    white-space: normal; /* Используйте normal вместо nowrap */
+}
+
+.coordinates {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 5px;
-  }
+}
+
+p {
+    word-break: break-word; /* Переносит строку на любом символе */
+    max-height: 2.4em; /* Максимальная высота для двух строк, основываясь на вашем line-height */
+    overflow: hidden; /* Скрывает все, что выходит за пределы */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Отображает максимум 2 строки */
+    -webkit-box-orient: vertical;
+}
+</style>
+
   </style>
   
