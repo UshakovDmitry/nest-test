@@ -1,20 +1,4 @@
- getData(): void {
-    fetch('http://localhost:4000/rabbitmq/read', {
-      method: 'GET',
-    })
-      .then(async (response) => {
-        if (response.ok) {
-          return await response.json();
-        } else {
-          throw new Error('Возникла ошибка при получении данных');
-        }
-      })
-      .then((data) => {
-        const transformedData = this.transformToTransportRequest(data);
-        console.log(transformedData);
-        this.model.transportRequests.push(transformedData);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
+'(): Promise<QueueMessage>' is deprecated.ts(6385)
+Observable.d.ts(121, 9): The declaration was marked as deprecated here.
+(method) Observable<QueueMessage>.toPromise(): Promise<QueueMessage> (+2 overloads)
+@deprecated — Replaced with firstValueFrom and lastValueFrom . Will be removed in v8. Details: https://rxjs.dev/deprecations/to-promise
