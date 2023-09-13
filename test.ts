@@ -1,3 +1,16 @@
-mongodb-windows-x86_64-7.0.1-signed.msi
-file:///C:/Users/ushakov.dmitriy/Downloads/mongodb-windows-x86_64-7.0.1-signed.msi
-This type of file may harm your computer.
+
+ushakov.dmitriy@DIT-104 MINGW64 /
+$ mongo
+bash: mongo: command not found
+
+ushakov.dmitriy@DIT-104 MINGW64 /
+$ mongod
+bash: mongod: command not found
+
+ushakov.dmitriy@DIT-104 MINGW64 /
+$ mongosh
+bash: mongosh: command not found
+
+ushakov.dmitriy@DIT-104 MINGW64 /
+$
+
