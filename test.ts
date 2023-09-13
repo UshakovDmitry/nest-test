@@ -1,104 +1,42 @@
-Сервис для работы с RabbitMQ (rabbitmq.service.ts)
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { EventPattern, Payload, Ctx, RmqContext } from '@nestjs/microservices';
-import { MessageService } from '../message/message.service';
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
 
-@Injectable()
-export class RabbitMQService implements OnModuleInit {
-  constructor(private readonly messageService: MessageService) {}
+> tms-api@0.0.1 start
+> nest start
 
-  async onModuleInit() {
-    // Логика для инициализации, если необходимо
-  }
-
-  @EventPattern('get_message')
-  async handleData(@Payload() data: any, @Ctx() context: RmqContext) {
-    const channel = context.getChannelRef();
-    const originalMsg = context.getMessage();
-    await this.messageService.create(data);
-    channel.ack(originalMsg);
-  }
-}
-
-
-
-Сервис для работы с MongoDB (message.service.ts)
-Замечание: Предполагая, что у вас уже есть Mongoose схема для сообщений.
-  
-  
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Message } from '../interfaces/message.interface';
-
-@Injectable()
-export class MessageService {
-  constructor(@InjectModel('Message') private readonly messageModel: Model<Message>) {}
-
-  async create(data: any): Promise<Message> {
-    const createdMessage = new this.messageModel(data);
-    return await createdMessage.save();
-  }
-
-  async findAll(): Promise<Message[]> {
-    return await this.messageModel.find().exec();
+[Nest] 1920  - 13.09.2023, 16:04:59     LOG [NestFactory] Starting Nest application...
+[Nest] 1920  - 13.09.2023, 16:04:59     LOG [InstanceLoader] MongooseModule dependencies initialized +29ms
+[Nest] 1920  - 13.09.2023, 16:04:59     LOG [InstanceLoader] ClientsModule dependencies initialized +1ms
+[Nest] 1920  - 13.09.2023, 16:04:59     LOG [InstanceLoader] MongooseCoreModule dependencies initialized +10ms
+[Nest] 1920  - 13.09.2023, 16:04:59     LOG [InstanceLoader] MongooseModule dependencies initialized +6ms
+[Nest] 1920  - 13.09.2023, 16:04:59     LOG [InstanceLoader] AppModule dependencies initialized +9ms
+[Nest] 1920  - 13.09.2023, 16:04:59     LOG [RoutesResolver] RabbitMQController {/all-messages}: +27ms
+[Nest] 1920  - 13.09.2023, 16:04:59     LOG [RouterExplorer] Mapped {/all-messages, GET} route +2ms
+[Nest] 1920  - 13.09.2023, 16:04:59     LOG [NestApplication] Nest application successfully started +3ms
+[Nest] 1920  - 13.09.2023, 16:04:59   ERROR [ClientProxy] Disconnected from RMQ. Trying to reconnect.
+[Nest] 1920  - 13.09.2023, 16:04:59   ERROR [ClientProxy] Object:
+{
+  "err": {
+    "code": 406,
+    "classId": 50,
+    "methodId": 10
   }
 }
 
 
-
-
-
-
-
-Контроллер (rabbitmq.controller.ts)
-import { Controller, Get } from '@nestjs/common';
-import { MessageService } from '../message/message.service';
-
-@Controller('all-messages')
-export class RabbitMQController {
-  constructor(private readonly messageService: MessageService) {}
-
-  @Get()
-  async findAll() {
-    return this.messageService.findAll();
-  }
-}
-
-
-
-
-
-
-Обновление AppModule (app.module.ts)
-import { Module } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq/rabbitmq.service';
-import { RabbitMQController } from './rabbitmq/rabbitmq.controller';
-import { MessageService } from './message/message.service';
-import { MessageSchema } from './message/message.schema';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-
-@Module({
-  imports: [
-    MongooseModule.forRoot('mongodb://localhost/rabbitmq'),
-    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
-    ClientsModule.register([
-      {
-        name: 'RABBITMQ_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://tms:26000567855499290979@rabbitmq.next.local'],
-          queue: 'TmsQueue',
-          queueOptions: {
-            durable: false,
-          },
-        },
-      },
-    ]),
-  ],
-  controllers: [RabbitMQController],
-  providers: [RabbitMQService, MessageService],
-})
-export class AppModule {}
-
+C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\amqplib\lib\channel.js:133
+      var closeFrameError = new Error(e);
+                            ^
+Error: Operation failed: QueueDeclare; 406 (PRECONDITION-FAILED) with message "PRECONDITION_FAILED - inequivalent ar
+g 'durable' for queue 'TmsQueue' in vhost '/': received 'false' but current is 'true'"
+    at reply (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\amqplib\lib\channel.
+js:133:29)
+    at ConfirmChannel.C.accept (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\am
+qplib\lib\channel.js:416:7)
+    at Connection.mainAccept (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\amqp
+lib\lib\connection.js:63:33)
+    at Socket.go (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\amqplib\lib\conn
+ection.js:486:48)
+    at Socket.emit (node:events:526:28)
+    at emitReadable_ (node:internal/streams/readable:578:12)
+    at processTicksAndRejections (node:internal/process/task_queues:82:21)
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend>
