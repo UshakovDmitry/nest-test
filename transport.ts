@@ -12,51 +12,55 @@ import { RabbitMQController } from './rabbitmq.controller';
 })
 export class RabbitMQModule {}
 
-
 COTROLLER.TS
-
 import { Controller, Get } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq.service';
+import { MessageService } from '../message/message.service';
 
-@Controller('rabbitmq')
+@Controller('all-messages')
 export class RabbitMQController {
-  constructor(private readonly rabbitMQService: RabbitMQService) {}
+  constructor(private readonly messageService: MessageService) {}
 
-  @Get('all-message')
-  async findAll(): Promise<any[]> {
-    return this.rabbitMQService.readFromQueue();
+  @Get()
+  async findAll() {
+    return this.messageService.findAll();
   }
 }
 
+
 SERVICE.TS
 import { Injectable } from '@nestjs/common';
-import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
-import { MessageService } from './message.service'; // импортируйте ваш сервис
+import { EventPattern, Payload, Ctx, RmqContext } from '@nestjs/microservices';
+
+import {
+  ClientProxy,
+  ClientProxyFactory,
+  Transport,
+} from '@nestjs/microservices';
+import { MessageService } from '../message/message.service';
 
 @Injectable()
 export class RabbitMQService {
   private client: ClientProxy;
 
-  constructor(private messageService: MessageService) { // инжектите ваш сервис
+  constructor(private messageService: MessageService) {
+    // инжектите ваш сервис
     this.client = ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
         urls: [`amqp://tms:26000567855499290979@rabbitmq.next.local`],
         queue: 'TmsQueue',
-        queueOptions: { durable: false },
+        queueOptions: { durable: true },
       },
     });
     this.client.connect(); // подключаемся к RabbitMQ
-    this.listenForMessages(); // начинаем слушать сообщения
+  }
+  @EventPattern('get_message')
+  async handleData(@Payload() data: any, @Ctx() context: RmqContext) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    await this.messageService.create(data);
+    channel.ack(originalMsg);
   }
 
-  async listenForMessages(): Promise<void> {
-    this.client.on('data', async (data) => {
-      await this.messageService.create(data); // сохраняем сообщение в MongoDB
-    });
-  }
 
-  async readFromQueue(): Promise<any> {
-    return this.client.send<any, any>('get_message', {}).toPromise();
-  }
 }
