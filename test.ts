@@ -1,38 +1,16 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
 
-@Module({
-  imports: [
-    MongooseModule.forRoot('mongodb://localhost/nest', { useNewUrlParser: true }),
-    // другие модули
-  ],
-  // providers и exports если они есть
-})
-export class DatabaseModule {}
+> tms-api@0.0.1 start
+> nest start
 
+src/database/database.module.ts:7:7 - error TS2345: Argument of type '{ useNewUrlParser: boolean; }' is not assignab
+le to parameter of type 'MongooseModuleOptions'.
+  Object literal may only specify known properties, and 'useNewUrlParser' does not exist in type 'MongooseModuleOpti
+ons'.
 
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { MessageSchema } from './message.entity';
-import { MessageService } from './message.service';
+7       useNewUrlParser: true,
+        ~~~~~~~~~~~~~~~
 
-@Module({
-  imports: [MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }])],
-  providers: [MessageService],
-  exports: [MessageService],
-})
-export class MessageModule {}
+Found 1 error(s).
 
-
-
-
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Message } from './message.entity';
-
-@Injectable()
-export class MessageService {
-  constructor(@InjectModel('Message') private readonly messageModel: Model<Message>) {}
-  // остальные методы
-}
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend>
