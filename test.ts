@@ -1,110 +1,27 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
 
-@Entity()
-export class Message {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
-  Number: string;
-
-  @Column()
-  Date: string;
-
-  @Column()
-  Organization: string;
-
-  // ... (все остальные поля сообщения)
-
-  @Column('json')
-  ArrayStrings: Array<any>;
-
-  @Column('json')
-  ContactInformation: any;
-}
+> tms-api@0.0.1 start
+> nest start
 
 
-
-
-////////////
-import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Message } from '../database/message.entity';
-
-@Injectable()
-export class RabbitMQService {
-  private readonly username: string = 'tms';
-  private readonly password: string = '26000567855499290979';
-
-  constructor(
-    private readonly httpService: HttpService,
-    @InjectRepository(Message)
-    private readonly messageRepository: Repository<Message>,
-  ) {}
-
-  async readFromQueue(): Promise<any> {
-    try {
-      const { data } = await this.httpService
-        .post(
-          'http://rabbitmq.next.local/api/queues/%2F/TmsQueue/get',
-          {
-            count: 1,
-            ackmode: 'ack_requeue_true',
-            encoding: 'auto',
-            truncate: 50000,
-          },
-          {
-            headers: {
-              Authorization: `Basic ${Buffer.from(
-                `${this.username}:${this.password}`,
-              ).toString('base64')}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        )
-        .toPromise();
-
-      if (data.length > 0) {
-        const payload = JSON.parse(data[0].payload);
-        const savedMessage = this.messageRepository.save(payload);
-        return savedMessage;
-      } else {
-        throw new Error('Возникла ошибка при получении данных');
-      }
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-}
-
-
-
-//////////
-
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
-import { Message } from './database/message.entity';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-
-@Module({
-  imports: [
-    RabbitMQModule,
-    TypeOrmModule.forRoot({
-      type: 'mongodb', // или ваш тип базы данных
-      host: 'localhost',
-      port: 27017,
-      database: 'your-db-name',
-      entities: [Message],
-      synchronize: true,
-    }),
-  ],
-  controllers: [AppController],
-  providers: [AppService],
-})
-export class AppModule {}
-
+C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\reflect-metadata\Reflect.js:553
+                var decorated = decorator(target, propertyKey, descriptor);
+                                ^
+Error: Cannot determine a type for the "Message.ContactInformation" field (union/intersection/ambiguous type was use
+d). Make sure your property is decorated with a "@Prop({ type: TYPE_HERE })" decorator.
+    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\mongoose\dist\decor
+ators\prop.decorator.js:21:23
+    at DecorateProperty (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\reflect-m
+etadata\Reflect.js:553:33)
+    at Reflect.decorate (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\reflect-m
+etadata\Reflect.js:123:24)
+    at __decorate (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\dist\database\message.entity
+.js:4:92)
+    at Object.<anonymous> (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\src\database\message
+.entity.ts:36:3)
+    at Module._compile (node:internal/modules/cjs/loader:1103:14)
+    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1157:10)
+    at Module.load (node:internal/modules/cjs/loader:981:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:822:12)
+    at Module.require (node:internal/modules/cjs/loader:1005:19)
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend>
