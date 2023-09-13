@@ -55,3 +55,49 @@ export interface Message extends Document {
   ArrayStrings: typeof ArrayStringSchema[];
   ContactInformation: typeof ContactInformationSchema;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// message.service.ts
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Message } from './message.schema';
+
+@Injectable()
+export class MessageService {
+  constructor(@InjectModel('Message') private messageModel: Model<Message>) {}
+
+  async create(messageDto: any): Promise<Message> {
+    const createdMessage = new this.messageModel(messageDto);
+    return createdMessage.save();
+  }
+}
+
+
+
+
+
+// app.module.ts
+@Module({
+  imports: [
+    MongooseModule.forRoot('mongodb://localhost/nest'),
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }])
+  ],
+  ...
+})
+
+  
