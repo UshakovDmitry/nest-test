@@ -1,3 +1,10 @@
+// src/rabbitmq/index.ts
+
+export * from './rabbitmq.module';
+export * from './rabbitmq-listener.service';
+
+
+
 
 MODULE.TS
 
