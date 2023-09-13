@@ -1,19 +1,24 @@
-PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-> tms-api@0.0.1 start
-> nest start
+@Entity()
+export class Message {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-src/rabbitmq/rabbitmq.service.ts:1:22 - error TS2724: '"@nestjs/common"' has no exported member named 'HttpService'.
- Did you mean 'HttpServer'?
+  @Column()
+  Number: string;
 
-1 import { Injectable, HttpService } from '@nestjs/common';
-                       ~~~~~~~~~~~
-src/rabbitmq/rabbitmq.service.ts:5:54 - error TS2307: Cannot find module '../message/message.schema' or its correspo
-nding type declarations.
+  @Column()
+  Date: string;
 
-5 import { MessageDocument, MESSAGE_SCHEMA_NAME } from '../message/message.schema';
-                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  @Column()
+  Organization: string;
 
-Found 2 error(s).
+  // ... (все остальные поля сообщения)
 
-PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend>
+  @Column('json')
+  ArrayStrings: Array<any>;
+
+  @Column('json')
+  ContactInformation: any;
+}
