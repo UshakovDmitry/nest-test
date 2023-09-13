@@ -1,19 +1,20 @@
 PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
 
 > tms-api@0.0.1 start
 > nest start
 
-[Nest] 1920  - 13.09.2023, 16:04:59     LOG [NestFactory] Starting Nest application...
-[Nest] 1920  - 13.09.2023, 16:04:59     LOG [InstanceLoader] MongooseModule dependencies initialized +29ms
-[Nest] 1920  - 13.09.2023, 16:04:59     LOG [InstanceLoader] ClientsModule dependencies initialized +1ms
-[Nest] 1920  - 13.09.2023, 16:04:59     LOG [InstanceLoader] MongooseCoreModule dependencies initialized +10ms
-[Nest] 1920  - 13.09.2023, 16:04:59     LOG [InstanceLoader] MongooseModule dependencies initialized +6ms
-[Nest] 1920  - 13.09.2023, 16:04:59     LOG [InstanceLoader] AppModule dependencies initialized +9ms
-[Nest] 1920  - 13.09.2023, 16:04:59     LOG [RoutesResolver] RabbitMQController {/all-messages}: +27ms
-[Nest] 1920  - 13.09.2023, 16:04:59     LOG [RouterExplorer] Mapped {/all-messages, GET} route +2ms
-[Nest] 1920  - 13.09.2023, 16:04:59     LOG [NestApplication] Nest application successfully started +3ms
-[Nest] 1920  - 13.09.2023, 16:04:59   ERROR [ClientProxy] Disconnected from RMQ. Trying to reconnect.
-[Nest] 1920  - 13.09.2023, 16:04:59   ERROR [ClientProxy] Object:
+[Nest] 20628  - 13.09.2023, 16:06:45     LOG [NestFactory] Starting Nest application...
+[Nest] 20628  - 13.09.2023, 16:06:45     LOG [InstanceLoader] MongooseModule dependencies initialized +26ms
+[Nest] 20628  - 13.09.2023, 16:06:45     LOG [InstanceLoader] ClientsModule dependencies initialized +1ms
+[Nest] 20628  - 13.09.2023, 16:06:45     LOG [InstanceLoader] MongooseCoreModule dependencies initialized +9ms
+[Nest] 20628  - 13.09.2023, 16:06:45     LOG [InstanceLoader] MongooseModule dependencies initialized +6ms
+[Nest] 20628  - 13.09.2023, 16:06:45     LOG [InstanceLoader] AppModule dependencies initialized +6ms
+[Nest] 20628  - 13.09.2023, 16:06:45     LOG [RoutesResolver] RabbitMQController {/all-messages}: +25ms
+[Nest] 20628  - 13.09.2023, 16:06:45     LOG [RouterExplorer] Mapped {/all-messages, GET} route +2ms
+[Nest] 20628  - 13.09.2023, 16:06:45     LOG [NestApplication] Nest application successfully started +3ms
+[Nest] 20628  - 13.09.2023, 16:06:45   ERROR [ClientProxy] Disconnected from RMQ. Trying to reconnect.
+[Nest] 20628  - 13.09.2023, 16:06:45   ERROR [ClientProxy] Object:
 {
   "err": {
     "code": 406,
