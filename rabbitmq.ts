@@ -35,12 +35,15 @@ export class RabbitMQModule {}
 
 
 // SERVICE.TS
-import { Injectable } from '@nestjs/common';
+// SERVICE.TS
+import { Injectable, Logger } from '@nestjs/common'; // добавьте импорт Logger
 import { Client, ClientProxy, Transport, ClientProxyFactory } from '@nestjs/microservices';
 import { QueueMessage } from './rabbitmq.interface';
 
 @Injectable()
 export class RabbitMQService {
+  private readonly logger = new Logger(RabbitMQService.name); // добавьте логгер
+
   @Client({
     transport: Transport.RMQ,
     options: {
@@ -54,7 +57,12 @@ export class RabbitMQService {
   client: ClientProxy;
 
   async readFromQueue(): Promise<QueueMessage> {
-    return this.client.send<QueueMessage>('read', {}).toPromise();
+    try {
+      return await this.client.send<QueueMessage>('read', {}).toPromise();
+    } catch (error) {
+      this.logger.error('Ошибка при чтении из RabbitMQ', error.stack); // логируем ошибку
+      throw error;
+    }
   }
 }
 
