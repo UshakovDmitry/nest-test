@@ -1,39 +1,10 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Message, MessageSchema } from './message.entity';
 
-export type MessageDocument = Message & Document;
+@Module({
+  imports: [MongooseModule.forFeature([{ name: Message.name, schema: MessageSchema }])],
+  exports: [MongooseModule],
+})
+export class DatabaseModule {}
 
-@Schema()
-export class Message {
-  @Prop()
-  Number: string;
-
-  @Prop()
-  Date: string;
-
-  @Prop()
-  Organization: string;
-
-  @Prop()
-  DocumentStatus: string;
-
-  @Prop()
-  Driver: string;
-
-  @Prop()
-  ISR: string;
-
-  @Prop()
-  Informal_Document: string;
-
-  @Prop()
-  SKU_Weight: string;
-
-  @Prop([{}])
-  ArrayStrings: Array<object>;
-
-  @Prop({})
-  ContactInformation: object;
-}
-
-export const MessageSchema = SchemaFactory.createForClass(Message);
