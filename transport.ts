@@ -64,3 +64,31 @@ export class RabbitMQService {
 
 
 }
+
+
+rabbitmq-listener.service
+import { Injectable } from '@nestjs/common';
+import { EventPattern } from '@nestjs/microservices';
+import { MessageService } from '../message/message.service';
+
+@Injectable()
+export class RabbitMQListenerService {
+  constructor(private readonly messageService: MessageService) {}
+
+  @EventPattern('TmsQueue')
+  async handleMessage(data: any): Promise<any> {
+    console.log('Received message:', data);
+
+    try {
+      const savedMessage = await this.messageService.create(data);
+      console.log('Message saved:', savedMessage);
+
+      return { status: 'success', id: savedMessage._id };
+    } catch (error) {
+      console.error('Error saving message:', error);
+      return { status: 'error', message: error.message };
+    }
+  }
+}
+
+
