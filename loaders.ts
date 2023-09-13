@@ -9,28 +9,18 @@ export * from './rabbitmq-listener.service';
 MODULE.TS
 
 // src/rabbitmq/rabbitmq.module.ts
-import { Injectable } from '@nestjs/common';
-import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { RabbitMQService } from './rabbitmq.service';
+import { RabbitMQController } from './rabbitmq.controller';
+import { MessageModule } from '../message/message.module'; // Путь может отличаться в зависимости от структуры вашего проекта
 
-@Injectable()
-export class RabbitMQService {
-  private client: ClientProxy;
-
-  constructor() {
-    this.client = ClientProxyFactory.create({
-      transport: Transport.RMQ,
-      options: {
-        urls: [`amqp://tms:26000567855499290979@rabbitmq.next.local`],
-        queue: 'TmsQueue',
-        queueOptions: { durable: false }
-      },
-    });
-  }
-
-  async readFromQueue(): Promise<any> {
-    return this.client.send<any, any>('get_message', {}).toPromise();
-  }
-}
+@Module({
+  imports: [MessageModule],
+  providers: [RabbitMQService],
+  controllers: [RabbitMQController]
+})
+export class RabbitMQModule {}
 
 
 
@@ -38,40 +28,54 @@ export class RabbitMQService {
 
 COTROLLER.TS
 
+import { Controller, Get } from '@nestjs/common';
+import { RabbitMQService } from './rabbitmq.service';
+
+@Controller('all-message')
+export class RabbitMQController {
+  constructor(private readonly rabbitMQService: RabbitMQService) {}
+
+  @Get()
+  async findAll(): Promise<any[]> {
+    return this.rabbitMQService.getAllMessages();
+  }
+}
 
 
 
 
 
 SERVICE.TS
-
 import { Injectable } from '@nestjs/common';
-import { Client, ClientProxy, Transport } from '@nestjs/microservices';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Message } from '../message/message.schema';
 
 @Injectable()
 export class RabbitMQService {
-  private readonly username: string = 'tms';
-  private readonly password: string = '26000567855499290979';
   private client: ClientProxy;
 
-  constructor() {
-    this.client = new Client({
+  constructor(
+    @InjectModel('Message') private readonly messageModel: Model<Message>
+  ) {
+    this.client = ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
-        urls: [`amqp://${this.username}:${this.password}@rabbitmq.next.local:5672`],
+        urls: [`amqp://tms:26000567855499290979@rabbitmq.next.local`],
         queue: 'TmsQueue',
-        queueOptions: {
-          durable: false,
-        },
+        queueOptions: { durable: false },
       },
     });
   }
 
-  async readFromQueue(): Promise<QueueMessage> {
-    return this.client.send<QueueMessage, void>('get_message', {}).toPromise();
+  async readFromQueue(): Promise<any> {
+    return this.client.send('get_message', {}).toPromise();
+  }
+
+  async getAllMessages(): Promise<any[]> {
+    return this.messageModel.find().exec();
   }
 }
-
 
 
 // src/rabbitmq/rabbitmq-listener.service.ts
