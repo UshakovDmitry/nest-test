@@ -1,36 +1,61 @@
-PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
+import { Injectable, HttpService } from '@nestjs/common';
+import { QueueMessage } from './rabbitmq.interface';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { MessageDocument, MESSAGE_SCHEMA_NAME } from '../message/message.schema';
 
-> tms-api@0.0.1 start
-> nest start
+@Injectable()
+export class RabbitMQService {
+  private readonly username: string = 'tms';
+  private readonly password: string = '26000567855499290979';
 
-src/rabbitmq/rabbitmq.service.ts:14:9 - error TS2552: Cannot find name 'response'. Did you mean 'Response'?
+  constructor(
+    private readonly httpService: HttpService,
+    @InjectModel(MESSAGE_SCHEMA_NAME) private readonly messageModel: Model<MessageDocument>
+  ) {}
 
-14     if (response.status === 200 && response.data.length > 0) {
-           ~~~~~~~~
+  async readFromQueue(): Promise<QueueMessage> {
+    try {
+      const response = await this.httpService
+        .post(
+          'http://rabbitmq.next.local/api/queues/%2F/TmsQueue/get',
+          {
+            count: 1,
+            ackmode: 'ack_requeue_true',
+            encoding: 'auto',
+            truncate: 50000,
+          },
+          {
+            headers: {
+              Authorization: `Basic ${Buffer.from(
+                `${this.username}:${this.password}`,
+              ).toString('base64')}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        )
+        .toPromise();
 
-  node_modules/typescript/lib/lib.dom.d.ts:18813:13
-    18813 declare var Response: {
-                      ~~~~~~~~
-    'Response' is declared here.
-src/rabbitmq/rabbitmq.service.ts:14:36 - error TS2552: Cannot find name 'response'. Did you mean 'Response'?
+      if (response.status === 200 && response.data.length > 0) {
+        const data = response.data[0];
+        const payload = JSON.parse(data.payload);
 
-14     if (response.status === 200 && response.data.length > 0) {
-                                      ~~~~~~~~
+        // Сохраняем сообщение в базе данных
+        const message = new this.messageModel(payload);
+        await message.save();
 
-  node_modules/typescript/lib/lib.dom.d.ts:18813:13
-    18813 declare var Response: {
-                      ~~~~~~~~
-    'Response' is declared here.
-src/rabbitmq/rabbitmq.service.ts:15:20 - error TS2552: Cannot find name 'response'. Did you mean 'Response'?
+        return payload;
+      } else {
+        throw new Error('Возникла ошибка при получении данных');
+      }
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 
-15       const data = response.data[0];
-                      ~~~~~~~~
-
-  node_modules/typescript/lib/lib.dom.d.ts:18813:13
-    18813 declare var Response: {
-                      ~~~~~~~~
-    'Response' is declared here.
-
-Found 3 error(s).
-
-PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend>
+  // Дополнительный метод для получения всех сообщений из MongoDB
+  async getAllMessages(): Promise<QueueMessage[]> {
+    return this.messageModel.find().exec();
+  }
+}
