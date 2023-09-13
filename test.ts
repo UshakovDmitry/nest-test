@@ -58,19 +58,6 @@ export interface Message extends Document {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 // message.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -100,4 +87,24 @@ export class MessageService {
   ...
 })
 
+
+  PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
+
+> tms-api@0.0.1 start
+> nest start
+
+src/app.module.ts:5:31 - error TS2307: Cannot find module './message/message.schema' or its corresponding type decla
+rations.
+
+5 import { MessageSchema } from './message/message.schema';
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/message/message.service.ts:4:25 - error TS2307: Cannot find module './message.schema' or its corresponding type
+declarations.
+
+4 import { Message } from './message.schema';
+                          ~~~~~~~~~~~~~~~~~~
+
+Found 2 error(s).
+
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend>
   
