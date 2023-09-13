@@ -9,30 +9,30 @@ export * from './rabbitmq-listener.service';
 MODULE.TS
 
 // src/rabbitmq/rabbitmq.module.ts
+import { Injectable } from '@nestjs/common';
+import { Client, ClientProxy, Transport } from '@nestjs/microservices';
 
-import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { MongooseModule } from '@nestjs/mongoose';
-import { MessageSchema } from 'path-to-your-message-schema'; // Обновите этот путь
-import { MessageService } from 'path-to-your-message-service'; // Обновите этот путь
-import { RabbitMQListenerService } from './rabbitmq-listener.service';
+@Injectable()
+export class RabbitMQService {
+  private client: ClientProxy;
 
-@Module({
-  imports: [
-    ClientsModule.register([{
-      name: 'RABBITMQ_SERVICE',
+  constructor() {
+    this.client = new ClientProxy({
       transport: Transport.RMQ,
       options: {
         urls: [`amqp://tms:26000567855499290979@rabbitmq.next.local`],
         queue: 'TmsQueue',
         queueOptions: { durable: false }
       },
-    }]),
-    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }])
-  ],
-  providers: [MessageService, RabbitMQListenerService]
-})
-export class RabbitmqModule {}
+    });
+  }
+
+  async readFromQueue(): Promise<any> {
+    // Просто отправьте сообщение на сервер
+    return this.client.send('get_message', {}).toPromise();
+  }
+}
+
 
 
 
