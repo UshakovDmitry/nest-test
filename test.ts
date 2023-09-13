@@ -1,115 +1,142 @@
-{
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
+export type MessageDocument = Message & Document;
 
-	"Number": "№№00015933",
+@Schema()
+export class ArrayString {
+  @Prop()
+  Shipping_Point: string;
 
+  @Prop()
+  Goods: string;
 
-	"Date": "01.08.2023 9:01:14",
+  @Prop()
+  Quantity: string;
 
+  @Prop()
+  Item_Status: string;
 
-	"Organization": "TOO Gulser Computers (Гулсер Компьютерс)",
+  @Prop()
+  Pickup_Point: string;
 
+  @Prop()
+  Delivery_Point: string;
 
-	"DocumentStatus": "Доставляется",
+  @Prop()
+  Pickup_Latitude: string;
 
+  @Prop()
+  Pickup_Longitude: string;
 
-	"Driver": "Бархудар Асан Арыпұлы",
+  @Prop()
+  Delivery_Latitude: string;
 
+  @Prop()
+  Delivery_Longitude: string;
 
-	"ISR": "",
+  @Prop()
+  Pickup_Time: string;
 
-
-	"Informal_Document": "Акт регистрации брака TL300000000014 от 01.04.2022 18:36:05",
-
-
-	"SKU_Weight": "17",
-
-
-	"ArrayStrings": [
-
-
-		{
-
-
-			"Shipping_Point": "Талгар 3, ул. Абылай хана, дом 111 (склад товара, ожидающего ремонта)",
-
-
-			"Goods": "Телевизор KIVI 55U710KB  Smart 4K UHD",
-
-
-			"Quantity": "1",
-
-
-			"Item_Status": "Оформлена",
-
-
-			"Pickup_Point": "1",
-
-
-			"Delivery_Point": "2",
-
-
-			"Pickup_Latitude": "43,305732",
-
-
-			"Pickup_Longitude": "77,241999",
-
-
-			"Delivery_Latitude": "43,245609",
-
-
-			"Delivery_Longitude": "76,90425",
-
-
-			"Pickup_Time": "01.01.0001 9:43:53",
-
-
-			"Delivery_Time": "01.01.0001 10:46:44"
-
-
-		}
-
-
-	],
-
-
-	"ContactInformation": {
-
-
-		"City": "Алматы",
-
-
-		"Delivery_Condition": "Доставка",
-
-
-		"Date_Time_delivery": "2023-08-05 До 18:00",
-
-
-		"Time_Window": "09:00-18:00",
-
-
-		"Latitude": "43,245609",
-
-
-		"Longitude": "76,90425",
-
-
-		"Street": "нет данных",
-
-
-		"Home": "нет данных",
-
-
-		"Phone": "+7(778)021-1316",
-
-
-		"Apartment": "нет данных",
-
-
-		"Contractor": "нет данных"
-
-
-	}
-
-
+  @Prop()
+  Delivery_Time: string;
 }
+
+@Schema()
+export class ContactInfo {
+  @Prop()
+  City: string;
+
+  @Prop()
+  Delivery_Condition: string;
+
+  @Prop()
+  Date_Time_delivery: string;
+
+  @Prop()
+  Time_Window: string;
+
+  @Prop()
+  Latitude: string;
+
+  @Prop()
+  Longitude: string;
+
+  @Prop()
+  Street: string;
+
+  @Prop()
+  Home: string;
+
+  @Prop()
+  Phone: string;
+
+  @Prop()
+  Apartment: string;
+
+  @Prop()
+  Contractor: string;
+}
+
+@Schema()
+export class Message {
+  @Prop()
+  Number: string;
+
+  @Prop()
+  Date: string;
+
+  @Prop()
+  Organization: string;
+
+  @Prop()
+  DocumentStatus: string;
+
+  @Prop()
+  Driver: string;
+
+  @Prop()
+  ISR: string;
+
+  @Prop()
+  Informal_Document: string;
+
+  @Prop()
+  SKU_Weight: string;
+
+  @Prop({ type: [ArrayString], default: [] })
+  ArrayStrings: ArrayString[];
+
+  @Prop()
+  ContactInformation: ContactInfo;
+}
+
+export const MessageSchema = SchemaFactory.createForClass(Message);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Message, MessageSchema } from './message.entity';
+
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
+  ],
+})
+export class DatabaseModule {}
