@@ -1,33 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Message } from './message.interface';
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
 
-@Injectable()
-export class MessageService {
-  constructor(@InjectModel('Message') private readonly messageModel: Model<Message>) {}
+> tms-api@0.0.1 start
+> nest start
 
-  async create(data: any): Promise<Message> {
-    const createdMessage = new this.messageModel(data);
-    return createdMessage.save();
-  }
+src/rabbitmq/rabbitmq.service.ts:28:17 - error TS2339: Property 'on' does not exist on type 'ClientProxy'.
 
-  async findAll(): Promise<Message[]> {
-    return this.messageModel.find().exec();
-  }
-}
+28     this.client.on('data', async (data) => {
+                   ~~
 
+Found 1 error(s).
 
-
-
-
-import { Document } from 'mongoose';
-
-export interface Message extends Document {
-  // ваша структура данных, например:
-  content: string;
-  timestamp: Date;
-  // добавьте дополнительные поля при необходимости
-}
-
-
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend>
