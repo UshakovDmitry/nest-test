@@ -1,45 +1,30 @@
 
 
 MODULE.TS
-import { Injectable } from '@nestjs/common';
-import {
-  ClientProxyFactory,
-  ClientProxy,
-  Transport,
-} from '@nestjs/microservices';
+import { Module } from '@nestjs/common';
+import { RabbitMQService } from './rabbitmq.service';
+import { RabbitMQController } from './rabbitmq.controller';
 
-@Injectable()
-export class RabbitMQService {
-  private client: ClientProxy;
+@Module({
+  providers: [RabbitMQService],
+  controllers: [RabbitMQController],
+  exports: [RabbitMQService] // Если нужно использовать сервис в других модулях
+})
+export class RabbitMQModule {}
 
-  constructor() {
-    this.client = ClientProxyFactory.create({
-      transport: Transport.RMQ,
-      options: {
-        urls: [`amqp://tms:26000567855499290979@rabbitmq.next.local`],
-        queue: 'TmsQueue',
-        queueOptions: { durable: false },
-      },
-    });
-  }
-
-  async readFromQueue(): Promise<any> {
-    // Просто отправьте сообщение на сервер
-    return this.client.send('get_message', {}).toPromise();
-  }
-}
 
 COTROLLER.TS
 
 import { Controller, Get } from '@nestjs/common';
-import { TransportService } from './transport.service';
+import { RabbitMQService } from './rabbitmq.service';
 
-@Controller('transport')
-export class TransportController {
-  constructor(private readonly transportService: TransportService) {}
-  @Get()
-  async getTransport() {
-    return await this.transportService.getTransport();
+@Controller('rabbitmq')
+export class RabbitMQController {
+  constructor(private readonly rabbitMQService: RabbitMQService) {}
+
+  @Get('all-message')
+  async findAll(): Promise<any[]> {
+    return this.rabbitMQService.readFromQueue();
   }
 }
 
