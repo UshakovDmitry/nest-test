@@ -10,14 +10,14 @@ MODULE.TS
 
 // src/rabbitmq/rabbitmq.module.ts
 import { Injectable } from '@nestjs/common';
-import { Client, ClientProxy, Transport } from '@nestjs/microservices';
+import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
 
 @Injectable()
 export class RabbitMQService {
   private client: ClientProxy;
 
   constructor() {
-    this.client = new ClientProxy({
+    this.client = ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
         urls: [`amqp://tms:26000567855499290979@rabbitmq.next.local`],
@@ -28,10 +28,10 @@ export class RabbitMQService {
   }
 
   async readFromQueue(): Promise<any> {
-    // Просто отправьте сообщение на сервер
-    return this.client.send('get_message', {}).toPromise();
+    return this.client.send<any, any>('get_message', {}).toPromise();
   }
 }
+
 
 
 
