@@ -31,10 +31,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 export class RabbitMQModule {}
 
 
-
-
-
-// SERVICE.TS
 // SERVICE.TS
 import { Injectable, Logger } from '@nestjs/common'; // добавьте импорт Logger
 import { Client, ClientProxy, Transport, ClientProxyFactory } from '@nestjs/microservices';
@@ -65,16 +61,6 @@ export class RabbitMQService {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
 
 
 // CONTROLLER.TS
