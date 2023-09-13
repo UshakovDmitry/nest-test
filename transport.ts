@@ -30,17 +30,14 @@ export class RabbitMQController {
 
 SERVICE.TS
 import { Injectable } from '@nestjs/common';
-import {
-  ClientProxy,
-  ClientProxyFactory,
-  Transport,
-} from '@nestjs/microservices';
+import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { MessageService } from './message.service'; // импортируйте ваш сервис
 
 @Injectable()
 export class RabbitMQService {
   private client: ClientProxy;
 
-  constructor() {
+  constructor(private messageService: MessageService) { // инжектите ваш сервис
     this.client = ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
@@ -48,6 +45,14 @@ export class RabbitMQService {
         queue: 'TmsQueue',
         queueOptions: { durable: false },
       },
+    });
+    this.client.connect(); // подключаемся к RabbitMQ
+    this.listenForMessages(); // начинаем слушать сообщения
+  }
+
+  async listenForMessages(): Promise<void> {
+    this.client.on('data', async (data) => {
+      await this.messageService.create(data); // сохраняем сообщение в MongoDB
     });
   }
 
