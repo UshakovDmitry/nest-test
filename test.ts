@@ -1,10 +1,18 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Message, MessageSchema } from './message.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Message, MessageDocument } from './message.entity';
 
-@Module({
-  imports: [MongooseModule.forFeature([{ name: Message.name, schema: MessageSchema }])],
-  exports: [MongooseModule],
-})
-export class DatabaseModule {}
+@Injectable()
+export class DatabaseService {
+  constructor(@InjectModel(Message.name) private messageModel: Model<MessageDocument>) {}
 
+  async create(data: any): Promise<Message> {
+    const createdMessage = new this.messageModel(data);
+    return createdMessage.save();
+  }
+
+  async findAll(): Promise<Message[]> {
+    return this.messageModel.find().exec();
+  }
+}
