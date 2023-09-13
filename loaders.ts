@@ -1,33 +1,96 @@
 
 MODULE.TS
+
+// src/rabbitmq/rabbitmq.module.ts
+
 import { Module } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq.service';
-import { RabbitMQController } from './rabbitmq.controller';
-import { HttpModule } from '@nestjs/axios';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MessageSchema } from 'path-to-your-message-schema'; // Обновите этот путь
+import { MessageService } from 'path-to-your-message-service'; // Обновите этот путь
+import { RabbitMQListenerService } from './rabbitmq-listener.service';
 
 @Module({
-  imports: [HttpModule.register({})],
-  controllers: [RabbitMQController],
-  providers: [RabbitMQService],
-  exports: [RabbitMQService],
+  imports: [
+    ClientsModule.register([{
+      name: 'RABBITMQ_SERVICE',
+      transport: Transport.RMQ,
+      options: {
+        urls: [`amqp://tms:26000567855499290979@rabbitmq.next.local`],
+        queue: 'TmsQueue',
+        queueOptions: { durable: false }
+      },
+    }]),
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }])
+  ],
+  providers: [MessageService, RabbitMQListenerService]
 })
-export class RabbitMQModule {}
+export class RabbitmqModule {}
 
 
 
 COTROLLER.TS
-import { Controller, Get } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq.service';
-import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('rabbitmq')
-@Controller('/api/rabbitmq')
-export class RabbitMQController {
-  constructor(private readonly rabbitMQService: RabbitMQService) {}
 
-  @Get('/read')
-  async readFromQueue() {
-    return await this.rabbitMQService.readFromQueue();
+
+
+
+
+SERVICE.TS
+
+import { Injectable } from '@nestjs/common';
+import { Client, ClientProxy, Transport } from '@nestjs/microservices';
+
+@Injectable()
+export class RabbitMQService {
+  private readonly username: string = 'tms';
+  private readonly password: string = '26000567855499290979';
+  private client: ClientProxy;
+
+  constructor() {
+    this.client = new Client({
+      transport: Transport.RMQ,
+      options: {
+        urls: [`amqp://${this.username}:${this.password}@rabbitmq.next.local:5672`],
+        queue: 'TmsQueue',
+        queueOptions: {
+          durable: false,
+        },
+      },
+    });
+  }
+
+  async readFromQueue(): Promise<QueueMessage> {
+    return this.client.send<QueueMessage, void>('get_message', {}).toPromise();
+  }
+}
+
+
+
+// src/rabbitmq/rabbitmq-listener.service.ts
+
+import { Injectable } from '@nestjs/common';
+import { EventPattern } from '@nestjs/microservices';
+import { MessageService } from 'path-to-your-message-service'; // Обновите этот путь
+
+@Injectable()
+export class RabbitMQListenerService {
+
+  constructor(private readonly messageService: MessageService) {}
+
+  @EventPattern('TmsQueue')
+  async handleMessage(data: any): Promise<any> {
+    console.log('Received message:', data);
+
+    try {
+      const savedMessage = await this.messageService.create(data);
+      console.log('Message saved:', savedMessage);
+
+      return { status: 'success', id: savedMessage._id };
+    } catch (error) {
+      console.error('Error saving message:', error);
+      return { status: 'error', message: error.message };
+    }
   }
 }
 
@@ -35,7 +98,16 @@ export class RabbitMQController {
 
 
 
-SERVICE.TS
+
+
+
+
+
+
+
+
+
+
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { QueueMessage } from './rabbitmq.interface';
