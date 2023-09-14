@@ -1,50 +1,81 @@
-$ npm run start
+message.service
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
-> tms-api@0.0.1 start
-> nest start
+@Injectable()
+export class MessageService {
+  constructor(
+    @InjectModel('Message') private readonly messageModel: Model<any>,
+  ) {}
 
-[Nest] 22996  - 14.09.2023, 12:26:02     LOG [NestFactory] Starting Nest application...
-[Nest] 22996  - 14.09.2023, 12:26:02     LOG [InstanceLoader] MongooseModule dependencies initialized +27ms
-[Nest] 22996  - 14.09.2023, 12:26:02     LOG [InstanceLoader] ClientsModule dependencies initialized +0ms
-[Nest] 22996  - 14.09.2023, 12:26:02   ERROR [ExceptionHandler] Nest can't resolve dependencies of the MessageService (?). Please make sur
-e that the argument MessageModel at index [0] is available in the RabbitMQModule context.
+  async create(data: any): Promise<any> {
+    const createdMessage = new this.messageModel(data);
+    return await createdMessage.save();
+  }
 
-Potential solutions:
-- Is RabbitMQModule a valid NestJS module?
-- If MessageModel is a provider, is it part of the current RabbitMQModule?
-- If MessageModel is exported from a separate @Module, is that module imported within RabbitMQModule?
-  @Module({
-    imports: [ /* the Module containing MessageModel */ ]
-  })
+  async findAll(): Promise<any[]> {
+    return await this.messageModel.find().exec();
+  }
+}
 
-Error: Nest can't resolve dependencies of the MessageService (?). Please make sure that the argument MessageModel at index [0] is availabl
-e in the RabbitMQModule context.
+message.shema
+import { Document, Schema } from 'mongoose';
 
-Potential solutions:
-- Is RabbitMQModule a valid NestJS module?
-- If MessageModel is a provider, is it part of the current RabbitMQModule?
-- If MessageModel is exported from a separate @Module, is that module imported within RabbitMQModule?
-  @Module({
-    imports: [ /* the Module containing MessageModel */ ]
-  })
+const ArrayStringSchema = new Schema({
+  Shipping_Point: String,
+  Goods: String,
+  Quantity: String,
+  Item_Status: String,
+  Pickup_Point: String,
+  Delivery_Point: String,
+  Pickup_Latitude: String,
+  Pickup_Longitude: String,
+  Delivery_Latitude: String,
+  Delivery_Longitude: String,
+  Pickup_Time: String,
+  Delivery_Time: String,
+});
 
-    at Injector.lookupComponentInParentModules (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\
-core\injector\injector.js:254:19)
-    at Injector.resolveComponentInstance (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\i
-njector\injector.js:207:33)
-    at resolveParam (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injector\injector.js:1
-28:38)
-    at async Promise.all (index 0)
-    at Injector.resolveConstructorParams (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\i
-njector\injector.js:143:27)
-    at Injector.loadInstance (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injector\inje
-ctor.js:70:13)
-    at Injector.loadProvider (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injector\inje
-ctor.js:97:9)
-    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injector\instance-loader.js:56:13
-    at async Promise.all (index 4)
-    at InstanceLoader.createInstancesOfProviders (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestj
-s\core\injector\instance-loader.js:55:9)
+const ContactInformationSchema = new Schema({
+  City: String,
+  Delivery_Condition: String,
+  Date_Time_delivery: String,
+  Time_Window: String,
+  Latitude: String,
+  Longitude: String,
+  Street: String,
+  Home: String,
+  Phone: String,
+  Apartment: String,
+  Contractor: String,
+});
 
-ushakov.dmitriy@DIT-104 MINGW64 ~/Desktop/alser.dispatcherworkplaceui/backend (develop-3)
-$
+export const MessageSchema = new Schema({
+  Number: String,
+  Date: String,
+  Organization: String,
+  DocumentStatus: String,
+  Driver: String,
+  ISR: String,
+  Informal_Document: String,
+  SKU_Weight: String,
+  ArrayStrings: [ArrayStringSchema],
+  ContactInformation: ContactInformationSchema,
+});
+
+export interface Message extends Document {
+  Number: string;
+  Date: string;
+  Organization: string;
+  DocumentStatus: string;
+  Driver: string;
+  ISR: string;
+  Informal_Document: string;
+  SKU_Weight: string;
+  ArrayStrings: (typeof ArrayStringSchema)[];
+  ContactInformation: typeof ContactInformationSchema;
+}
+
+
+
