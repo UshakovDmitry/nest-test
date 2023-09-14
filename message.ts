@@ -1,34 +1,42 @@
-Details
-Features	
-arguments:	
-x-queue-type:	classic
-durable:	true
-Policy	ha-fed
-Operator policy	
-Effective policy definition	
-federation-upstream-set:	all
-ha-mode:	exactly
-ha-params:	5
-ha-sync-mode:	automatic
-message-ttl:	3465687905
-Node	rabbit@dkrclstrnd1
-Mirrors	rabbit@dkrclstrnd4
-rabbit@dkrclstrnd3
-rabbit@dkrclstrnd2
-rabbit@dkrclstrnd5
+import { Injectable, MessagePattern, Payload, Ctx } from '@nestjs/microservices';
+import { MessageService } from '../message/message.service';
+import { RmqContext } from '@nestjs/microservices';
 
-State	idle
-Consumers	1
-Consumer capacity 	100%
-Total	Ready	Unacked	In memory	Persistent	Transient, Paged Out
-Messages 	0	0	0	0	0	0
-Message body bytes 	0 B	0 B	0 B	0 B	0 B	0 B
-Process memory 	17 KiB
+@Injectable()
+export class RabbitMQService {
+  constructor(private messageService: MessageService) {}
+
+  @MessagePattern()
+  async handleData(@Payload() data: any, @Ctx() context: RmqContext) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    console.log(data);
+    await this.messageService.create(data);
+    channel.ack(originalMsg);
+  }
+}
 
 
 
 
-From	Routing key	Arguments	
-(Default exchange binding)
-TmsExchange
-tms1c
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { MicroserviceOptions } from '@nestjs/microservices';
+
+async function bootstrap() {
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+    transport: Transport.RMQ,
+    options: {
+      urls: ['amqp://tms:26000567855499290979@rabbitmq.next.local'],
+      queue: 'TmsQueue',
+      queueOptions: {
+        durable: true,
+      },
+    },
+  });
+  app.listen(() => console.log('Microservice is listening'));
+}
+bootstrap();
+
+
+
