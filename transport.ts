@@ -1,94 +1,32 @@
+$ npm run start
 
+> tms-api@0.0.1 start
+> nest start
 
-MODULE.TS
-import { Module } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq.service';
-import { RabbitMQController } from './rabbitmq.controller';
-
-@Module({
-  providers: [RabbitMQService],
-  controllers: [RabbitMQController],
-  exports: [RabbitMQService] // Если нужно использовать сервис в других модулях
-})
-export class RabbitMQModule {}
-
-COTROLLER.TS
-import { Controller, Get } from '@nestjs/common';
-import { MessageService } from '../message/message.service';
-
-@Controller('all-messages')
-export class RabbitMQController {
-  constructor(private readonly messageService: MessageService) {}
-
-  @Get()
-  async findAll() {
-    return this.messageService.findAll();
-  }
-}
-
-
-SERVICE.TS
-import { Injectable } from '@nestjs/common';
-import { EventPattern, Payload, Ctx, RmqContext } from '@nestjs/microservices';
-
-import {
-  ClientProxy,
-  ClientProxyFactory,
-  Transport,
-} from '@nestjs/microservices';
-import { MessageService } from '../message/message.service';
-
-@Injectable()
-export class RabbitMQService {
-  private client: ClientProxy;
-
-  constructor(private messageService: MessageService) {
-    // инжектите ваш сервис
-    this.client = ClientProxyFactory.create({
-      transport: Transport.RMQ,
-      options: {
-        urls: [`amqp://tms:26000567855499290979@rabbitmq.next.local`],
-        queue: 'TmsQueue',
-        queueOptions: { durable: true },
-      },
-    });
-    this.client.connect(); // подключаемся к RabbitMQ
-  }
-  @EventPattern('get_message')
-  async handleData(@Payload() data: any, @Ctx() context: RmqContext) {
-    const channel = context.getChannelRef();
-    const originalMsg = context.getMessage();
-    await this.messageService.create(data);
-    channel.ack(originalMsg);
-  }
-
-
-}
-
-
-rabbitmq-listener.service
-import { Injectable } from '@nestjs/common';
-import { EventPattern } from '@nestjs/microservices';
-import { MessageService } from '../message/message.service';
-
-@Injectable()
-export class RabbitMQListenerService {
-  constructor(private readonly messageService: MessageService) {}
-
-  @EventPattern('TmsQueue')
-  async handleMessage(data: any): Promise<any> {
-    console.log('Received message:', data);
-
-    try {
-      const savedMessage = await this.messageService.create(data);
-      console.log('Message saved:', savedMessage);
-
-      return { status: 'success', id: savedMessage._id };
-    } catch (error) {
-      console.error('Error saving message:', error);
-      return { status: 'error', message: error.message };
-    }
-  }
-}
-
-
+[Nest] 23228  - 14.09.2023, 13:29:33     LOG [NestFactory] Starting Nest application...
+[Nest] 23228  - 14.09.2023, 13:29:33     LOG [InstanceLoader] MongooseModule dependenci
+es initialized +29ms
+[Nest] 23228  - 14.09.2023, 13:29:33     LOG [InstanceLoader] ClientsModule dependencie
+s initialized +0ms
+[Nest] 23228  - 14.09.2023, 13:29:33     LOG [InstanceLoader] MongooseCoreModule depend
+encies initialized +9ms
+[Nest] 23228  - 14.09.2023, 13:29:33     LOG [InstanceLoader] MongooseModule dependenci
+es initialized +7ms
+[Nest] 23228  - 14.09.2023, 13:29:33     LOG [InstanceLoader] MessageModule dependencie
+s initialized +0ms
+[Nest] 23228  - 14.09.2023, 13:29:33     LOG [InstanceLoader] RabbitMQModule dependenci
+es initialized +1ms
+[Nest] 23228  - 14.09.2023, 13:29:33     LOG [InstanceLoader] AppModule dependencies in
+itialized +0ms
+[Nest] 23228  - 14.09.2023, 13:29:33     LOG [NestMicroservice] Nest microservice succe
+ssfully started +83ms
+Microservices started
+[Nest] 23228  - 14.09.2023, 13:29:33     LOG [RoutesResolver] RabbitMQController {/all-
+messages}: +16ms
+[Nest] 23228  - 14.09.2023, 13:29:33     LOG [RouterExplorer] Mapped {/all-messages, GE
+T} route +3ms
+[Nest] 23228  - 14.09.2023, 13:29:33     LOG [NestApplication] Nest application success
+fully started +2ms
+Application is listening on port 4000
+[Nest] 23228  - 14.09.2023, 13:29:33   ERROR [Server] There is no matching event handle
+r defined in the remote service. Event pattern: undefined
