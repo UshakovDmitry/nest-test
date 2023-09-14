@@ -47,10 +47,37 @@ export class RabbitMQService {
 
 
 
+ushakov.dmitriy@DIT-104 MINGW64 ~/Desktop/alser.dispatcherworkplaceui/backend (develop-
+3)
+$ npm run start
 
+> tms-api@0.0.1 start
+> nest start
 
-
-
-Argument of type '{ transport: Transport; options: { urls: string[]; queue: string; queueOptions: { durable: boolean; }; }; }' is not assignable to parameter of type '{ urls?: string[] | RmqUrl[]; queue?: string; prefetchCount?: number; isGlobalPrefetchCount?: boolean; queueOptions?: any; socketOptions?: any; noAck?: boolean; serializer?: Serializer<any, any>; ... 5 more ...; maxConnectionAttempts?: number; }'.
-  Object literal may only specify known properties, and 'transport' does not exist in type '{ urls?: string[] | RmqUrl[]; queue?: string; prefetchCount?: number; isGlobalPrefetchCount?: boolean; queueOptions?: any; socketOptions?: any; noAck?: boolean; serializer?: Serializer<any, any>; ... 5 more ...; maxConnectionAttempts?: number; }'.ts(2345)
-(property) transport: Transport
+[Nest] 3616  - 14.09.2023, 15:54:31     LOG [NestFactory] Starting Nest application...
+[Nest] 3616  - 14.09.2023, 15:54:31     LOG [InstanceLoader] MongooseModule dependencie
+s initialized +28ms
+[Nest] 3616  - 14.09.2023, 15:54:31     LOG [InstanceLoader] ClientsModule dependencies
+ initialized +0ms
+[Nest] 3616  - 14.09.2023, 15:54:31     LOG [InstanceLoader] MongooseCoreModule depende
+ncies initialized +10ms
+[Nest] 3616  - 14.09.2023, 15:54:31     LOG [InstanceLoader] MongooseModule dependencie
+s initialized +6ms
+[Nest] 3616  - 14.09.2023, 15:54:31     LOG [InstanceLoader] MessageModule dependencies
+ initialized +1ms
+[Nest] 3616  - 14.09.2023, 15:54:31     LOG [InstanceLoader] RabbitMQModule dependencie
+s initialized +6ms
+[Nest] 3616  - 14.09.2023, 15:54:31     LOG [InstanceLoader] AppModule dependencies ini
+tialized +1ms
+[Nest] 3616  - 14.09.2023, 15:54:31     LOG [NestMicroservice] Nest microservice succes
+sfully started +86ms
+Microservices started
+[Nest] 3616  - 14.09.2023, 15:54:31     LOG [RoutesResolver] RabbitMQController {/all-m
+essages}: +16ms
+[Nest] 3616  - 14.09.2023, 15:54:31     LOG [RouterExplorer] Mapped {/all-messages, GET
+} route +2ms
+[Nest] 3616  - 14.09.2023, 15:54:31     LOG [NestApplication] Nest application successf
+ully started +2ms
+Application is listening on port 4000
+[Nest] 3616  - 14.09.2023, 15:54:34   ERROR [Server] There is no matching event handler
+ defined in the remote service. Event pattern: undefined
