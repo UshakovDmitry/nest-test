@@ -42,3 +42,20 @@ export class RabbitMQService {
     return this.client.emit('TmsQueue', message);
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Argument of type '{ transport: Transport; options: { urls: string[]; queue: string; queueOptions: { durable: boolean; }; }; }' is not assignable to parameter of type '{ urls?: string[] | RmqUrl[]; queue?: string; prefetchCount?: number; isGlobalPrefetchCount?: boolean; queueOptions?: any; socketOptions?: any; noAck?: boolean; serializer?: Serializer<any, any>; ... 5 more ...; maxConnectionAttempts?: number; }'.
+  Object literal may only specify known properties, and 'transport' does not exist in type '{ urls?: string[] | RmqUrl[]; queue?: string; prefetchCount?: number; isGlobalPrefetchCount?: boolean; queueOptions?: any; socketOptions?: any; noAck?: boolean; serializer?: Serializer<any, any>; ... 5 more ...; maxConnectionAttempts?: number; }'.ts(2345)
+(property) transport: Transport
