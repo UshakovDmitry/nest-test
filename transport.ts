@@ -1,35 +1,32 @@
-  async readFromQueue(): Promise<QueueMessage> {
-    try {
-      const response = await this.httpService
-        .post(
-          'http://rabbitmq.next.local/api/queues/%2F/TmsQueue/get',
-          {
-            count: 1,
-            ackmode: 'ack_requeue_true',
-            encoding: 'auto',
-            truncate: 50000,
-          },
-          {
-            headers: {
-              Authorization: `Basic ${Buffer.from(
-                `${this.username}:${this.password}`,
-              ).toString('base64')}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        )
-        .toPromise();
+$ npm run start
 
-      if (response.status === 200 && response.data.length > 0) {
-        const data = response.data[0];
-        const payload = JSON.parse(data.payload);
+> tms-api@0.0.1 start
+> nest start
 
-        return payload;
-      } else {
-        throw new Error('Возникла ошибка при получении данных');
-      }
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
+[Nest] 23992  - 14.09.2023, 14:01:45     LOG [NestFactory] Starting Nest application...
+[Nest] 23992  - 14.09.2023, 14:01:45     LOG [InstanceLoader] MongooseModule dependenci
+es initialized +28ms
+[Nest] 23992  - 14.09.2023, 14:01:45     LOG [InstanceLoader] ClientsModule dependencie
+s initialized +0ms
+[Nest] 23992  - 14.09.2023, 14:01:45     LOG [InstanceLoader] MongooseCoreModule depend
+encies initialized +10ms
+[Nest] 23992  - 14.09.2023, 14:01:45     LOG [InstanceLoader] MongooseModule dependenci
+es initialized +7ms
+[Nest] 23992  - 14.09.2023, 14:01:45     LOG [InstanceLoader] MessageModule dependencie
+s initialized +0ms
+[Nest] 23992  - 14.09.2023, 14:01:45     LOG [InstanceLoader] RabbitMQModule dependenci
+es initialized +1ms
+[Nest] 23992  - 14.09.2023, 14:01:45     LOG [InstanceLoader] AppModule dependencies in
+itialized +0ms
+[Nest] 23992  - 14.09.2023, 14:01:45     LOG [NestMicroservice] Nest microservice succe
+ssfully started +83ms
+Microservices started
+[Nest] 23992  - 14.09.2023, 14:01:45     LOG [RoutesResolver] RabbitMQController {/all-
+messages}: +18ms
+[Nest] 23992  - 14.09.2023, 14:01:45     LOG [RouterExplorer] Mapped {/all-messages, GE
+T} route +3ms
+[Nest] 23992  - 14.09.2023, 14:01:45     LOG [NestApplication] Nest application success
+fully started +2ms
+Application is listening on port 4000
+[Nest] 23992  - 14.09.2023, 14:01:45   ERROR [Server] There is no matching event handle
+r defined in the remote service. Event pattern: undefined
