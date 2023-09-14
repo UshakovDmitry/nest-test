@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { EventPattern, Payload, Ctx, RmqContext } from '@nestjs/microservices';
+import { MessageService } from '../message/message.service';
 
 @Injectable()
-export class MessageService {
-  constructor(
-    @InjectModel('Message') private readonly messageModel: Model<any>,
-  ) {}
+export class RabbitMQService {
+  constructor(private messageService: MessageService) {}
 
-  async create(data: any): Promise<any> {
-    const createdMessage = new this.messageModel(data);
-    return await createdMessage.save();
-  }
-
-  async findAll(): Promise<any[]> {
-    return await this.messageModel.find().exec();
+  @EventPattern('get_message')
+  async handleData(@Payload() data: any, @Ctx() context: RmqContext) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    console.log(data);
+    await this.messageService.create(data);
+    channel.ack(originalMsg);
   }
 }
