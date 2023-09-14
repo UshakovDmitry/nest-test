@@ -1,140 +1,224 @@
-Message 1
-The server reported 0 messages remaining.
-
-Exchange	TmsExchange
-Routing Key	tms1c
-Redelivered	○
-Properties	
-headers:	
-JMSXDeliveryCount:	1
-JMS_AMQP_HEADER:	true
-JMS_AMQP_HEADERDURABLE:	true
-JMS_AMQP_ORIGINAL_ENCODING:	6
-NATIVE_MESSAGE_ID:	ID:AMQP_UUID:fe636d99-0288-4c6c-90ed-37445d5b7117
-SenderCode:	office
-content_type:	application/json
-integ_sender_code:	office
-Payload
-1506 bytes
-Encoding: string
-[
-
-
-	{
-
-
-		"Number": "№GLO000079",
-
-
-		"Date": "01.08.2023 9:50:26",
-
-
-		"Organization": "TOO Gulser Computers (Гулсер Компьютерс)",
-
-
-		"DocumentStatus": "Доставляется",
-
-
-		"Driver": "Трункин Алексей Максимович",
-
-
-		"ISR": "",
-
-
-		"Informal_Document": "Акт регистрации брака GLO00000000047 от 01.02.2023 18:52:29",
-
-
-		"SKU_Weight": "0,4",
-
-
-		"ArrayStrings": [
-
-
-			{
-
-
-				"Shipping_Point": "Жетыкара, ТД \"Континенталь\", 53А",
-
-
-				"Goods": "Сетевой фильтр SMART SM-06B-1.5M XH-ED06K-1.5M черный 10А выключатель 6роз 1.5м",
-
-
-				"Quantity": "1",
-
-
-				"Item_Status": "Оформлена",
-
-
-				"Pickup_Point": "1",
-
-
-				"Delivery_Point": "2",
-
-
-				"Pickup_Latitude": "61,189797",
-
-
-				"Pickup_Longitude": "52,183911",
-
-
-				"Delivery_Latitude": "43,227672",
-
-
-				"Delivery_Longitude": "76,833993",
-
-
-				"Pickup_Time": "01.01.0001 9:44:29",
-
-
-				"Delivery_Time": "01.01.0001 10:10:11"
-
-
-			}
-
-
-		],
-
-
-		"ContactInformation": {
-
-
-			"City": "Костанай",
-
-
-			"Delivery_Condition": "Доставка",
-
-
-			"Date_Time_delivery": "2023-08-05 До 18:00",
-
-
-			"Time_Window": "09:00-18:00",
-
-
-			"Latitude": "53,212172",
-
-
-			"Longitude": "63,638317",
-
-
-			"Street": "нет данных",
-
-
-			"Home": "нет данных",
-
-
-			"Phone": "+7(714)292-7030",
-
-
-			"Apartment": "нет данных",
-
-
-			"Contractor": "нет данных"
-
-
-		}
-
-
-	}
-
-
-]
+main.ts
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as basicAuth from 'express-basic-auth';
+import * as compression from 'compression';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { config } from 'dotenv';
+
+// Инициализация dotenv
+config();
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [process.env.RABBITMQ_URL || ''],
+      queue: 'TmsQueue',
+      queueOptions: {
+        durable: true,
+      },
+    },
+  });
+
+  // SWAGGER CONFIGURATION
+  app.use(
+    ['/swagger', '/swagger-stats'],
+    basicAuth({
+      challenge: true,
+      users: {
+        [process.env.SWAGGER_USER || '']: process.env.SWAGGER_PASSWORD || '',
+      },
+    }),
+  );
+  const config = new DocumentBuilder()
+    .setTitle('Описание всех контроллеров REST API')
+    .setDescription(
+      'Внимание! Некоторые методы могут изменять данные в базе данных!',
+    )
+    .setVersion('1.0')
+    .addTag('API для TMS')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document);
+
+  app.enableCors();
+  app.use(compression());
+
+  await app.startAllMicroservices();
+  console.log('Microservices started');
+
+  const port = parseInt(process.env.PORT || '4000', 10);
+  await app.listen(port);
+  console.log(`Application is listening on port ${port}`);
+}
+bootstrap();
+
+app module
+import { Module } from '@nestjs/common';
+import { RabbitMQService } from './rabbitmq/rabbitmq.service';
+import { RabbitMQController } from './rabbitmq/rabbitmq.controller';
+import { MessageModule } from './message/message.module';
+import { MessageSchema } from './message/message.shema';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { connectMongoose } from './connect-mongoose';
+import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
+
+@Module({
+  imports: [
+    RabbitMQModule,
+    MessageModule,
+    MongooseModule.forRoot(connectMongoose()),
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
+    ClientsModule.register([
+      {
+        name: 'RABBITMQ_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://tms:26000567855499290979@rabbitmq.next.local'],
+          queue: 'TmsQueue',
+          queueOptions: {
+            durable: true,
+          },
+        },
+      },
+    ]),
+  ],
+  controllers: [RabbitMQController],
+  providers: [RabbitMQService],
+})
+export class AppModule {}
+
+rabbitmq.module
+import { Module } from '@nestjs/common';
+import { RabbitMQService } from './rabbitmq.service';
+import { RabbitMQController } from './rabbitmq.controller';
+import { MessageModule } from '../message/message.module'; // 👈 import
+@Module({
+  imports: [MessageModule], 
+  providers: [RabbitMQService, RabbitMQController],
+})
+export class RabbitMQModule {}
+rabbitmq.service
+import { Injectable } from '@nestjs/common';
+import {
+  MessagePattern,
+  Payload,
+  Ctx,
+  RmqContext,
+} from '@nestjs/microservices';
+import { MessageService } from '../message/message.service';
+
+@Injectable()
+export class RabbitMQService {
+  constructor(private messageService: MessageService) {}
+
+  @MessagePattern('createMessage')
+  async handleData(@Payload() data: any, @Ctx() context: RmqContext) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    console.log('Сообщение получено:', data);
+    try {
+      await this.messageService.create(data);
+      console.log('Сообщение сохранено');
+      channel.ack(originalMsg);
+    } catch (error) {
+      console.error('Ошибка при сохранении', error);
+    }
+  }
+}
+message.module
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MessageService } from './message.service';
+import { MessageSchema } from './message.shema';
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
+  ],
+  providers: [MessageService],
+  exports: [MessageService], // 👈 export for DI
+})
+export class MessageModule {}
+
+message.service
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+
+@Injectable()
+export class MessageService {
+  constructor(
+    @InjectModel('Message') private readonly messageModel: Model<any>,
+  ) {}
+
+  async create(data: any): Promise<any> {
+    const createdMessage = new this.messageModel(data);
+    return await createdMessage.save();
+  }
+
+  async findAll(): Promise<any[]> {
+    return await this.messageModel.find().exec();
+  }
+}
+message.shema
+import { Document, Schema } from 'mongoose';
+
+const ArrayStringSchema = new Schema({
+  Shipping_Point: String,
+  Goods: String,
+  Quantity: String,
+  Item_Status: String,
+  Pickup_Point: String,
+  Delivery_Point: String,
+  Pickup_Latitude: String,
+  Pickup_Longitude: String,
+  Delivery_Latitude: String,
+  Delivery_Longitude: String,
+  Pickup_Time: String,
+  Delivery_Time: String,
+});
+
+const ContactInformationSchema = new Schema({
+  City: String,
+  Delivery_Condition: String,
+  Date_Time_delivery: String,
+  Time_Window: String,
+  Latitude: String,
+  Longitude: String,
+  Street: String,
+  Home: String,
+  Phone: String,
+  Apartment: String,
+  Contractor: String,
+});
+
+export const MessageSchema = new Schema({
+  Number: String,
+  Date: String,
+  Organization: String,
+  DocumentStatus: String,
+  Driver: String,
+  ISR: String,
+  Informal_Document: String,
+  SKU_Weight: String,
+  ArrayStrings: [ArrayStringSchema],
+  ContactInformation: ContactInformationSchema,
+});
+
+export interface Message extends Document {
+  Number: string;
+  Date: string;
+  Organization: string;
+  DocumentStatus: string;
+  Driver: string;
+  ISR: string;
+  Informal_Document: string;
+  SKU_Weight: string;
+  ArrayStrings: (typeof ArrayStringSchema)[];
+  ContactInformation: typeof ContactInformationSchema;
+}
