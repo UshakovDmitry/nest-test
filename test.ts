@@ -56,7 +56,7 @@ async function bootstrap() {
   console.log(`Application is listening on port ${port}`);
 }
 bootstrap();
-
+//////////////////////////////////////////////////////////////
 app module
 import { Module } from '@nestjs/common';
 import { RabbitMQService } from './rabbitmq/rabbitmq.service';
@@ -92,6 +92,7 @@ import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
   providers: [RabbitMQService],
 })
 export class AppModule {}
+//////////////////////////////////////////////////////////////////
 
 rabbitmq.module
 import { Module } from '@nestjs/common';
@@ -103,6 +104,7 @@ import { MessageModule } from '../message/message.module'; // 👈 import
   providers: [RabbitMQService, RabbitMQController],
 })
 export class RabbitMQModule {}
+////////////////////////////////////////////////////////////////
 rabbitmq.service
 import { Injectable } from '@nestjs/common';
 import {
@@ -110,12 +112,24 @@ import {
   Payload,
   Ctx,
   RmqContext,
+  ClientRMQ,
 } from '@nestjs/microservices';
 import { MessageService } from '../message/message.service';
 
 @Injectable()
 export class RabbitMQService {
-  constructor(private readonly messageService: MessageService) {}
+  private client: ClientRMQ;
+
+  constructor(private readonly messageService: MessageService) {
+    this.client = new ClientRMQ({
+      urls: ['amqp://tms:26000567855499290979@rabbitmq.next.local'],
+      queue: 'TmsQueue',
+      queueOptions: {
+        durable: true,
+      },
+    });
+    this.client.connect(); // подключаемся к RabbitMQ
+  }
 
   @EventPattern('TmsQueue')
   async handleData(@Payload() data: any, @Ctx() context: RmqContext) {
@@ -133,8 +147,28 @@ export class RabbitMQService {
       channel.nack(originalMsg); // Отправляем neg-ack в случае ошибки, чтобы сообщение могло быть переотправлено или обработано иначе
     }
   }
+
+  // Метод для отправки сообщений в RabbitMQ
+  async emitToQueue(message: any) {
+    return this.client.emit('TmsQueue', message);
+  }
+}
+/////////////////////////////////////////////////////////
+rabbitmq.controller
+import { Controller, Get } from '@nestjs/common';
+import { MessageService } from '../message/message.service';
+
+@Controller('all-messages')
+export class RabbitMQController {
+  constructor(private readonly messageService: MessageService) {}
+
+  @Get()
+  async findAll() {
+    return this.messageService.findAll();
+  }
 }
 
+///////////////////////////////////////////////////////////////////////////////////////
 message.module
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -148,27 +182,7 @@ import { MessageSchema } from './message.shema';
   exports: [MessageService], // 👈 export for DI
 })
 export class MessageModule {}
-
-message.service
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-
-@Injectable()
-export class MessageService {
-  constructor(
-    @InjectModel('Message') private readonly messageModel: Model<any>,
-  ) {}
-
-  async create(data: any): Promise<any> {
-    const createdMessage = new this.messageModel(data);
-    return await createdMessage.save();
-  }
-
-  async findAll(): Promise<any[]> {
-    return await this.messageModel.find().exec();
-  }
-}
+/////////////////////////////////////////////////////////////////////
 message.shema
 import { Document, Schema } from 'mongoose';
 
@@ -226,3 +240,4 @@ export interface Message extends Document {
   ArrayStrings: (typeof ArrayStringSchema)[];
   ContactInformation: typeof ContactInformationSchema;
 }
+
