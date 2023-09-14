@@ -1,20 +1,22 @@
-import { Controller, Logger } from '@nestjs/common';
-import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { Module } from '@nestjs/common';
+import { MessageController } from '../message/message.controller';
 
-@Controller()
-export class MessageController {
-  private readonly logger = new Logger(MessageController.name);
-
-  @RabbitSubscribe({
-    exchange: 'TmsExchange',
-    routingKey: 'tms1c', // Или другой ключ маршрутизации, который вы используете
-    queue: 'TmsQueue', // Имя очереди
-  })
-  public async handleMessage(message: any) {
-    console.log('Received message:', message);
-    this.logger.log(`Received message: ${JSON.stringify(message)}`);
-  }
-}
+@Module({
+  imports: [
+    RabbitMQModule.forRoot(RabbitMQModule, {
+      exchanges: [
+        {
+          name: 'TmsExchange',
+          type: 'direct',
+        },
+      ],
+      uri: 'amqp://tms:26000567855499290979@rabbitmq.next.local',
+    }),
+  ],
+  controllers: [MessageController],
+})
+export class RabbitMqModule {}
 
 
 
