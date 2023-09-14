@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EventPattern, Payload, Ctx, RmqContext, ClientRMQ, Transport } from '@nestjs/microservices';
+import { EventPattern, Payload, Ctx, RmqContext, ClientRMQ } from '@nestjs/microservices';
 import { MessageService } from '../message/message.service';
 
 @Injectable()
@@ -8,13 +8,10 @@ export class RabbitMQService {
 
   constructor(private readonly messageService: MessageService) {
     this.client = new ClientRMQ({
-      transport: Transport.RMQ,
-      options: {
-        urls: ['amqp://tms:26000567855499290979@rabbitmq.next.local'],
-        queue: 'TmsQueue',
-        queueOptions: {
-          durable: true,
-        },
+      urls: ['amqp://tms:26000567855499290979@rabbitmq.next.local'],
+      queue: 'TmsQueue',
+      queueOptions: {
+        durable: true,
       },
     });
     this.client.connect(); // подключаемся к RabbitMQ
@@ -42,8 +39,6 @@ export class RabbitMQService {
     return this.client.emit('TmsQueue', message);
   }
 }
-
-
 
 
 
