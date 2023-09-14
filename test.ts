@@ -1,41 +1,30 @@
-
-rabbitmq.service
-import { Injectable } from '@nestjs/common';
-import {
-  MessagePattern,
-  Payload,
-  Ctx,
-  RmqContext,
-} from '@nestjs/microservices';
-import { MessageService } from '../message/message.service';
-
-@Injectable()
-export class RabbitMQService {
-  constructor(private messageService: MessageService) {}
-
-  @MessagePattern('createMessage')
-  async handleData(@Payload() data: any, @Ctx() context: RmqContext) {
-    const channel = context.getChannelRef();
-    const originalMsg = context.getMessage();
-    console.log('Сообщение получено:', data);
-    try {
-      await this.messageService.create(data);
-      console.log('Сообщение сохранено');
-      channel.ack(originalMsg);
-    } catch (error) {
-      console.error('Ошибка при сохранении', error);
-    }
-  }
-}
-
-rabbitmq.module
-
+// message.module.ts
 import { Module } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq.service';
-import { MessageService } from '../message/message.service';
-import { RabbitMQController } from './rabbitmq.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MessageService } from './message.service';
+import { MessageSchema } from './message.schema';
 
 @Module({
-  providers: [RabbitMQService, MessageService, RabbitMQController],
+  imports: [
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }])
+  ],
+  providers: [MessageService],
+  exports: [MessageService]  // Убедитесь, что сервис экспортируется
+})
+export class MessageModule {}
+
+
+
+
+// rabbitmq.module.ts
+import { Module } from '@nestjs/common';
+import { RabbitMQService } from './rabbitmq.service';
+import { RabbitMQController } from './rabbitmq.controller';
+import { MessageModule } from '../message/message.module';  // Добавьте этот импорт
+
+@Module({
+  imports: [MessageModule],  // Добавьте этот импорт в массив
+  providers: [RabbitMQService, RabbitMQController],
 })
 export class RabbitMQModule {}
+
