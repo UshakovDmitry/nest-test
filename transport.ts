@@ -1,23 +1,37 @@
+import { Module } from '@nestjs/common';
+import { RabbitMQService } from './rabbitmq/rabbitmq.service';
+import { RabbitMQController } from './rabbitmq/rabbitmq.controller';
+import { MessageModule } from './message/message.module';
+import { MessageSchema } from './message/message.shema';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { connectMongoose } from './connect-mongoose';
+import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
 
-  @EventPattern()
-  async handleData(@Payload() data: any, @Ctx() context: RmqContext) {
-    const channel = context.getChannelRef();
-    const originalMsg = context.getMessage();
-    console.log('Получено сообщение:', originalMsg);
-
-    try {
-      if (data && data.data) {
-        console.log('Сообщение получено:', data.data);
-        await this.messageService.create(data.data);
-        console.log('Сообщение сохранено');
-        channel.ack(originalMsg);
-      } else {
-        console.error('Некорректный формат сообщения');
-      }
-    } catch (error) {
-      console.error('Ошибка при сохранении', error);
-    }
-  }
+@Module({
+  imports: [
+    RabbitMQModule,
+    MessageModule,
+    MongooseModule.forRoot(connectMongoose()),
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
+    ClientsModule.register([
+      {
+        name: 'RABBITMQ_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://tms:26000567855499290979@rabbitmq.next.local'],
+          queue: 'TmsQueue',
+          queueOptions: {
+            durable: true,
+          },
+        },
+      },
+    ]),
+  ],
+  controllers: [RabbitMQController],
+  providers: [RabbitMQService],
+})
+export class AppModule {}
 
 
 
