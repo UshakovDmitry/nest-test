@@ -1,3 +1,5 @@
+ushakov.dmitriy@DIT-104 MINGW64 ~/Desktop/alser.dispatcherworkplaceui/backend (develop-
+3)
 $ npm run start
 
 > tms-api@0.0.1 start
@@ -29,4 +31,10 @@ T} route +3ms
 fully started +2ms
 Application is listening on port 4000
 [Nest] 23228  - 14.09.2023, 13:29:33   ERROR [Server] There is no matching event handle
+r defined in the remote service. Event pattern: undefined
+[Nest] 23228  - 14.09.2023, 13:31:35   ERROR [Server] There is no matching event handle
+r defined in the remote service. Event pattern: undefined
+[Nest] 23228  - 14.09.2023, 13:31:43   ERROR [Server] There is no matching event handle
+r defined in the remote service. Event pattern: undefined
+[Nest] 23228  - 14.09.2023, 13:32:03   ERROR [Server] There is no matching event handle
 r defined in the remote service. Event pattern: undefined
