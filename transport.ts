@@ -1,3 +1,7 @@
+npm install @golevelup/nestjs-rabbitmq
+
+
+
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
