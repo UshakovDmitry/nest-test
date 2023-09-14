@@ -4,8 +4,10 @@ import { MessageService } from '../message/message.service';
 
 @Injectable()
 export class RabbitMQService {
-  constructor(private messageService: MessageService) {}
-  console.log('RabbitMQService');
+  constructor(private messageService: MessageService) {
+    console.log('RabbitMQService');
+  }
+
   @EventPattern('TmsQueue')
   async handleData(@Payload() data: any, @Ctx() context: RmqContext) {
     const channel = context.getChannelRef();
@@ -39,29 +41,30 @@ $ npm run start
 > tms-api@0.0.1 start
 > nest start
 
-src/rabbitmq/rabbitmq.service.ts:8:3 - error TS1434: Unexpected keyword or identifier.
-
-8   console.log('RabbitMQService');
-    ~~~~~~~
-src/rabbitmq/rabbitmq.service.ts:8:10 - error TS1068: Unexpected token. A constructor,
-method, accessor, or property was expected.
-
-8   console.log('RabbitMQService');
-           ~
-src/rabbitmq/rabbitmq.service.ts:8:15 - error TS1003: Identifier expected.
-
-8   console.log('RabbitMQService');
-                ~~~~~~~~~~~~~~~~~
-src/rabbitmq/rabbitmq.service.ts:10:9 - error TS2389: Function implementation name must
- be 'log'.
-
-10   async handleData(@Payload() data: any, @Ctx() context: RmqContext) {
-           ~~~~~~~~~~
-
-Found 4 error(s).
-
-
-ushakov.dmitriy@DIT-104 MINGW64 ~/Desktop/alser.dispatcherworkplaceui/backend (develop-
-3)
-$
-
+[Nest] 9400  - 14.09.2023, 14:58:07     LOG [NestFactory] Starting Nest application...
+[Nest] 9400  - 14.09.2023, 14:58:07     LOG [InstanceLoader] MongooseModule dependencie
+s initialized +28ms
+[Nest] 9400  - 14.09.2023, 14:58:07     LOG [InstanceLoader] ClientsModule dependencies
+ initialized +0ms
+[Nest] 9400  - 14.09.2023, 14:58:07     LOG [InstanceLoader] MongooseCoreModule depende
+ncies initialized +10ms
+[Nest] 9400  - 14.09.2023, 14:58:07     LOG [InstanceLoader] MongooseModule dependencie
+s initialized +7ms
+[Nest] 9400  - 14.09.2023, 14:58:07     LOG [InstanceLoader] MessageModule dependencies
+ initialized +1ms
+RabbitMQService
+RabbitMQService
+[Nest] 9400  - 14.09.2023, 14:58:07     LOG [InstanceLoader] RabbitMQModule dependencie
+s initialized +1ms
+[Nest] 9400  - 14.09.2023, 14:58:07     LOG [InstanceLoader] AppModule dependencies ini
+tialized +1ms
+[Nest] 9400  - 14.09.2023, 14:58:07     LOG [NestMicroservice] Nest microservice succes
+sfully started +96ms
+Microservices started
+[Nest] 9400  - 14.09.2023, 14:58:07     LOG [RoutesResolver] RabbitMQController {/all-m
+essages}: +16ms
+[Nest] 9400  - 14.09.2023, 14:58:07     LOG [RouterExplorer] Mapped {/all-messages, GET
+} route +3ms
+[Nest] 9400  - 14.09.2023, 14:58:07     LOG [NestApplication] Nest application successf
+ully started +2ms
+Application is listening on port 4000
