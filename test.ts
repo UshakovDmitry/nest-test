@@ -1,31 +1,19 @@
-import { Module } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq/rabbitmq.service';
-import { RabbitMQController } from './rabbitmq/rabbitmq.controller';
-import { MessageService } from './message/message.service';
-import { MessageSchema } from './message/message.shema';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { connectMongoose } from './connect-mongoose';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
-@Module({
-  imports: [
-    MongooseModule.forRoot(connectMongoose()),
-    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
-    ClientsModule.register([
-      {
-        name: 'RABBITMQ_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://tms:26000567855499290979@rabbitmq.next.local'],
-          queue: 'TmsQueue',
-          queueOptions: {
-            durable: true,
-          },
-        },
-      },
-    ]),
-  ],
-  controllers: [RabbitMQController],
-  providers: [RabbitMQService, MessageService],
-})
-export class AppModule {}
+@Injectable()
+export class MessageService {
+  constructor(
+    @InjectModel('Message') private readonly messageModel: Model<any>,
+  ) {}
+
+  async create(data: any): Promise<any> {
+    const createdMessage = new this.messageModel(data);
+    return await createdMessage.save();
+  }
+
+  async findAll(): Promise<any[]> {
+    return await this.messageModel.find().exec();
+  }
+}
