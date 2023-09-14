@@ -1,15 +1,26 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as basicAuth from 'express-basic-auth';
 import * as compression from 'compression';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 process.env.SWAGGER_USER = 'tms';
 process.env.SWAGGER_PASSWORD = '123456789';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: ['amqp://tms:26000567855499290979@rabbitmq.next.local'],
+      queue: 'TmsQueue',
+      queueOptions: {
+        durable: true,
+      },
+    },
+  });
+
   // -- SWAGGER -- //
   app.use(
     ['/swagger', '/swagger-stats'],
@@ -30,85 +41,14 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
+
   // -- CORS -- //
   app.enableCors();
   // -- COMPRESS -- //
   app.use(compression());
+
+  await app.startAllMicroservicesAsync();
   // -- LISTEN -- //
   await app.listen(4000);
 }
 bootstrap();
-
-
-
-
-
-import { Module } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq/rabbitmq.service';
-import { RabbitMQController } from './rabbitmq/rabbitmq.controller';
-import { MessageService } from './message/message.service';
-import { MessageSchema } from './message/message.shema';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { connectMongoose } from './connect-mongoose';
-
-@Module({
-  imports: [
-    MongooseModule.forRoot(connectMongoose()),
-    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
-    ClientsModule.register([
-      {
-        name: 'RABBITMQ_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://tms:26000567855499290979@rabbitmq.next.local'],
-          queue: 'TmsQueue',
-          queueOptions: {
-            durable: true,
-          },
-        },
-      },
-    ]),
-  ],
-  controllers: [RabbitMQController],
-  providers: [RabbitMQService, MessageService],
-})
-export class AppModule {}
-
-
-
-
-import { Module } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq/rabbitmq.service';
-import { RabbitMQController } from './rabbitmq/rabbitmq.controller';
-import { MessageService } from './message/message.service';
-import { MessageSchema } from './message/message.shema';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { connectMongoose } from './connect-mongoose';
-
-@Module({
-  imports: [
-    MongooseModule.forRoot(connectMongoose()),
-    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
-    ClientsModule.register([
-      {
-        name: 'RABBITMQ_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://tms:26000567855499290979@rabbitmq.next.local'],
-          queue: 'TmsQueue',
-          queueOptions: {
-            durable: true,
-          },
-        },
-      },
-    ]),
-  ],
-  controllers: [RabbitMQController],
-  providers: [RabbitMQService, MessageService],
-})
-export class AppModule {}
-
-
-
