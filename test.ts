@@ -106,7 +106,7 @@ export class RabbitMQModule {}
 rabbitmq.service
 import { Injectable } from '@nestjs/common';
 import {
-  MessagePattern,
+  EventPattern,
   Payload,
   Ctx,
   RmqContext,
@@ -117,7 +117,7 @@ import { MessageService } from '../message/message.service';
 export class RabbitMQService {
   constructor(private readonly messageService: MessageService) {}
 
-  @MessagePattern('createMessage')
+  @EventPattern('TmsQueue')
   async handleData(@Payload() data: any, @Ctx() context: RmqContext) {
     const channel = context.getChannelRef();
     const originalMsg = context.getMessage();
