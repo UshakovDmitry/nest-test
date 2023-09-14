@@ -1,16 +1,45 @@
-PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
+import { Injectable } from '@nestjs/common';
+import { EventPattern, Payload, Ctx, RmqContext } from '@nestjs/microservices';
+import { MessageService } from '../message/message.service';
 
-> tms-api@0.0.1 start
-> nest start
+@Injectable()
+export class RabbitMQService {
+  constructor(private messageService: MessageService) {}
 
-[Nest] 848  - 14.09.2023, 09:57:34     LOG [NestFactory] Starting Nest application...
-[Nest] 848  - 14.09.2023, 09:57:34     LOG [InstanceLoader] MongooseModule dependencies initialized +28ms
-[Nest] 848  - 14.09.2023, 09:57:34     LOG [InstanceLoader] ClientsModule dependencies initialized +0ms
-[Nest] 848  - 14.09.2023, 09:57:34     LOG [InstanceLoader] MongooseCoreModule dependencies initialized +10ms
-[Nest] 848  - 14.09.2023, 09:57:34     LOG [InstanceLoader] MongooseModule dependencies initialized +7ms
-[Nest] 848  - 14.09.2023, 09:57:34     LOG [InstanceLoader] AppModule dependencies initialized +1ms
-[Nest] 848  - 14.09.2023, 09:57:34     LOG [NestMicroservice] Nest microservice successfully started +84ms
-[Nest] 848  - 14.09.2023, 09:57:34     LOG [RoutesResolver] RabbitMQController {/all-messages}: +16ms
-[Nest] 848  - 14.09.2023, 09:57:34     LOG [RouterExplorer] Mapped {/all-messages, GET} route +2ms
-[Nest] 848  - 14.09.2023, 09:57:34     LOG [NestApplication] Nest application successfully started +3ms
-[Nest] 848  - 14.09.2023, 09:57:34   ERROR [Server] There is no matching event handler defined in the remote service. Event pattern: undefined
+  @EventPattern('get_message')
+  async handleData(@Payload() data: any, @Ctx() context: RmqContext) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    console.log(data);
+    await this.messageService.create(data);
+    channel.ack(originalMsg);
+  }
+}
+
+
+
+
+
+import { Module } from '@nestjs/common';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { RabbitMQService } from './rabbitmq.service';
+import { MessageService } from '../message/message.service';
+import { RabbitMQController } from './rabbitmq.controller';
+
+@Module({
+  imports: [
+    ClientsModule.register([
+      {
+        name: 'RABBITMQ_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://tms:26000567855499290979@rabbitmq.next.local'],
+          queue: 'TmsQueue',
+          queueOptions: { durable: true },
+        },
+      },
+    ]),
+  ],
+  providers: [RabbitMQService, MessageService, RabbitMQController],
+})
+export class RabbitMQModule {}
