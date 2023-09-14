@@ -1,15 +1,26 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import {
+  NestFactory,
+} from '@nestjs/core';
+import {
+  AppModule,
+} from './app.module';
+import {
+  SwaggerModule,
+  DocumentBuilder,
+} from '@nestjs/swagger';
 import * as basicAuth from 'express-basic-auth';
 import * as compression from 'compression';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import {
+  MicroserviceOptions,
+  Transport,
+} from '@nestjs/microservices';
 
 process.env.SWAGGER_USER = 'tms';
 process.env.SWAGGER_PASSWORD = '123456789';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
@@ -21,7 +32,7 @@ async function bootstrap() {
     },
   });
 
-  // -- SWAGGER -- //
+  // SWAGGER CONFIGURATION
   app.use(
     ['/swagger', '/swagger-stats'],
     basicAuth({
@@ -42,13 +53,13 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
 
-  // -- CORS -- //
   app.enableCors();
-  // -- COMPRESS -- //
   app.use(compression());
 
-  await app.startAllMicroservices();
-  // -- LISTEN -- //
+  await app.startAllMicroservicesAsync();
+  console.log('Microservices started');
+
   await app.listen(4000);
+  console.log('Application is listening on port 4000');
 }
 bootstrap();
