@@ -16,5 +16,5 @@ Microservices started
 [Nest] 24904  - 14.09.2023, 12:13:11     LOG [RouterExplorer] Mapped {/all-messages, GET} route +2ms
 [Nest] 24904  - 14.09.2023, 12:13:11     LOG [NestApplication] Nest application successfully started +3ms
 Application is listening on port 4000
-
-
+[Nest] 24904  - 14.09.2023, 12:13:47   ERROR [Server] There is no matching event handler defined in the remote service. Event pattern: und
+efined
