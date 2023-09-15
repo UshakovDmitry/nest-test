@@ -22,3 +22,19 @@ export class AllExceptionsFilter implements ExceptionFilter {
     });
   }
 }
+
+
+
+// main.ts
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { AllExceptionsFilter } from './all-exceptions.filter';  // Добавьте эту строку
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.useGlobalFilters(new AllExceptionsFilter());  // Добавьте эту строку
+  await app.listen(3000); 
+  console.log('Микросервис запущен');
+}
+
+bootstrap();
