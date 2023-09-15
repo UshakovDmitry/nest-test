@@ -14,9 +14,11 @@ Parameter 'amqpMsg' of public method from exported class has or is using private
 type Message = /*unresolved*/ any
 
 и вот мой код
+
 app.controller.ts
 import { Controller, Logger } from '@nestjs/common';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { Message } from 'amqplib';
 
 @Controller()
 export class AppController {
@@ -27,11 +29,13 @@ export class AppController {
     routingKey: 'tms1c',
     queue: 'TmsQueue',
   })
-  public async handleMessage(message: any) {
+  public async handleMessage(message: any, amqpMsg: Message) {
     console.log('Received full message:', JSON.stringify(message));
     this.logger.log(`Received message: ${JSON.stringify(message)}`);
+    amqpMsg.ack();
   }
 }
+
 
 app.module
 import { Module } from '@nestjs/common';
@@ -66,5 +70,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-
-
