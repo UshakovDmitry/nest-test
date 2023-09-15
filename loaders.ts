@@ -1,168 +1,110 @@
-// src/rabbitmq/index.ts
 
-export * from './rabbitmq.module';
-export * from './rabbitmq-listener.service';
-
-
-
-
-MODULE.TS
-
-// src/rabbitmq/rabbitmq.module.ts
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { RabbitMQService } from './rabbitmq.service';
-import { RabbitMQController } from './rabbitmq.controller';
-import { MessageModule } from '../message/message.module'; // Путь может отличаться в зависимости от структуры вашего проекта
-
-@Module({
-  imports: [MessageModule],
-  providers: [RabbitMQService],
-  controllers: [RabbitMQController]
-})
-export class RabbitMQModule {}
-
-
-
-
-
-COTROLLER.TS
-
-import { Controller, Get } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq.service';
-
-@Controller('all-message')
-export class RabbitMQController {
-  constructor(private readonly rabbitMQService: RabbitMQService) {}
-
-  @Get()
-  async findAll(): Promise<any[]> {
-    return this.rabbitMQService.getAllMessages();
-  }
-}
-
-
-
-
-
-SERVICE.TS
+message.service
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Message } from '../message/message.schema';
+
 
 @Injectable()
-export class RabbitMQService {
-  private client: ClientProxy;
-
+export class MessageService {
   constructor(
-    @InjectModel('Message') private readonly messageModel: Model<Message>
-  ) {
-    this.client = ClientProxyFactory.create({
-      transport: Transport.RMQ,
-      options: {
-        urls: [`amqp://tms:26000567855499290979@rabbitmq.next.local`],
-        queue: 'TmsQueue',
-        queueOptions: { durable: false },
-      },
-    });
-  }
+    @InjectModel('Message') private readonly messageModel: Model<any>,
+  ) {}
 
-  async readFromQueue(): Promise<any> {
-    return this.client.send('get_message', {}).toPromise();
-  }
-
-  async getAllMessages(): Promise<any[]> {
-    return this.messageModel.find().exec();
-  }
-}
-
-
-// src/rabbitmq/rabbitmq-listener.service.ts
-
-import { Injectable } from '@nestjs/common';
-import { EventPattern } from '@nestjs/microservices';
-import { MessageService } from 'path-to-your-message-service'; // Обновите этот путь
-
-@Injectable()
-export class RabbitMQListenerService {
-
-  constructor(private readonly messageService: MessageService) {}
-
-  @EventPattern('TmsQueue')
-  async handleMessage(data: any): Promise<any> {
-    console.log('Received message:', data);
-
+  saveMessage(data: any): any {
     try {
-      const savedMessage = await this.messageService.create(data);
-      console.log('Message saved:', savedMessage);
-
-      return { status: 'success', id: savedMessage._id };
+      const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+      const message = new MessageModel(parsedData);
+      return message.save();
     } catch (error) {
       console.error('Error saving message:', error);
-      return { status: 'error', message: error.message };
+      throw error;
     }
+  }
+
+
+  async getAllMessages(): Promise<any[]> {
+    return await this.messageModel.find().exec();
   }
 }
 
 
+message.shema
+import { Schema } from 'mongoose';
 
+const ArrayStringsSchema = new Schema({
+  Shipping_Point: String,
+  Goods: String,
+  Quantity: String,
+  Item_Status: String,
+  Pickup_Point: String,
+  Delivery_Point: String,
+  Pickup_Latitude: String,
+  Pickup_Longitude: String,
+  Delivery_Latitude: String,
+  Delivery_Longitude: String,
+  Pickup_Time: Date,
+  Delivery_Time: Date,
+});
 
+const ContactInformationSchema = new Schema({
+  City: String,
+  Delivery_Condition: String,
+  Date_Time_delivery: String,
+  Time_Window: String,
+  Latitude: String,
+  Longitude: String,
+  Street: String,
+  Home: String,
+  Phone: String,
+  Apartment: String,
+  Contractor: String,
+});
 
+export const MessageSchema = new Schema({
+  Number: String,
+  Date: Date,
+  Organization: String,
+  DocumentStatus: String,
+  Driver: String,
+  ISR: String,
+  Informal_Document: String,
+  SKU_Weight: String,
+  ArrayStrings: [ArrayStringsSchema],
+  ContactInformation: ContactInformationSchema,
+});
+message.module
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MessageService } from './message.service';
+import { MessageSchema } from './message.shema';
+import { MessageController } from './message.controller';
 
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
+  ],
+  providers: [MessageService],
+  exports: [MessageService],
+  controllers: [MessageController],
+})
+export class MessageModule {}
 
+message.controller
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { MessageService } from './message.service';
 
+@Controller('messages')
+export class MessageController {
+  constructor(private readonly messageService: MessageService) {}
 
+  @Get()
+  async getAllMessages() {
+    return this.messageService.getAllMessages();
+  }
 
-
-
-
-
-
-import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { QueueMessage } from './rabbitmq.interface';
-
-@Injectable()
-export class RabbitMQService {
-  private readonly username: string = 'tms';
-  private readonly password: string = '26000567855499290979';
-
-  constructor(private readonly httpService: HttpService) {}
-
-  async readFromQueue(): Promise<QueueMessage> {
-    try {
-      const response = await this.httpService
-        .post(
-          'http://rabbitmq.next.local/api/queues/%2F/TmsQueue/get',
-          {
-            count: 1,
-            ackmode: 'ack_requeue_true',
-            encoding: 'auto',
-            truncate: 50000,
-          },
-          {
-            headers: {
-              Authorization: `Basic ${Buffer.from(
-                `${this.username}:${this.password}`,
-              ).toString('base64')}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        )
-        .toPromise();
-
-      if (response.status === 200 && response.data.length > 0) {
-        const data = response.data[0];
-        const payload = JSON.parse(data.payload);
-
-        return payload;
-      } else {
-        throw new Error('Возникла ошибка при получении данных');
-      }
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+  @Post()
+  async saveMessage(@Body() messageData: any) {
+    return this.messageService.saveMessage(messageData);
   }
 }
