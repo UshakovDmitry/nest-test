@@ -1,5 +1,2 @@
-From	Routing key	Arguments	
-(Default exchange binding)
-⇓
-
-This queue
+From exchange: TmsExchange
+Routing key: tms1c
