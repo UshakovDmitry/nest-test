@@ -1,22 +1,13 @@
-PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
-
-> tms-api@0.0.1 start
-> nest start
-
-[Nest] 21896  - 15.09.2023, 10:37:30     LOG [NestFactory] Starting Nest application...
-[Nest] 21896  - 15.09.2023, 10:37:30     LOG [AmqpConnection] Trying to connect to RabbitMQ broker (default)
-[Nest] 21896  - 15.09.2023, 10:37:30     LOG [InstanceLoader] AppModule dependencies initialized +13ms
-[Nest] 21896  - 15.09.2023, 10:37:30     LOG [InstanceLoader] DiscoveryModule dependencies initialized +0ms
-[Nest] 21896  - 15.09.2023, 10:37:31     LOG [AmqpConnection] Successfully connected to RabbitMQ broker (default)
-[Nest] 21896  - 15.09.2023, 10:37:31     LOG [RabbitMQModule] Successfully connected to RabbitMQ
-[Nest] 21896  - 15.09.2023, 10:37:31     LOG [AmqpConnection] Successfully connected a RabbitMQ channel "AmqpConnection"
-[Nest] 21896  - 15.09.2023, 10:37:31     LOG [InstanceLoader] RabbitMQModule dependencies initialized +0ms
-[Nest] 21896  - 15.09.2023, 10:37:31     LOG [RoutesResolver] AppController {/}: +17ms
-[Nest] 21896  - 15.09.2023, 10:37:31     LOG [RabbitMQModule] Initializing RabbitMQ Handlers
-[Nest] 21896  - 15.09.2023, 10:37:31     LOG [NestApplication] Nest application successfully started +2ms
-Микросервис запущен
-
-при добавлении сообщений в очередь ничего не проиходит
+@RabbitSubscribe({
+  exchange: 'TmsExchange',
+  routingKey: 'tms1c',
+  queue: 'TmsQueue',
+})
+public async handleMessage(message: any, amqpMsg: Message) {
+  console.log('Received full message:', JSON.stringify(message));
+  this.logger.log(`Received message: ${JSON.stringify(message)}`);
+  amqpMsg.ack();
+}
 
 
 
