@@ -53,6 +53,7 @@ import { MessageSchema } from './message.shema';
 })
 export class MessageModule {}
 
+
 message.service.ts 
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -62,16 +63,18 @@ import { Model } from 'mongoose';
 @Injectable()
 export class MessageService {
   constructor(
-    @InjectModel('Message') private readonly messageModel: Model<any>
+    @InjectModel('Message') private readonly messageModel: Model<any>,
   ) {}
 
   async saveMessage(content: string) {
+    console.log('saveMessage service', content);
+
     const newMessage = new this.messageModel({ content });
     return await newMessage.save();
   }
   async getAllMessages(): Promise<any[]> {
     return await this.messageModel.find().exec();
-}
+  }
 }
 
 
