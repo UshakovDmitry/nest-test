@@ -58,7 +58,6 @@ message.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-// import { MessageDocument } from './message.schema';
 
 @Injectable()
 export class MessageService {
@@ -66,12 +65,11 @@ export class MessageService {
     @InjectModel('Message') private readonly messageModel: Model<any>,
   ) {}
 
-  async saveMessage(content: string) {
-    console.log('saveMessage service', content);
-
-    const newMessage = new this.messageModel({ content });
+  async saveMessage(messageData: any): Promise<any> {
+    const newMessage = new this.messageModel(messageData);
     return await newMessage.save();
   }
+
   async getAllMessages(): Promise<any[]> {
     return await this.messageModel.find().exec();
   }
@@ -80,8 +78,9 @@ export class MessageService {
 
 
 
+
 message.controller.ts:
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 import { MessageService } from './message.service';
 
 @Controller('messages')
@@ -91,6 +90,11 @@ export class MessageController {
   @Get()
   async getAllMessages() {
     return this.messageService.getAllMessages();
+  }
+
+  @Post()
+  async saveMessage(@Body() messageData: any) {
+    return this.messageService.saveMessage(messageData);
   }
 }
 
