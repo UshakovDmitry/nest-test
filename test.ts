@@ -1,45 +1,22 @@
-Exchange: TmsExchange in virtual host /
-Overview
-Message rates last minute 
-10:30:5010:31:0010:31:1010:31:2010:31:3010:31:400.0 /s1.0 /s
-Publish (In)
-0.00/s
-Publish (Out)
-0.00/s
-Details
-Type	direct
-Features	
-durable:	true
-Policy	ha-fed
-Bindings
-This exchange
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
 
-⇓
+> tms-api@0.0.1 start
+> nest start
 
-To	Routing key	Arguments	
-TmsQueue
-tms1c	
-Add binding from this exchange
+[Nest] 21896  - 15.09.2023, 10:37:30     LOG [NestFactory] Starting Nest application...
+[Nest] 21896  - 15.09.2023, 10:37:30     LOG [AmqpConnection] Trying to connect to RabbitMQ broker (default)
+[Nest] 21896  - 15.09.2023, 10:37:30     LOG [InstanceLoader] AppModule dependencies initialized +13ms
+[Nest] 21896  - 15.09.2023, 10:37:30     LOG [InstanceLoader] DiscoveryModule dependencies initialized +0ms
+[Nest] 21896  - 15.09.2023, 10:37:31     LOG [AmqpConnection] Successfully connected to RabbitMQ broker (default)
+[Nest] 21896  - 15.09.2023, 10:37:31     LOG [RabbitMQModule] Successfully connected to RabbitMQ
+[Nest] 21896  - 15.09.2023, 10:37:31     LOG [AmqpConnection] Successfully connected a RabbitMQ channel "AmqpConnection"
+[Nest] 21896  - 15.09.2023, 10:37:31     LOG [InstanceLoader] RabbitMQModule dependencies initialized +0ms
+[Nest] 21896  - 15.09.2023, 10:37:31     LOG [RoutesResolver] AppController {/}: +17ms
+[Nest] 21896  - 15.09.2023, 10:37:31     LOG [RabbitMQModule] Initializing RabbitMQ Handlers
+[Nest] 21896  - 15.09.2023, 10:37:31     LOG [NestApplication] Nest application successfully started +2ms
+Микросервис запущен
 
-To queue
-:	
- *
-Routing key:
-Arguments:
-=	
-
-String
-Publish message
-Routing key:
-Headers: 
-=	
-
-String
-Properties: 
-=	
-Payload:
-Delete this exchange
-
+при добавлении сообщений в очередь ничего не проиходит
 
 
 
