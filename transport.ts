@@ -1,63 +1,41 @@
-import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-import { Module } from '@nestjs/common';
-import { MessageController } from '../message/message.controller';
+import { Controller, Logger } from '@nestjs/common';
+import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 
-@Module({
-  imports: [
-    RabbitMQModule.forRoot(RabbitMQModule, {
-      exchanges: [
-        {
-          name: 'TmsExchange',
-          type: 'direct',
-        },
-      ],
-      uri: 'amqp://tms:26000567855499290979@rabbitmq.next.local',
-    }),
-  ],
-  controllers: [MessageController],
-})
-export class RabbitMqModule {}
+@Controller()
+export class AppController {
+  private readonly logger = new Logger(AppController.name);
 
-
-
-данные из плагина просмотра очереди
-
-Features	
-arguments:	
-x-queue-type:	classic
-durable:	true
-Policy	ha-fed
-Operator policy	
-Effective policy definition	
-federation-upstream-set:	all
-ha-mode:	exactly
-ha-params:	5
-ha-sync-mode:	automatic
-message-ttl:	3465687905
-Node	rabbit@dkrclstrnd1
-Mirrors	rabbit@dkrclstrnd4
-rabbit@dkrclstrnd3
-rabbit@dkrclstrnd2
-rabbit@dkrclstrnd5
+  @RabbitSubscribe({
+    exchange: 'TmsExchange',
+    routingKey: 'tms1c',
+    queue: 'TmsQueue',
+  })
+  public async handleMessage(message: any) {
+    console.log('Received full message:', JSON.stringify(message));
+    this.logger.log(`Received message: ${JSON.stringify(message)}`);
+  }
+}
 
 
 
 
-From	Routing key	Arguments	
-(Default exchange binding)
-TmsExchange
-tms1c
 
 
 
-Warning: getting messages from a queue is a destructive action. 
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
 
-Ack Mode:
+> tms-api@0.0.1 start
+> nest start
 
-Nack message requeue true
-Encoding:
-
-Auto string / base64
- 
-Messages:
-1
+[Nest] 27132  - 15.09.2023, 09:52:36     LOG [NestFactory] Starting Nest application...
+[Nest] 27132  - 15.09.2023, 09:52:36     LOG [AmqpConnection] Trying to connect to RabbitMQ broker (default)
+[Nest] 27132  - 15.09.2023, 09:52:36     LOG [InstanceLoader] AppModule dependencies initialized +12ms
+[Nest] 27132  - 15.09.2023, 09:52:36     LOG [InstanceLoader] DiscoveryModule dependencies initialized +1ms
+[Nest] 27132  - 15.09.2023, 09:52:36     LOG [AmqpConnection] Successfully connected to RabbitMQ broker (default)
+[Nest] 27132  - 15.09.2023, 09:52:36     LOG [RabbitMQModule] Successfully connected to RabbitMQ
+[Nest] 27132  - 15.09.2023, 09:52:36     LOG [AmqpConnection] Successfully connected a RabbitMQ channel "AmqpConnection"
+[Nest] 27132  - 15.09.2023, 09:52:36     LOG [InstanceLoader] RabbitMQModule dependencies initialized +0ms
+[Nest] 27132  - 15.09.2023, 09:52:36     LOG [RabbitMQModule] Initializing RabbitMQ Handlers
+[Nest] 27132  - 15.09.2023, 09:52:36     LOG [NestMicroservice] Nest microservice successfully started +72ms
+Микросервис запущен
+[Nest] 27132  - 15.09.2023, 09:52:43   ERROR [Server] There is no matching event handler defined in the remote service. Event pattern: undefined
