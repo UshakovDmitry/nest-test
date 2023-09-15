@@ -1,27 +1,17 @@
-Message rates last minute 
-10:09:4010:09:5010:10:0010:10:1010:10:2010:10:300.0 /s1.0 /s
-Publish (In)
-0.00/s
-Publish (Out)
-0.00/s
-Details
-Type	direct
-Features	
-durable:	true
-Policy	ha-fed
-Bindings
-This exchange
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
 
-⇓
+> tms-api@0.0.1 start
+> nest start
 
-To	Routing key	Arguments	
-TmsQueue
-tms1c	
-Add binding from this exchange
-
-To queue
-:	
- *
-Routing key:
-Arguments:
-=	
+[Nest] 8612  - 15.09.2023, 10:14:23     LOG [NestFactory] Starting Nest application...
+[Nest] 8612  - 15.09.2023, 10:14:23     LOG [AmqpConnection] Trying to connect to RabbitMQ broker (default)
+[Nest] 8612  - 15.09.2023, 10:14:23     LOG [InstanceLoader] AppModule dependencies initialized +12ms
+[Nest] 8612  - 15.09.2023, 10:14:23     LOG [InstanceLoader] DiscoveryModule dependencies initialized +1ms
+[Nest] 8612  - 15.09.2023, 10:14:23     LOG [AmqpConnection] Successfully connected to RabbitMQ broker (default)
+[Nest] 8612  - 15.09.2023, 10:14:23     LOG [RabbitMQModule] Successfully connected to RabbitMQ
+[Nest] 8612  - 15.09.2023, 10:14:23     LOG [AmqpConnection] Successfully connected a RabbitMQ channel "AmqpConnection"
+[Nest] 8612  - 15.09.2023, 10:14:23     LOG [InstanceLoader] RabbitMQModule dependencies initialized +0ms
+[Nest] 8612  - 15.09.2023, 10:14:23     LOG [RabbitMQModule] Initializing RabbitMQ Handlers
+[Nest] 8612  - 15.09.2023, 10:14:23     LOG [NestMicroservice] Nest microservice successfully started +213ms
+Микросервис запущен
+[Nest] 8612  - 15.09.2023, 10:14:23   ERROR [Server] There is no matching event handler defined in the remote service. Event pattern: undefined
