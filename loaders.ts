@@ -4,7 +4,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-
 @Injectable()
 export class MessageService {
   constructor(
@@ -14,7 +13,7 @@ export class MessageService {
   saveMessage(data: any): any {
     try {
       const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
-      const message = new MessageModel(parsedData);
+      const message = new this.messageModel(parsedData);  // Используйте this.messageModel
       return message.save();
     } catch (error) {
       console.error('Error saving message:', error);
@@ -22,11 +21,11 @@ export class MessageService {
     }
   }
 
-
   async getAllMessages(): Promise<any[]> {
     return await this.messageModel.find().exec();
   }
 }
+
 
 
 message.shema
