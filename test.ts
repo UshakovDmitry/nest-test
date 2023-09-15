@@ -9,7 +9,9 @@ public async handleMessage(message: any, amqpMsg: Message) {
   amqpMsg.ack();
 }
 
-
+Cannot find name 'Message'.ts(2304)
+Parameter 'amqpMsg' of public method from exported class has or is using private name 'Message'.ts(4073)
+type Message = /*unresolved*/ any
 
 и вот мой код
 app.controller.ts
