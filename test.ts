@@ -1,41 +1,38 @@
-rabbitmq.service.ts
-import { Injectable } from '@nestjs/common';
-import { MessageService } from '../message/message.service';
-import { getAllMessagesFromRabbitMQ } from '../listener-rabbitMQ';
+observer.ts
+export interface Observer {
+  update(message: string): void;
+}
 
-@Injectable()
-export class RabbitMQService {
-  constructor(private readonly messageService: MessageService) {
-    try {
-      // При создании сервиса выводим текущий список сообщений из RabbitMQ
-      this.listenForNewMessages();
-    } catch (error) {
-      // Если возникли ошибки, выводим их в консоль
-      console.log('Ошибка при подключении к RabbitMQ', error);
+export class Subject {
+  private observers: Observer[] = [];
+
+  public addObserver(observer: Observer): void {
+    this.observers.push(observer);
+  }
+
+  public removeObserver(observer: Observer): void {
+    const observerIndex = this.observers.indexOf(observer);
+    if (observerIndex !== -1) {
+      this.observers.splice(observerIndex, 1);
     }
   }
 
-  private async listenForNewMessages() {
-    console.log('listenForNewMessages----------------');
-    
-    const messages = getAllMessagesFromRabbitMQ();
-    for (const message of messages) {
-      // Попробуйте сохранить сообщение в базу данных
-      try {
-        console.log('Сохраняем сообщение в базе данных', message);
-
-        await this.messageService.saveMessage(message);
-      } catch (error) {
-        console.log('Ошибка при сохранении сообщения в базе данных', error);
-      }
+  public notifyObservers(message: string): void {
+    for (const observer of this.observers) {
+      observer.update(message);
     }
   }
 }
 
-listener-rabbitMQ.ts
-const amqp = require('amqplib/callback_api');
 
-const arrMessage = [];
+
+
+listener-rabbitMQ.ts
+
+const amqp = require('amqplib/callback_api');
+import { Subject } from './observer';
+
+export const messageSubject = new Subject();
 
 amqp.connect(
   'amqp://tms:26000567855499290979@rabbitmq.next.local',
@@ -47,33 +44,54 @@ amqp.connect(
       if (error1) {
         throw error1;
       }
-      // Название очереди
       const queue = 'TmsQueue';
 
       channel.assertQueue(queue, {
         durable: true,
       });
 
-      // Здесть мы получаем сообщения из очереди и добавляем в массив arrMessage
       channel.consume(
         queue,
         function (msg: any) {
-          console.log('Сообщение :', msg.content.toString());
-          arrMessage.push(msg.content.toString());
+          console.log('Received message:', msg.content.toString());
+          messageSubject.notifyObservers(msg.content.toString());
         },
         {
           noAck: true,
-        },
+        }
       );
     });
-  },
+  }
 );
 
-export function getAllMessagesFromRabbitMQ() {
-  return arrMessage;
+
+
+
+
+rabbitmq.service.ts
+
+import { Injectable } from '@nestjs/common';
+import { MessageService } from '../message/message.service';
+import { Observer } from './observer';
+import { messageSubject } from './listener-rabbitMQ';
+
+@Injectable()
+export class RabbitMQService implements Observer {
+  constructor(private readonly messageService: MessageService) {
+    messageSubject.addObserver(this);
+  }
+
+  public update(message: string): void {
+    this.saveMessageToDb(message);
+  }
+
+  private async saveMessageToDb(message: string): Promise<void> {
+    try {
+      console.log('Saving message to database:', message);
+      await this.messageService.saveMessage(message);
+    } catch (error) {
+      console.log('Error saving message to database:', error);
+    }
+  }
 }
-
-
-rabbitmq.service.ts не отрабатыет при изменении getAllMessagesFromRabbitMQ
-реализуй подску или слушатель с помощью дизайн паттерна обзервбл
 
