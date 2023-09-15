@@ -1,49 +1,19 @@
-message.schema.ts
-import { Schema } from 'mongoose';
-
-const ArrayStringsSchema = new Schema({
-  Shipping_Point: String,
-  Goods: String,
-  Quantity: String,
-  Item_Status: String,
-  Pickup_Point: String,
-  Delivery_Point: String,
-  Pickup_Latitude: String,
-  Pickup_Longitude: String,
-  Delivery_Latitude: String,
-  Delivery_Longitude: String,
-  Pickup_Time: Date,
-  Delivery_Time: Date,
-});
-
-const ContactInformationSchema = new Schema({
-  City: String,
-  Delivery_Condition: String,
-  Date_Time_delivery: String,
-  Time_Window: String,
-  Latitude: String,
-  Longitude: String,
-  Street: String,
-  Home: String,
-  Phone: String,
-  Apartment: String,
-  Contractor: String,
-});
-
-export const MessageSchema = new Schema({
-  Number: String,
-  Date: Date,
-  Organization: String,
-  DocumentStatus: String,
-  Driver: String,
-  ISR: String,
-  Informal_Document: String,
-  SKU_Weight: String,
-  ArrayStrings: [ArrayStringsSchema],
-  ContactInformation: ContactInformationSchema,
-});
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MessageService } from './message.service';
+import { MessageSchema } from './message.shema';
+import { MessageController } from './message.controller';
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
+  ],
+  providers: [MessageService],
+  exports: [MessageService],
+  сontrollers: [MessageController],
+})
+export class MessageModule {}
 
 
-
-
-
+Argument of type '{ imports: DynamicModule[]; providers: (typeof MessageService)[]; exports: (typeof MessageService)[]; сontrollers: (typeof MessageController)[]; }' is not assignable to parameter of type 'ModuleMetadata'.
+  Object literal may only specify known properties, but 'сontrollers' does not exist in type 'ModuleMetadata'. Did you mean to write 'controllers'?ts(2345)
+(property) сontrollers: (typeof MessageController)[]
