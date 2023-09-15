@@ -84,26 +84,14 @@ import { AppController } from './app.controller';
 })
 export class AppModule {}
 
+
 main.ts
 import { NestFactory } from '@nestjs/core';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.RMQ,
-      options: {
-        urls: ['amqp://tms:26000567855499290979@rabbitmq.next.local'],
-        queue: 'TmsQueue',
-        queueOptions: {
-          durable: true,
-        },
-      },
-    },
-  );
-  await app.listen();
+  const app = await NestFactory.create(AppModule);
+  await app.listen(3000); // Можете изменить порт, если необходимо
   console.log('Микросервис запущен');
 }
 
