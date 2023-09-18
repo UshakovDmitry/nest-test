@@ -1,150 +1,46 @@
 import { Schema } from 'mongoose';
 
 const ArrayStringsSchema = new Schema({
-  Shipping_Point: String,
-  Goods: String,
-  Quantity: String,
-  Item_Status: String,
-  Pickup_Point: String,
-  Delivery_Point: String,
-  Pickup_Latitude: String,
-  Pickup_Longitude: String,
-  Delivery_Latitude: String,
-  Delivery_Longitude: String,
-  Pickup_Time: String,
-  Delivery_Time: String,
+  Shipping_Point: { type: String, default: '' },
+  Goods: { type: String, default: '' },
+  Quantity: { type: String, default: '' },
+  Item_Status: { type: String, default: '' },
+  Pickup_Point: { type: String, default: '' },
+  Delivery_Point: { type: String, default: '' },
+  Pickup_Latitude: { type: String, default: '' },
+  Pickup_Longitude: { type: String, default: '' },
+  Delivery_Latitude: { type: String, default: '' },
+  Delivery_Longitude: { type: String, default: '' },
+  Pickup_Time: { type: String, default: '' },
+  Delivery_Time: { type: String, default: '' },
 });
 
 const ContactInformationSchema = new Schema({
-  City: String,
-  Delivery_Condition: String,
-  Date_Time_delivery: String,
-  Time_Window: String,
-  Latitude: String,
-  Longitude: String,
-  Street: String,
-  Home: String,
-  Phone: String,
-  Apartment: String,
-  Contractor: String,
+  City: { type: String, default: '' },
+  Delivery_Condition: { type: String, default: '' },
+  Date_Time_delivery: { type: String, default: '' },
+  Time_Window: { type: String, default: '' },
+  Latitude: { type: String, default: '' },
+  Longitude: { type: String, default: '' },
+  Street: { type: String, default: 'нет данных' },
+  Home: { type: String, default: 'нет данных' },
+  Phone: { type: String, default: '' },
+  Apartment: { type: String, default: 'нет данных' },
+  Contractor: { type: String, default: '' },
 });
 
 export const MessageSchema = new Schema(
   {
-    Number: String,
-    Date: Date,
-    Organization: String,
-    DocumentStatus: String,
-    Driver: String,
-    ISR: String,
-    Informal_Document: String,
-    SKU_Weight: String,
-    ArrayStrings: [ArrayStringsSchema],
-    ContactInformation: ContactInformationSchema,
+    Number: { type: String, default: '' },
+    Date: { type: Date, default: Date.now },
+    Organization: { type: String, default: '' },
+    DocumentStatus: { type: String, default: '' },
+    Driver: { type: String, default: '' },
+    ISR: { type: String, default: '' },
+    Informal_Document: { type: String, default: '' },
+    SKU_Weight: { type: String, default: '' },
+    ArrayStrings: { type: [ArrayStringsSchema], default: [] },
+    ContactInformation: { type: ContactInformationSchema, default: {} },
   },
   { versionKey: false },
 );
-
-вот пример сообщения из очереди
-  {
-    Number: '№№00015934',
-    Date: '14.08.2023 15:53:04',
-    Organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-    DocumentStatus: 'Оформлена',
-    Driver: '',
-    ISR: '(747)2667569',
-    Informal_Document: 'Заказ покупателя ППО 000000080238 от 14.08.2023 15:46:12',
-    SKU_Weight: '',
-    ArrayStrings: [ [Object], [Object] ],
-    ContactInformation: {
-      City: 'Алматы',
-      Delivery_Condition: 'Доставка',
-      Date_Time_delivery: '2023-08-16 К До 20:00',
-      Time_Window: '15:00-18:00',
-      Latitude: '43,3189165',
-      Longitude: '76,93994950000001',
-      Street: 'нет данных',
-      Home: '74',
-      Phone: '(747)2667569',
-      Apartment: 'нет данных',
-      Contractor: 'АЛЕКСЕЙ ТРУНКИН'
-    }
-  }
-]
-[
-  {
-    Number: '№№00015934',
-    Date: '14.08.2023 15:53:04',
-    Organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-    DocumentStatus: 'Оформлена',
-    Driver: '',
-    ISR: '(747)2667569',
-    Informal_Document: 'Заказ покупателя ППО 000000080238 от 14.08.2023 15:46:12',
-    SKU_Weight: '',
-    ArrayStrings: [ [Object], [Object] ],
-    ContactInformation: {
-      City: 'Алматы',
-      Delivery_Condition: 'Доставка',
-      Date_Time_delivery: '2023-08-16 К До 20:00',
-      Time_Window: '15:00-18:00',
-      Latitude: '43,3189165',
-      Longitude: '76,93994950000001',
-      Street: 'нет данных',
-      Home: '74',
-      Phone: '(747)2667569',
-      Apartment: 'нет данных',
-      Contractor: 'АЛЕКСЕЙ ТРУНКИН'
-    }
-  }
-] messageData!
-Сохранено в базу данных: [
-  {
-    Number: '№№00015934',
-    Date: '14.08.2023 15:53:04',
-    Organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-    DocumentStatus: 'Оформлена',
-    Driver: '',
-    ISR: '(747)2667569',
-    Informal_Document: 'Заказ покупателя ППО 000000080238 от 14.08.2023 15:46:12',
-    SKU_Weight: '',
-    ArrayStrings: [ [Object], [Object] ],
-    ContactInformation: {
-      City: 'Алматы',
-      Delivery_Condition: 'Доставка',
-      Date_Time_delivery: '2023-08-16 К До 20:00',
-      Time_Window: '15:00-18:00',
-      Latitude: '43,3189165',
-      Longitude: '76,93994950000001',
-      Street: 'нет данных',
-      Home: '74',
-      Phone: '(747)2667569',
-      Apartment: 'нет данных',
-      Contractor: 'АЛЕКСЕЙ ТРУНКИН'
-    }
-  }
-]
-[
-  {
-    Number: '№№00015934',
-    Date: '14.08.2023 15:53:04',
-    Organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-    DocumentStatus: 'Оформлена',
-    Driver: '',
-    ISR: '(747)2667569',
-    Informal_Document: 'Заказ покупателя ППО 000000080238 от 14.08.2023 15:46:12',
-    SKU_Weight: '',
-    ArrayStrings: [ [Object], [Object] ],
-    ContactInformation: {
-      City: 'Алматы',
-      Delivery_Condition: 'Доставка',
-      Date_Time_delivery: '2023-08-16 К До 20:00',
-      Time_Window: '15:00-18:00',
-      Latitude: '43,3189165',
-      Longitude: '76,93994950000001',
-      Street: 'нет данных',
-      Home: '74',
-      Phone: '(747)2667569',
-      Apartment: 'нет данных',
-      Contractor: 'АЛЕКСЕЙ ТРУНКИН'
-    }
-  }
