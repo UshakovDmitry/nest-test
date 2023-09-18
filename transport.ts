@@ -55,3 +55,125 @@ setup	@	applications.component.vue:30
 Promise.then (async)		
 (anonymous)	@	applications.component.vue:14
 Show 22 more frames
+
+
+
+
+
+
+
+
+
+
+[
+    {
+        "_id": "6507e259791fee739b362af5",
+        "Number": "№№00015934",
+        "Date": "14.08.2023 15:53:04",
+        "Organization": "TOO Gulser Computers (Гулсер Компьютерс)",
+        "DocumentStatus": "Оформлена",
+        "Driver": "",
+        "ISR": "(747)2667569",
+        "Informal_Document": "Заказ покупателя ППО 000000080238 от 14.08.2023 15:46:12",
+        "SKU_Weight": "",
+        "ArrayStrings": [
+            {
+                "Shipping_Point": "Алматы ул.Кабдолова 1/4 ТРК Grand Park",
+                "Goods": "",
+                "Quantity": "1",
+                "Item_Status": "",
+                "Pickup_Point": "0",
+                "Delivery_Point": "0",
+                "Pickup_Latitude": "0",
+                "Pickup_Longitude": "0",
+                "Delivery_Latitude": "0",
+                "Delivery_Longitude": "0",
+                "Pickup_Time": "01.01.0001 0:00:00",
+                "Delivery_Time": "01.01.0001 0:00:00"
+            },
+            {
+                "Shipping_Point": "Алматы ул.Кабдолова 1/4 ТРК Grand Park",
+                "Goods": "",
+                "Quantity": "1",
+                "Item_Status": "",
+                "Pickup_Point": "0",
+                "Delivery_Point": "0",
+                "Pickup_Latitude": "0",
+                "Pickup_Longitude": "0",
+                "Delivery_Latitude": "0",
+                "Delivery_Longitude": "0",
+                "Pickup_Time": "01.01.0001 0:00:00",
+                "Delivery_Time": "01.01.0001 0:00:00"
+            }
+        ],
+        "ContactInformation": {
+            "City": "Алматы",
+            "Delivery_Condition": "Доставка",
+            "Date_Time_delivery": "2023-08-16 К До 20:00",
+            "Time_Window": "15:00-18:00",
+            "Latitude": "43,3189165",
+            "Longitude": "76,93994950000001",
+            "Street": "нет данных",
+            "Home": "74",
+            "Phone": "(747)2667569",
+            "Apartment": "нет данных",
+            "Contractor": "АЛЕКСЕЙ ТРУНКИН",
+            "_id": "6507e259791fee739b362af6"
+        }
+    },
+    {
+        "_id": "6507e259791fee739b362af7",
+        "Number": "№№00015934",
+        "Date": "14.08.2023 15:53:04",
+        "Organization": "TOO Gulser Computers (Гулсер Компьютерс)",
+        "DocumentStatus": "Оформлена",
+        "Driver": "",
+        "ISR": "(747)2667569",
+        "Informal_Document": "Заказ покупателя ППО 000000080238 от 14.08.2023 15:46:12",
+        "SKU_Weight": "",
+        "ArrayStrings": [
+            {
+                "Shipping_Point": "Алматы ул.Кабдолова 1/4 ТРК Grand Park",
+                "Goods": "",
+                "Quantity": "1",
+                "Item_Status": "",
+                "Pickup_Point": "0",
+                "Delivery_Point": "0",
+                "Pickup_Latitude": "0",
+                "Pickup_Longitude": "0",
+                "Delivery_Latitude": "0",
+                "Delivery_Longitude": "0",
+                "Pickup_Time": "01.01.0001 0:00:00",
+                "Delivery_Time": "01.01.0001 0:00:00"
+            },
+            {
+                "Shipping_Point": "Алматы ул.Кабдолова 1/4 ТРК Grand Park",
+                "Goods": "",
+                "Quantity": "1",
+                "Item_Status": "",
+                "Pickup_Point": "0",
+                "Delivery_Point": "0",
+                "Pickup_Latitude": "0",
+                "Pickup_Longitude": "0",
+                "Delivery_Latitude": "0",
+                "Delivery_Longitude": "0",
+                "Pickup_Time": "01.01.0001 0:00:00",
+                "Delivery_Time": "01.01.0001 0:00:00"
+            }
+        ],
+        "ContactInformation": {
+            "City": "Алматы",
+            "Delivery_Condition": "Доставка",
+            "Date_Time_delivery": "2023-08-16 К До 20:00",
+            "Time_Window": "15:00-18:00",
+            "Latitude": "43,3189165",
+            "Longitude": "76,93994950000001",
+            "Street": "нет данных",
+            "Home": "74",
+            "Phone": "(747)2667569",
+            "Apartment": "нет данных",
+            "Contractor": "АЛЕКСЕЙ ТРУНКИН",
+            "_id": "6507e259791fee739b362af8"
+        }
+    }
+]
