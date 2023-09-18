@@ -134,6 +134,27 @@ export const MessageSchema = new Schema({
   ArrayStrings: [ArrayStringsSchema],
   ContactInformation: ContactInformationSchema,
 });
+
+
+message.controller
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { MessageService } from './message.service';
+
+@Controller('messages')
+export class MessageController {
+  constructor(private readonly messageService: MessageService) {}
+
+  @Get()
+  async getAllMessages() {
+    return this.messageService.getAllMessages();
+  }
+
+  @Post()
+  async saveMessage(@Body() messageData: any) {
+    return this.messageService.saveMessage(messageData);
+  }
+}
+
 PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
 
 > tms-api@0.0.1 start
