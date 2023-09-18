@@ -23,8 +23,9 @@ amqp.connect(
       channel.consume(
         queue,
         function (msg: any) {
-          console.log('Сообщение из TmsQueue', msg.content.toString());
-          messageSubject.notifyObservers(msg.content.toString());
+          const messageObj = JSON.parse(msg.content.toString());
+          console.log('Сообщение из TmsQueue', messageObj);
+          messageSubject.notifyObservers(messageObj);
         },
         {
           noAck: true,
@@ -33,6 +34,7 @@ amqp.connect(
     });
   },
 );
+
 
 rabbitmq.service
 import { Injectable } from '@nestjs/common';
@@ -59,6 +61,7 @@ export class RabbitMQService implements Observer {
     }
   }
 }
+
 message.service
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -74,7 +77,7 @@ export class MessageService {
     try {
       const parsedData =
         typeof messageData === 'string' ? JSON.parse(messageData) : messageData;
-      console.log(parsedData, 'messageData!!!!!!!!!!!');
+      console.log(parsedData, 'messageData!');
 
       const message = new this.messageModel(parsedData);
 
@@ -94,46 +97,49 @@ message.shema
 import { Schema } from 'mongoose';
 
 const ArrayStringsSchema = new Schema({
-  Shipping_Point: String,
-  Goods: String,
-  Quantity: String,
-  Item_Status: String,
-  Pickup_Point: String,
-  Delivery_Point: String,
-  Pickup_Latitude: String,
-  Pickup_Longitude: String,
-  Delivery_Latitude: String,
-  Delivery_Longitude: String,
-  Pickup_Time: Date,
-  Delivery_Time: Date,
+  Shipping_Point: { type: String, default: '' },
+  Goods: { type: String, default: '' },
+  Quantity: { type: String, default: '' },
+  Item_Status: { type: String, default: '' },
+  Pickup_Point: { type: String, default: '' },
+  Delivery_Point: { type: String, default: '' },
+  Pickup_Latitude: { type: String, default: '' },
+  Pickup_Longitude: { type: String, default: '' },
+  Delivery_Latitude: { type: String, default: '' },
+  Delivery_Longitude: { type: String, default: '' },
+  Pickup_Time: { type: String, default: '' },
+  Delivery_Time: { type: String, default: '' },
 });
 
 const ContactInformationSchema = new Schema({
-  City: String,
-  Delivery_Condition: String,
-  Date_Time_delivery: String,
-  Time_Window: String,
-  Latitude: String,
-  Longitude: String,
-  Street: String,
-  Home: String,
-  Phone: String,
-  Apartment: String,
-  Contractor: String,
+  City: { type: String, default: '' },
+  Delivery_Condition: { type: String, default: '' },
+  Date_Time_delivery: { type: String, default: '' },
+  Time_Window: { type: String, default: '' },
+  Latitude: { type: String, default: '' },
+  Longitude: { type: String, default: '' },
+  Street: { type: String, default: 'нет данных' },
+  Home: { type: String, default: 'нет данных' },
+  Phone: { type: String, default: '' },
+  Apartment: { type: String, default: 'нет данных' },
+  Contractor: { type: String, default: '' },
 });
 
-export const MessageSchema = new Schema({
-  Number: String,
-  Date: Date,
-  Organization: String,
-  DocumentStatus: String,
-  Driver: String,
-  ISR: String,
-  Informal_Document: String,
-  SKU_Weight: String,
-  ArrayStrings: [ArrayStringsSchema],
-  ContactInformation: ContactInformationSchema,
-});
+export const MessageSchema = new Schema(
+  {
+    Number: { type: String, default: '' },
+    Date: { type: Date, default: Date.now },
+    Organization: { type: String, default: '' },
+    DocumentStatus: { type: String, default: '' },
+    Driver: { type: String, default: '' },
+    ISR: { type: String, default: '' },
+    Informal_Document: { type: String, default: '' },
+    SKU_Weight: { type: String, default: '' },
+    ArrayStrings: { type: [ArrayStringsSchema], default: [] },
+    ContactInformation: { type: ContactInformationSchema, default: {} },
+  },
+  { versionKey: false },
+);
 
 
 message.controller
@@ -154,6 +160,123 @@ export class MessageController {
     return this.messageService.saveMessage(messageData);
   }
 }
+
+message.module
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MessageService } from './message.service';
+import { MessageSchema } from './message.shema';
+import { MessageController } from './message.controller';
+
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
+  ],
+  providers: [MessageService],
+  exports: [MessageService],
+  controllers: [MessageController],
+})
+export class MessageModule {}
+
+app.module
+
+import { Module } from '@nestjs/common';
+import { RabbitMQService } from './rabbitmq/rabbitmq.service';
+import { MessageModule } from './message/message.module';
+import { MessageSchema } from './message/message.shema';
+import { MongooseModule } from '@nestjs/mongoose';
+import { connectMongoose } from './connect-mongoose';
+import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
+import { MessageController } from './message/message.controller';
+
+@Module({
+  imports: [
+    RabbitMQModule,
+    MessageModule,
+    MongooseModule.forRoot(connectMongoose()),
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
+  ],
+  controllers: [MessageController],
+  providers: [RabbitMQService],
+})
+export class AppModule {}
+
+main.ts
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as basicAuth from 'express-basic-auth';
+import * as compression from 'compression';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { config } from 'dotenv';
+
+config();
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [process.env.RABBITMQ_URL || ''],
+      queue: 'TmsQueue',
+      queueOptions: {
+        durable: true,
+      },
+    },
+  });
+
+  // SWAGGER CONFIGURATION
+  app.use(
+    ['/swagger', '/swagger-stats'],
+    basicAuth({
+      challenge: true,
+      users: {
+        [process.env.SWAGGER_USER || '']: process.env.SWAGGER_PASSWORD || '',
+      },
+    }),
+  );
+  const config = new DocumentBuilder()
+    .setTitle('Описание всех контроллеров REST API')
+    .setDescription(
+      'Внимание! Некоторые методы могут изменять данные в базе данных!',
+    )
+    .setVersion('1.0')
+    .addTag('API для TMS')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document);
+
+  app.enableCors();
+  app.use(compression());
+
+  await app.startAllMicroservices();
+  console.log('Микросервис запущен');
+
+  const port = parseInt(process.env.PORT || '4000', 10);
+  await app.listen(port);
+  console.log(`Приложение слушаетсчя на ${port}`);
+}
+bootstrap();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
 
