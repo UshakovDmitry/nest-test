@@ -1,140 +1,162 @@
-message.controller.ts
-@Controller('messages')
-export class MessageController {
-  constructor(private readonly messageService: MessageService) {}
-
-  @Get()
-  async getAllMessages() {
-    return this.messageService.getAllMessages();
-  }
-
-  @Post()
-  async saveMessage(@Body() messageData: any) {
-    return this.messageService.saveMessage(messageData);
-  }
-}
-
-message.service.ts
-
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { MessageDocument } from '../schemas/message.shema';
-
-@Injectable()
-export class MessageService {
-  constructor(
-    @InjectModel('Message') private messageModel: Model<MessageDocument>,
-  ) {}
-
-  async saveMessage(messageData: any) {
-    try {
-      const parsedData =
-        typeof messageData === 'string' ? JSON.parse(messageData) : messageData;
-      // console.log(parsedData, 'messageData!');
-
-      const createdMessage = new this.messageModel(parsedData);
-      console.log(createdMessage, 'createdMessage!');
-      return createdMessage.save();
-    } catch (error) {
-      console.error('Ошибка сохранения в бд:', error);
-      throw error;
-    }
-  }
-
-  async getAllMessages(): Promise<any[]> {
-    return await this.messageModel.find().exec();
-  }
-}
-
-message.module.ts
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { MessageService } from './message.service';
-import { MessageSchema } from '../schemas/message.shema';
-import { MessageController } from './message.controller';
-
-@Module({
-  imports: [
-    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
-  ],
-  providers: [MessageService],
-  exports: [MessageService],
-  controllers: [MessageController],
-})
-export class MessageModule {}
-
-
-вот запрос с фронта
-
-application.viewModel.ts
-
-import { type TransportRequestsModel } from './applications.model';
-// import { ITransportRequest } from '../../domain/interfaces/transportRequest.interface';
-
-export class TransportRequestsViewModel {
-  model: TransportRequestsModel;
-
-  constructor(model: any) {
-    this.model = model;
-    this.getData();
-  }
-  transformToTransportRequest(data: any) {
-    return {
-      number: String(data.Number),
-      status: String(data.DocumentStatus),
-      ISR: String(data.ISR),
-      document: String(data.Informal_Document),
-      shipping_point: {
-        address: String(data.ArrayStrings[0].Shipping_Point),
-        coordinates: `${data.ArrayStrings[0].Pickup_Latitude}, ${data.ArrayStrings[0].Pickup_Longitude}`,
-      },
-      contractor: {
-        name: String(data.ContactInformation.Contractor),
-        phone: String(data.ContactInformation.Phone),
-      },
-      delivery_time: String(data.ContactInformation.Date_Time_delivery),
-      delivery_point: {
-        address: `${data.ContactInformation.City}, ${data.ContactInformation.Street}, ${data.ContactInformation.Home}, ${data.ContactInformation.Apartment}}`,
-        coordinates: `${data.ContactInformation.Latitude}, ${data.ContactInformation.Longitude}`,
-      },
-      sku_weight: String(data.SKU_Weight),
-    };
-  }
-
-  getData(): void {
-    fetch('http://localhost:4000/messages', {
-      method: 'GET',
-    })
-      .then(async (response) => {
-        if (response.ok) {
-          console.log('Данные получены');
-          return await response.json();
-        } else {
-          throw new Error('Возникла ошибка при получении данных');
-        }
-      })
-      .then((dataArray) => {
-        dataArray.forEach((data: any) => {
-          const transformedData = this.transformToTransportRequest(data);
-          console.log(transformedData, 'transformedData');
-          this.model.transportRequests.push(transformedData);
-          console.log(this.model.transportRequests, 'this.model.transportRequests');
-          
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
-
-  selectCity(city: string): void {
-    console.log(city);
-  }
-
-  downloadLoadersAsXLSX(): void {
-    alert('Функционал в разработке');
-  }
-}
-
-
+Step 2/6: Docker Build Backend (Docker)
+14:19:02   Starting: docker build -t dockeregistry.next.local/tmsbe:latest -t dockeregistry.next.local/tmsbe:1.0.16 -f Dockerfile .
+14:19:02   in directory: /opt/buildagent/work/ed05d3ddad573f11/backend
+14:19:03   Sending build context to Docker daemon  690.7kB
+14:19:03   
+14:19:03   Step 1/11 : FROM node:19-alpine
+14:19:03    ---> e2a8cc97f817
+14:19:03   Step 2/11 : WORKDIR /usr/src/app
+14:19:03    ---> Running in 34541da7d79d
+14:19:03   Removing intermediate container 34541da7d79d
+14:19:03    ---> d8a26844df13
+14:19:03   Step 3/11 : COPY package*.json ./
+14:19:03    ---> 82ccba5bb27e
+14:19:03   Step 4/11 : RUN npm config set registry http://npm.next.local:4873/
+14:19:03    ---> Running in c8e03c2b63aa
+14:19:05   Removing intermediate container c8e03c2b63aa
+14:19:05    ---> 06b061eff394
+14:19:05   Step 5/11 : RUN yarn install -d
+14:19:05    ---> Running in f9dee41a7ca0
+14:19:06   yarn install v1.22.19
+14:19:06   info No lockfile found.
+14:19:06   warning package-lock.json found. Your project contains lock files generated by tools other than Yarn. It is advised not to mix package managers in order to avoid resolution inconsistencies caused by unsynchronized lock files. To clear this warning, remove package-lock.json.
+14:19:06   [1/4] Resolving packages...
+14:19:27   warning @nestjs/cli > fork-ts-checker-webpack-plugin > memfs@3.6.0: this will be v4
+14:19:54   [2/4] Fetching packages...
+14:20:23   [3/4] Linking dependencies...
+14:20:23   warning " > ts-loader@9.4.4" has unmet peer dependency "webpack@^5.0.0".
+14:20:38   [4/4] Building fresh packages...
+14:20:39   success Saved lockfile.
+14:20:39   Done in 93.83s.
+14:21:12   Removing intermediate container f9dee41a7ca0
+14:21:12    ---> 73b6000e1426
+14:21:12   Step 6/11 : RUN yarn add @nestjs/cli@9.1.5
+14:21:13    ---> Running in 9b911ad83d29
+14:21:13   yarn add v1.22.19
+14:21:14   warning package-lock.json found. Your project contains lock files generated by tools other than Yarn. It is advised not to mix package managers in order to avoid resolution inconsistencies caused by unsynchronized lock files. To clear this warning, remove package-lock.json.
+14:21:14   [1/4] Resolving packages...
+14:21:17   warning @nestjs/cli > @angular-devkit/schematics > magic-string > sourcemap-codec@1.4.8: Please use @jridgewell/sourcemap-codec instead
+14:21:17   [2/4] Fetching packages...
+14:21:26   [3/4] Linking dependencies...
+14:21:26   warning " > ts-loader@9.4.4" has unmet peer dependency "webpack@^5.0.0".
+14:21:37   [4/4] Building fresh packages...
+14:21:37   success Saved lockfile.
+14:21:37   warning "@nestjs/cli" is already in "devDependencies". Please remove existing entry first before adding it to "dependencies".
+14:21:38   success Saved 16 new dependencies.
+14:21:38   info Direct dependencies
+14:21:38   └─ @nestjs/cli@9.1.5
+14:21:38   info All dependencies
+14:21:38   ├─ @angular-devkit/schematics-cli@14.2.2
+14:21:38   ├─ @nestjs/cli@9.1.5
+14:21:38   ├─ @webassemblyjs/floating-point-hex-parser@1.11.1
+14:21:38   ├─ @webassemblyjs/helper-numbers@1.11.1
+14:21:38   ├─ @webassemblyjs/helper-wasm-section@1.11.1
+14:21:38   ├─ @webassemblyjs/wasm-edit@1.11.1
+14:21:38   ├─ @webassemblyjs/wasm-opt@1.11.1
+14:21:38   ├─ @webassemblyjs/wast-printer@1.11.1
+14:21:38   ├─ acorn-import-assertions@1.9.0
+14:21:38   ├─ cli-table3@0.6.2
+14:21:38   ├─ es-module-lexer@0.9.3
+14:21:38   ├─ inquirer@7.3.3
+14:21:38   ├─ sourcemap-codec@1.4.8
+14:21:38   ├─ terser-webpack-plugin@5.3.9
+14:21:38   ├─ tsconfig-paths-webpack-plugin@4.0.0
+14:21:38   └─ webpack@5.74.0
+14:21:38   Done in 24.07s.
+14:21:49   Removing intermediate container 9b911ad83d29
+14:21:49    ---> 9b2df7fe53a5
+14:21:49   Step 7/11 : RUN yarn add prom-client@14.1.0
+14:21:49    ---> Running in 7f391d8c113b
+14:21:50   yarn add v1.22.19
+14:21:50   warning package-lock.json found. Your project contains lock files generated by tools other than Yarn. It is advised not to mix package managers in order to avoid resolution inconsistencies caused by unsynchronized lock files. To clear this warning, remove package-lock.json.
+14:21:50   [1/4] Resolving packages...
+14:21:51   [2/4] Fetching packages...
+14:21:52   [3/4] Linking dependencies...
+14:21:52   warning " > ts-loader@9.4.4" has unmet peer dependency "webpack@^5.0.0".
+14:22:00   [4/4] Building fresh packages...
+14:22:00   success Saved lockfile.
+14:22:00   success Saved 3 new dependencies.
+14:22:00   info Direct dependencies
+14:22:00   └─ prom-client@14.1.0
+14:22:00   info All dependencies
+14:22:00   ├─ bintrees@1.0.2
+14:22:00   ├─ prom-client@14.1.0
+14:22:00   └─ tdigest@0.1.2
+14:22:00   Done in 9.90s.
+14:22:01   Removing intermediate container 7f391d8c113b
+14:22:01    ---> 6abdfc563eb9
+14:22:01   Step 8/11 : COPY . .
+14:22:01    ---> 828d12622ece
+14:22:01   Step 9/11 : RUN npm fund
+14:22:01    ---> Running in 2a4b5eceffbe
+14:22:04   tms-api@0.0.1
+14:22:04   +-- https://opencollective.com/nest
+14:22:04   |   `-- @nestjs/common@10.2.5, @nestjs/core@10.2.5, @nestjs/microservices@10.2.5, @nestjs/platform-express@10.2.5, @nestjs/testing@10.2.5
+14:22:04   +-- https://github.com/motdotla/dotenv?sponsor=1
+14:22:04   |   `-- dotenv@16.3.1
+14:22:04   +-- https://opencollective.com/mongoose
+14:22:04   |   `-- mongoose@7.5.2
+14:22:04   +-- https://opencollective.com/typeorm
+14:22:04   | | `-- typeorm@0.3.17
+14:22:04   | +-- https://opencollective.com/date-fns
+14:22:04   | |   `-- date-fns@2.30.0
+14:22:04   | +-- https://github.com/sponsors/isaacs
+14:22:04   | |   `-- glob@8.1.0, mkdirp@2.1.6, rimraf@3.0.2, glob@7.2.3
+14:22:04   | +-- https://github.com/sponsors/broofa
+14:22:04   | |   `-- uuid@9.0.1
+14:22:04   | `-- https://github.com/chalk/wrap-ansi?sponsor=1
+14:22:04   |     `-- wrap-ansi@7.0.0
+14:22:04   +-- https://opencollective.com/typescript-eslint
+14:22:04   |   `-- @typescript-eslint/eslint-plugin@6.7.0, @typescript-eslint/scope-manager@6.7.0, @typescript-eslint/types@6.7.0, @typescript-eslint/type-utils@6.7.0, @typescript-eslint/typescript-estree@6.7.0, @typescript-eslint/utils@6.7.0, @typescript-eslint/visitor-keys@6.7.0, @typescript-eslint/parser@6.7.0
+14:22:04   +-- https://opencollective.com/prettier
+14:22:04   | | `-- eslint-plugin-prettier@5.0.0
+14:22:04   | `-- https://opencollective.com/unts
+14:22:04   |     `-- synckit@0.8.5, @pkgr/utils@2.4.2
+14:22:04   +-- https://github.com/prettier/prettier?sponsor=1
+14:22:04   |   `-- prettier@3.0.3
+14:22:04   +-- https://github.com/sponsors/RubenVerborgh
+14:22:04   |   `-- follow-redirects@1.15.2
+14:22:04   +-- https://paulmillr.com/funding/
+14:22:04   | | `-- chokidar@3.5.3
+14:22:04   | `-- https://github.com/sponsors/jonschlinkert
+14:22:04   |     `-- picomatch@2.3.1
+14:22:04   +-- https://opencollective.com/webpack
+14:22:04   | | `-- webpack@5.74.0, terser-webpack-plugin@5.3.9, schema-utils@3.3.0
+14:22:04   | `-- https://opencollective.com/browserslist
+14:22:04   |     `-- browserslist@4.21.10, caniuse-lite@1.0.30001535, update-browserslist-db@1.0.11
+14:22:04   +-- https://github.com/sponsors/epoberezkin
+14:22:04   |   `-- ajv@8.12.0, ajv@6.12.6
+14:22:04   +-- https://github.com/sponsors/sibiraj-s
+14:22:04   |   `-- ci-info@3.8.0
+14:22:04   +-- https://opencollective.com/babel
+14:22:04   |   `-- @babel/core@7.22.20
+14:22:04   +-- https://github.com/sponsors/dubzzz
+14:22:04   |   `-- pure-rand@6.0.3
+14:22:04   +-- https://github.com/sindresorhus/emittery?sponsor=1
+14:22:04   |   `-- emittery@0.13.1
+14:22:04   `-- https://ko-fi.com/tunnckoCore/commissions
+14:22:04       `-- formidable@2.1.2
+14:22:04   
+14:22:04   Removing intermediate container 2a4b5eceffbe
+14:22:04    ---> 4ab2fbeb471e
+14:22:04   Step 10/11 : RUN npm run build
+14:22:04    ---> Running in c5f458880f24
+14:22:06   
+14:22:06   > tms-api@0.0.1 build
+14:22:06   > nest build
+14:22:06   
+14:22:13   npm notice
+14:22:13   npm notice New major version of npm available! 9.6.3 -> 10.1.0
+14:22:13   npm notice Changelog: <https://github.com/npm/cli/releases/tag/v10.1.0>
+14:22:13   npm notice Run `npm install -g npm@10.1.0` to update!
+14:22:13   npm notice
+14:22:13   Removing intermediate container c5f458880f24
+14:22:13    ---> 4314156c28bc
+14:22:13   Step 11/11 : CMD ["node", "dist/main.js"]
+14:22:13    ---> Running in 08458fbb8746
+14:22:13   Removing intermediate container 08458fbb8746
+14:22:13    ---> 7b0689cdec7f
+14:22:13   Successfully built 7b0689cdec7f
+14:22:13   Successfully tagged dockeregistry.next.local/tmsbe:latest
+14:22:13   Successfully tagged dockeregistry.next.local/tmsbe:1.0.16
+14:22:13   Process exited with code 0
