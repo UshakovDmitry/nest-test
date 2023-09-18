@@ -1,27 +1,16 @@
-В файле listener-rabbitMQ:
-
-channel.consume(
-    queue,
-    function (msg: any) {
-      const messageObj = JSON.parse(msg.content.toString());
-      console.log('Сообщение из TmsQueue', messageObj);
-      messageSubject.notifyObservers(messageObj);
+    {
+        "_id": "6507cc80b8b84a79245088ed",
+        "ArrayStrings": []
     },
     {
-      noAck: true,
+        "_id": "6507cc80b8b84a79245088ee",
+        "ArrayStrings": []
     },
-);
-
-
-В вашем message.service, вы уже делаете проверку:
-
-const parsedData =
-    typeof messageData === 'string' ? JSON.parse(messageData) : messageData;
-
-
-
-В файле message.shema:
-
-export const MessageSchema = new Schema({
-  // ... остальные поля ...
-}, { versionKey: false });
+    {
+        "_id": "6507cd94aadddf5037287446",
+        "ArrayStrings": []
+    },
+    {
+        "_id": "6507cd94aadddf5037287447",
+        "ArrayStrings": []
+    }
