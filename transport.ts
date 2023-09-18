@@ -1,78 +1,18 @@
-    {
-        "Number": "",
-        "Organization": "",
-        "DocumentStatus": "",
-        "Driver": "",
-        "ISR": "",
-        "Informal_Document": "",
-        "SKU_Weight": "",
-        "ContactInformation": {
-            "City": "",
-            "Delivery_Condition": "",
-            "Date_Time_delivery": "",
-            "Time_Window": "",
-            "Latitude": "",
-            "Longitude": "",
-            "Street": "нет данных",
-            "Home": "нет данных",
-            "Phone": "",
-            "Apartment": "нет данных",
-            "Contractor": "",
-            "_id": "6507cf287c6f1b90d3c37e0c"
-        },
-        "_id": "6507cd94aadddf5037287447",
-        "ArrayStrings": [],
-        "Date": "2023-09-18T04:16:40.908Z"
-    },
-    {
-        "_id": "6507ceda7c6f1b90d3c37ded",
-        "Number": "",
-        "Organization": "",
-        "DocumentStatus": "",
-        "Driver": "",
-        "ISR": "",
-        "Informal_Document": "",
-        "SKU_Weight": "",
-        "ContactInformation": {
-            "City": "",
-            "Delivery_Condition": "",
-            "Date_Time_delivery": "",
-            "Time_Window": "",
-            "Latitude": "",
-            "Longitude": "",
-            "Street": "нет данных",
-            "Home": "нет данных",
-            "Phone": "",
-            "Apartment": "нет данных",
-            "Contractor": "",
-            "_id": "6507ceda7c6f1b90d3c37dec"
-        },
-        "Date": "2023-09-18T04:15:22.567Z",
-        "ArrayStrings": []
-    },
-    {
-        "_id": "6507ceda7c6f1b90d3c37def",
-        "Number": "",
-        "Organization": "",
-        "DocumentStatus": "",
-        "Driver": "",
-        "ISR": "",
-        "Informal_Document": "",
-        "SKU_Weight": "",
-        "ContactInformation": {
-            "City": "",
-            "Delivery_Condition": "",
-            "Date_Time_delivery": "",
-            "Time_Window": "",
-            "Latitude": "",
-            "Longitude": "",
-            "Street": "нет данных",
-            "Home": "нет данных",
-            "Phone": "",
-            "Apartment": "нет данных",
-            "Contractor": "",
-            "_id": "6507ceda7c6f1b90d3c37dee"
-        },
-        "Date": "2023-09-18T04:15:22.572Z",
-        "ArrayStrings": []
-    }
+  import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
+
+export type CatDocument = HydratedDocument<Cat>;
+
+@Schema()
+export class Cat {
+  @Prop()
+  name: string;
+
+  @Prop()
+  age: number;
+
+  @Prop()
+  breed: string;
+}
+
+export const CatSchema = SchemaFactory.createForClass(Cat);
