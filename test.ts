@@ -1,55 +1,52 @@
-this.drivers = [
-  {
-    status: 'По плану',
-    fullName: 'Қазбек Қазбекұлы',
-    phone: '+7 (777) 777-77-77',
-    car_model: 'Toyota Land Cruiser',
-    car_number: 'А 777 АТ 77',
-    all_orders: 12,
-    completed_orders: 10,
-    delayed_orders: 1,
-    orders_on_time: 9,
-    current_order: '№№1234567',
-    current_location: 'г. Алматы, пр. Абая, д. 5',
-  },
-  {
-    status: 'Опаздывает',
-    fullName: 'Әділ Асылбекұлы',
-    phone: '+7 (777) 888-88-88',
-    car_model: 'Lexus LX570',
-    car_number: 'А 888 АЗ 88',
-    all_orders: 15,
-    completed_orders: 12,
-    delayed_orders: 2,
-    orders_on_time: 10,
-    current_order: '№№8765432',
-    current_location: 'г. Астана, ул. Мәңгілік ел, д. 10',
-  },
-  {
-    status: 'В пути',
-    fullName: 'Бауыржан Бауыржанұлы',
-    phone: '+7 (777) 555-55-55',
-    car_model: 'Mercedes-Benz GLE',
-    car_number: 'А 555 БТ 55',
-    all_orders: 18,
-    completed_orders: 14,
-    delayed_orders: 3,
-    orders_on_time: 11,
-    current_order: '№№4567890',
-    current_location: 'г. Шымкент, пр. Желтоксан, д. 20',
-  },
-  {
-    status: 'Завершил заказ',
-    fullName: 'Данияр Даниярұлы',
-    phone: '+7 (777) 444-44-44',
-    car_model: 'Porsche Cayenne',
-    car_number: 'А 444 ДТ 44',
-    all_orders: 20,
-    completed_orders: 19,
-    delayed_orders: 0,
-    orders_on_time: 19,
-    current_order: '№№0987654',
-    current_location: 'г. Актау, ул. Мангілік, д. 25',
-  },
-];
+<input type="checkbox" id="switch" /><label for="switch">Toggle</label>
 
+
+input[type=checkbox]{
+  height: 0;
+  width: 0;
+  visibility: hidden;
+}
+
+label {
+  cursor: pointer;
+  text-indent: -9999px;
+  width: 200px;
+  height: 100px;
+  background: grey;
+  display: block;
+  border-radius: 100px;
+  position: relative;
+}
+
+label:after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 90px;
+  height: 90px;
+  background: #fff;
+  border-radius: 90px;
+  transition: 0.3s;
+}
+
+input:checked + label {
+  background: #bada55;
+}
+
+input:checked + label:after {
+  left: calc(100% - 5px);
+  transform: translateX(-100%);
+}
+
+label:active:after {
+  width: 130px;
+}
+
+// centering
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
