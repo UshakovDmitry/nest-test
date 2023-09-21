@@ -1,11 +1,11 @@
-getHTTP.service.ts:16 Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'development')
-    at getURL (getHTTP.service.ts:16:30)
-    at fetch (getHTTP.service.ts:20:29)
-    at Object.getMessages (getHTTP.service.ts:27:28)
-    at useGetApi (getHTTP.service.ts:30:26)
-    at TransportRequestsViewModel.getData (applications.viewmodel.ts:14:28)
-    at new TransportRequestsViewModel (applications.viewmodel.ts:10:10)
-    at setup (applications.component.vue:31:3)
-    at callWithErrorHandling (runtime-core.esm-bundler.js:158:18)
-    at setupStatefulComponent (runtime-core.esm-bundler.js:7236:25)
-    at setupComponent (runtime-core.esm-bundler.js:7197:36)
+function getURL(apiName: string): string {
+    console.log('API Name:', apiName); // Логируем имя API
+    console.log('URLs Object:', urls); // Логируем объект с URL
+    const p: string = params ? params : "";
+    const isProduction = Boolean(import.meta.env.PROD);
+    if (isProduction) {
+        return urls[apiName].production + p;
+    }
+    return urls[apiName].development + p;
+}
+
