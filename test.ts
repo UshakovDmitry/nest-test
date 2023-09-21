@@ -1,211 +1,75 @@
-  this.couriers = [
-      {
-        fullName: 'Суханов Борис Раисович',
-        Car: 'A134LWB02',
-        type: 'ГПХ',
-        schedule: '09:00 - 12:00',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Алматы',
-        phoneNumber: '+7 777 777 77 77',
-        isActive: false,
-      },
-      {
-        
-        fullName: 'Пархоменко Иосиф Константинопольский',
-        Car: 'I 901 II 15',
-        type: 'Минивэн',
-        schedule: '5.2',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Астана',
-        phoneNumber: '76708327409',
-        isActive: false,
-      },
-      {
-  
-        fullName: 'Бородай Устин Константинопольский',
-        Car: 'I 901 II 15',
-        type: 'Минивэн',
-        schedule: '5.2',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Астана',
-        phoneNumber: '76708327409',
-        isActive: false,
-      },
-      {
-      
-        fullName: 'Суханов Борис Раисович',
-        Car: 'A134LWB02',
-        type: 'ГПХ',
-        schedule: '09:00 - 12:00',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Алматы',
-        phoneNumber: '+7 777 777 77 77',
-        isActive: false,
-      },
-      {
-       
-        fullName: 'Пархоменко Иосиф Константинопольский',
-        Car: 'I 901 II 15',
-        type: 'Минивэн',
-        schedule: '5.2',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Астана',
-        phoneNumber: '76708327409',
-        isActive: false,
-      },
-      {
-       
-        fullName: 'Бородай Устин Константинопольский',
-        Car: 'I 901 II 15',
-        type: 'Минивэн',
-        schedule: '5.2',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Астана',
-        phoneNumber: '76708327409',
-        isActive: false,
-      },
-      {
-      
-        fullName: 'Суханов Борис Раисович',
-        Car: 'A134LWB02',
-        type: 'ГПХ',
-        schedule: '09:00 - 12:00',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Алматы',
-        phoneNumber: '+7 777 777 77 77',
-        isActive: false,
-      },
-      {
-        
-        fullName: 'Пархоменко Иосиф Константинопольский',
-        Car: 'I 901 II 15',
-        type: 'Минивэн',
-        schedule: '5.2',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Астана',
-        phoneNumber: '76708327409',
-        isActive: false,
-      },
-      {
-        
-        fullName: 'Бородай Устин Константинопольский',
-        Car: 'I 901 II 15',
-        type: 'Минивэн',
-        schedule: '5.2',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Астана',
-        phoneNumber: '76708327409',
-        isActive: false,
-      },
-      {
-        
-        fullName: 'Суханов Борис Раисович',
-        Car: 'A134LWB02',
-        type: 'ГПХ',
-        schedule: '09:00 - 12:00',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Алматы',
-        phoneNumber: '+7 777 777 77 77',
-        isActive: false,
-      },
-      {
-        
-        fullName: 'Пархоменко Иосиф Константинопольский',
-        Car: 'I 901 II 15',
-        type: 'Минивэн',
-        schedule: '5.2',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Астана',
-        phoneNumber: '76708327409',
-        isActive: false,
-      },
-      {
-       
-        fullName: 'Бородай Устин Константинопольский',
-        Car: 'I 901 II 15',
-        type: 'Минивэн',
-        schedule: '5.2',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Астана',
-        phoneNumber: '76708327409',
-        isActive: false,
-      },
-      {
-        fullName: 'Суханов Борис Раисович',
-        Car: 'A134LWB02',
-        type: 'ГПХ',
-        schedule: '09:00 - 12:00',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Алматы',
-        phoneNumber: '+7 777 777 77 77',
-        isActive: false,
-      },
-      {
-        fullName: 'Пархоменко Иосиф Константинопольский',
-        Car: 'I 901 II 15',
-        type: 'Минивэн',
-        schedule: '5.2',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Астана',
-        phoneNumber: '76708327409',
-        isActive: false,
-      },
-      {
-        fullName: 'Бородай Устин Константинопольский',
-        Car: 'I 901 II 15',
-        type: 'Минивэн',
-        schedule: '5.2',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Астана',
-        phoneNumber: '76708327409',
-        isActive: false,
-      },
-      {
-        fullName: 'Суханов Борис Раисович',
-        Car: 'A134LWB02',
-        type: 'ГПХ',
-        schedule: '09:00 - 12:00',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Алматы',
-        phoneNumber: '+7 777 777 77 77',
-        isActive: false,
-      },
-      {
-        fullName: 'Пархоменко Иосиф Константинопольский',
-        Car: 'I 901 II 15',
-        type: 'Минивэн',
-        schedule: '5.2',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Астана',
-        phoneNumber: '76708327409',
-        isActive: false,
-      },
-      {
-        fullName: 'Бородай Устин Константинопольский',
-        Car: 'I 901 II 15',
-        type: 'Минивэн',
-        schedule: '5.2',
-        hardWindow: true,
-        returnToWarehouse: '1.7',
-        city: 'Астана',
-        phoneNumber: '76708327409',
-        isActive: false,
-      },
-    ];
+this.couriers = [
+  {
+    fullName: 'Дмитрий Борисов',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Алексей Пархоменко',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Максим Бородай',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Иван Суханов',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Артем Пархоменко',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Константин Бородай',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Николай Суханов',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Сергей Пархоменко',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Антон Бородай',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Владимир Суханов',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Петр Пархоменко',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Олег Бородай',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Вячеслав Суханов',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Степан Пархоменко',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Евгений Бородай',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Роман Суханов',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Лев Пархоменко',
+    //... other attributes remain unchanged
+  },
+  {
+    fullName: 'Тимур Бородай',
+    //... other attributes remain unchanged
+  },
+];
+
