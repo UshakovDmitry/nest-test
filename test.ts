@@ -1,73 +1,60 @@
-<template>
-<label class="toggle">
-  <input class="toggle-checkbox" type="checkbox" checked>
-  <div class="toggle-switch"></div>
-  <span class="toggle-label"></span>
-</label>
-</template>
+я написал логику зпросов 
+если в режиме разработки то обращаться на один адрес и если в режиме продакшн то на другой
+В ЧЕМ ПРОБЛЕМА?
 
-<script setup lang="ts">
-// import { ref } from 'vue';
+import { httpProvider } from "../providers/http.provider";
+import { urls } from "../resourse/config/urls";
 
-// const props = defineProps<{
-//   id: number;
-//   isActive?: boolean;
-// }>();
+export function useGetApi(method: string, params?: string | undefined) {
 
-
-</script>
-
-<style scoped>
+    console.log(method, 'method');
+    
+  function getURL(apiName: string): string {
+    const p: string = params ? params : "";
+    if (import.meta.env.PROD as any) {
+      return urls[apiName].production + p;
+    }
+    return urls[apiName].development + p;
+  }
 
 
-.toggle {
-  cursor: pointer;
-  display: inline-block;
+  function fetch(apiName: string) {
+    const URL: string = getURL(apiName);
+    const METHOD: string = "GET";
+
+    return httpProvider(URL, METHOD);
+  }
+
+  const methods: { [key: string]: Function } = {
+    getMessages: () => fetch("messages/getMessages"),
+  };
+
+  return methods[method]();
 }
 
-.toggle-switch {
-  display: inline-block;
-  background: #ccc;
-  border-radius: 16px;
-  width: 42px;
-  height: 24px;
-  position: relative;
-  vertical-align: middle;
-  transition: background 0.25s;
-}
-.toggle-switch:before, .toggle-switch:after {
-  content: "";
-}
-.toggle-switch:before {
-  display: block;
-  background: linear-gradient(to bottom, #fff 0%, #eee 100%);
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  transition: left 0.25s;
-}
-/* .toggle:hover .toggle-switch:before {
-  background: linear-gradient(to bottom, #fff 0%, #fff 100%);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
-} */
-.toggle-checkbox:checked + .toggle-switch {
-  background: #2F975C;
-}
-.toggle-checkbox:checked + .toggle-switch:before {
-  left: 22px;
-}
 
-.toggle-checkbox {
-  position: absolute;
-  visibility: hidden;
-}
+urls
+export const urls: any = {
+  getToken: {
+    production: '',
+    development: '',
+  },
+  getMessages: {
+    production: 'https://tms.next.local/api',
+    development: 'http://127.0.0.1:5173/api',
+  },
+};
 
-.toggle-label {
-  margin-left: 5px;
-  position: relative;
-  top: 2px;
-}
-</style>
+
+
+getHTTP.service.ts:13 Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'development')
+    at getURL (getHTTP.service.ts:13:26)
+    at fetch (getHTTP.service.ts:18:25)
+    at Object.getMessages (getHTTP.service.ts:25:24)
+    at useGetApi (getHTTP.service.ts:28:24)
+    at TransportRequestsViewModel.getData (applications.viewmodel.ts:14:28)
+    at new TransportRequestsViewModel (applications.viewmodel.ts:10:10)
+    at setup (applications.component.vue:31:3)
+    at callWithErrorHandling (runtime-core.esm-bundler.js:158:18)
+    at setupStatefulComponent (runtime-core.esm-bundler.js:7236:25)
+    at setupComponent (runtime-core.esm-bundler.js:7197:36)
