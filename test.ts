@@ -1,55 +1,7 @@
-export interface TransportRequestData {
-    _id: string;
-    Number: string;
-    Date: string;
-    Organization: string;
-    DocumentStatus: string;
-    Driver: string;
-    ISR: string;
-    Informal_Document: string;
-    SKU_Weight: string;
-    ArrayStrings: ProductItemData[];
-    ContactInformation: ContactInformationData;
-}
 
+import { IProductItem } from "../interfaces/ProductItem.interface";
 
-export interface ProductItemData {
-    Shipping_Point: string;
-    Goods: string;
-    Quantity: string;
-    Item_Status: string;
-    Pickup_Point: string;
-    Delivery_Point: string;
-    Pickup_Latitude: string;
-    Pickup_Longitude: string;
-    Delivery_Latitude: string;
-    Delivery_Longitude: string;
-    Pickup_Time: string;
-    Delivery_Time: string;
-}
-
-
-export interface ContactInformationData {
-    City: string;
-    Delivery_Condition: string;
-    Date_Time_delivery: string;
-    Time_Window: string;
-    Latitude: string;
-    Longitude: string;
-    Street: string;
-    Home: string;
-    Phone: string;
-    Apartment: string;
-    Contractor: string;
-    _id: string;
-}
-
-
-
-///
-
-
-class ProductItem {
+export class ProductItem implements IProductItem{
     shippingPoint: string;
     goods: string;
     quantity: number;
@@ -80,67 +32,21 @@ class ProductItem {
 }
 
 
-
-class TransportRequest {
-    id: string;
-    number: string;
-    date: Date;
-    organization: string;
-    documentStatus: string;
-    driver: string;
-    ISR: string;
-    informalDocument: string;
-    skuWeight: number;
-    products: ProductItem[];
-    contactInformation: ContactInformation;
-
-    constructor(data: any) {
-        this.id = data._id;
-        this.number = data.Number;
-        this.date = new Date(data.Date);
-        this.organization = data.Organization;
-        this.documentStatus = data.DocumentStatus;
-        this.driver = data.Driver;
-        this.ISR = data.ISR;
-        this.informalDocument = data.Informal_Document;
-        this.skuWeight = parseInt(data.SKU_Weight, 10);
-        this.products = data.ArrayStrings.map((item: any) => new ProductItem(item));
-        this.contactInformation = new ContactInformation(data.ContactInformation);
-    }
+export interface IProductItem {
+    Shipping_Point: string;
+    Goods: string;
+    Quantity: string;
+    Item_Status: string;
+    Pickup_Point: string;
+    Delivery_Point: string;
+    Pickup_Latitude: string;
+    Pickup_Longitude: string;
+    Delivery_Latitude: string;
+    Delivery_Longitude: string;
+    Pickup_Time: string;
+    Delivery_Time: string;
 }
 
-
-
-
-
-
-
-class ContactInformation {
-    city: string;
-    deliveryCondition: string;
-    dateTimeDelivery: string;
-    timeWindow: string;
-    latitude: number;
-    longitude: number;
-    street: string;
-    home: string;
-    phone: string;
-    apartment: string;
-    contractor: string;
-    id: string;
-
-    constructor(data: any) {
-        this.city = data.City;
-        this.deliveryCondition = data.Delivery_Condition;
-        this.dateTimeDelivery = data.Date_Time_delivery;
-        this.timeWindow = data.Time_Window;
-        this.latitude = parseFloat(data.Latitude.replace(',', '.'));
-        this.longitude = parseFloat(data.Longitude.replace(',', '.'));
-        this.street = data.Street;
-        this.home = data.Home;
-        this.phone = data.Phone;
-        this.apartment = data.Apartment;
-        this.contractor = data.Contractor;
-        this.id = data._id;
-    }
-}
+Class 'ProductItem' incorrectly implements interface 'IProductItem'.
+  Type 'ProductItem' is missing the following properties from type 'IProductItem': Shipping_Point, Goods, Quantity, Item_Status, and 8 more.ts(2420)
+class ProductItem
