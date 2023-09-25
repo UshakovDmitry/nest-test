@@ -116,3 +116,20 @@ src/domain/entities/ContactInformation.ts(1,42): error TS2307: Cannot find modul
   src/domain/interfaces/driver.interface.ts(1,29): error TS2307: Cannot find module './order.interface' or its corresponding type declarations.
    src/domain/interfaces/transportRequest.interface.ts(1,42): error TS2307: Cannot find module './contactInformation.interface' or its corresponding type declarations.
   src/domain/interfaces/transportRequest.interface.ts(2,29): error TS2307: Cannot find module './order.interface' or its corresponding type declarations.
+
+
+
+
+
+
+
+
+
+  import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [vue()],
+});
+
