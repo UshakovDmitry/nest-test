@@ -83,6 +83,9 @@ export interface ITransportRequest {
   contactInformation: IContactInformation;
 }
 
+
+
+
 {
   "compilerOptions": {
     "target": "ES2020",
@@ -98,7 +101,12 @@ export interface ITransportRequest {
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": "./",
+    "paths": {
+      "@interfaces/*": ["src/domain/interfaces/*"],
+      "@entities/*": ["src/domain/entities/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "exclude": ["node_modules", "src/**/*.vue.js"],
@@ -108,28 +116,18 @@ export interface ITransportRequest {
 
 
 
-src/domain/entities/ContactInformation.ts(1,42): error TS2307: Cannot find module '../interfaces/contactInformation.interface' or its corresponding type declarations.
-   src/domain/entities/Driver.ts(1,29): error TS2307: Cannot find module '../interfaces/order.interface' or its corresponding type declarations.
-   src/domain/entities/Order.ts(1,29): error TS2307: Cannot find module '../interfaces/order.interface' or its corresponding type declarations.
-  src/domain/entities/TransportRequest.ts(2,29): error TS2307: Cannot find module '../interfaces/order.interface' or its corresponding type declarations.
-  src/domain/entities/TransportRequest.ts(4,42): error TS2307: Cannot find module '../interfaces/contactInformation.interface' or its corresponding type declarations.
-  src/domain/interfaces/driver.interface.ts(1,29): error TS2307: Cannot find module './order.interface' or its corresponding type declarations.
-   src/domain/interfaces/transportRequest.interface.ts(1,42): error TS2307: Cannot find module './contactInformation.interface' or its corresponding type declarations.
-  src/domain/interfaces/transportRequest.interface.ts(2,29): error TS2307: Cannot find module './order.interface' or its corresponding type declarations.
 
-
-
-
-
-
-
-
-
-  import { defineConfig } from 'vite';
+import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import path from 'path';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
+  resolve: {
+    alias: {
+      '@interfaces': path.resolve(__dirname, 'src/domain/interfaces/'),
+      '@entities': path.resolve(__dirname, 'src/domain/entities/')
+    }
+  }
 });
 
