@@ -1,134 +1,164 @@
-export interface IContactInformation {
-  city: string;
-  deliveryCondition: string;
-  dateTimeDelivery: string;
-  timeWindow: string;
-  latitude: string;
-  longitude: string;
-  street: string;
-  home: string;
-  phone: string;
-  apartment: string;
-  contractor: string;
-  id: string;
-}
-https://kaspi.kz/shop/api/v2/orderentries/MTQwMjYzNjcwIyMw/relationships/product
+нужно добавить новую логику в проект на nest 
 
-import { type IOrder } from './order.interface';
+есть модуль drivers
 
-export interface IDriver {
-  id: number;
-  status: string;
-  fullName: string;
-  phone: string;
-  car_model: string;
-  car_number: string;
-  all_orders: number | string;
-  completed_orders: number | string;
-  delayed_orders: number | string;
-  orders_on_time: number | string;
-  current_order: string;
-  current_location: string;
-  isActive?: boolean;
-  orders: IOrder[];
-}
+drivers.controller
+import { Controller, Get } from '@nestjs/common';
+import { DriversService } from './drivers.service';
+import { ApiTags } from '@nestjs/swagger';
 
-export interface ILoader {
-  fullName: string;
-  warehouseNumber: string;
-  schedule: string;
-  carNumber: string;
-  isActive: boolean;
-}
-export interface IOrder {
-  shippingPoint: string;
-  goods: string;
-  quantity: string;
-  itemStatus: string;
-  pickupPoint: string;
-  deliveryPoint: string;
-  pickupLatitude: string;
-  pickupLongitude: string;
-  deliveryLatitude: string;
-  deliveryLongitude: string;
-  pickupTime: string;
-  deliveryTime: string;
-}
+@ApiTags('drivers')
+@Controller('/api/drivers')
+export class DriversController {
+  constructor(private readonly driversService: DriversService) {}
 
-export interface ITransport {
-  model: number | string;
-  number: number | string;
-  type: string;
-  volume: string;
-  loadCapacity: number | string;
-  city: number | string;
-  isActive: boolean;
-  hasDriver: boolean;
-  schedule: string;
-}
-
-import { type IContactInformation } from './contactInformation.interface';
-import { type IOrder } from './order.interface';
-
-export interface ITransportRequest {
-  id: string;
-  number: string;
-  date: string;
-  organization: string;
-  documentStatus: string;
-  driver: string;
-  ISR: string;
-  informalDocument: string;
-  skuWeight: string;
-  orders: IOrder[];
-  contactInformation: IContactInformation;
+  @Get()
+  async getDrivers() {
+    return await this.driversService.getDrivers();
+  }
 }
 
 
+drivers.module
+import { Module } from '@nestjs/common';
+import { DriversService } from './drivers.service';
+import { DriversController } from './drivers.controller';
 
+@Module({
+  controllers: [DriversController],
+  providers: [DriversService],
+})
+export class DriversModule {}
 
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "module": "ESNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "preserve",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "baseUrl": "./",
-    "paths": {
-      "@interfaces/*": ["src/domain/interfaces/*"],
-      "@entities/*": ["src/domain/entities/*"]
-    }
-  },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "exclude": ["node_modules", "src/**/*.vue.js"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+drivers.service 
+import { Injectable } from '@nestjs/common';
+// import { InjectModel } from '@nestjs/mongoose';
+// import { Model } from 'mongoose';
+// import { MessageDocument } from '../schemas/message.shema';
+
+@Injectable()
+export class DriversService {
+  //   constructor(
+  //     @InjectModel('Message') private messageModel: Model<MessageDocument>,
+  //   ) {}
+
+  async getDrivers(): Promise<any[]> {
+    // return await this.messageModel.find().exec();
+  здесь хочу вызывать метод который возвращает массив водителей и их заказов
+  }
 }
 
+у меня есть база данных монго вот таких заявок на транспорт
+
+_id
+650d4ccd50f0a77202216bfe
+Number
+"№№00015933"
+Date
+"01.08.2023 9:01:14"
+Organization
+"TOO Gulser Computers (Гулсер Компьютерс)"
+DocumentStatus
+"Доставляется"
+Driver
+"Бархудар Асан Арыпұлы"
+ISR
+""
+Informal_Document
+"Акт регистрации брака TL300000000014 от 01.04.2022 18:36:05"
+SKU_Weight
+"17"
+
+ArrayStrings
+Array (1)
+
+0
+Object
+Shipping_Point
+"Талгар 3, ул. Абылай хана, дом 111 (склад товара, ожидающего ремонта)"
+Goods
+"Телевизор KIVI 55U710KB  Smart 4K UHD"
+Quantity
+"1"
+Item_Status
+"Оформлена"
+Pickup_Point
+"1"
+Delivery_Point
+"2"
+Pickup_Latitude
+"43,305732"
+Pickup_Longitude
+"77,241999"
+Delivery_Latitude
+"43,245609"
+Delivery_Longitude
+"76,90425"
+Pickup_Time
+"01.01.0001 9:43:53"
+Delivery_Time
+"01.01.0001 10:46:44"
+
+ContactInformation
+Object
+City
+"Алматы"
+Delivery_Condition
+"Доставка"
+Date_Time_delivery
+"2023-08-05 До 18:00"
+Time_Window
+"09:00-18:00"
+Latitude
+"43,245609"
+Longitude
+"76,90425"
+Street
+"нет данных"
+Home
+"нет данных"
+Phone
+"+7(778)021-1316"
+Apartment
+"нет данных"
+Contractor
+"нет данных"
+_id
+650d4ccd50f0a77202216bff
 
 
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { MessageDocument } from '../schemas/message.shema';
 
+@Injectable()
+export class MessageService {
+  constructor(
+    @InjectModel('Message') private messageModel: Model<MessageDocument>,
+  ) {}
 
-import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
-import path from 'path';
-
-export default defineConfig({
-  plugins: [vue()],
-  resolve: {
-    alias: {
-      '@interfaces': path.resolve(__dirname, 'src/domain/interfaces/'),
-      '@entities': path.resolve(__dirname, 'src/domain/entities/')
+  async saveMessage(messageData: any) {
+    try {
+      const parsedData =
+        typeof messageData === 'string' ? JSON.parse(messageData) : messageData;
+      const createdMessage = new this.messageModel(parsedData);
+      console.log(createdMessage, 'createdMessage!');
+      return createdMessage.save();
+    } catch (error) {
+      console.error('Ошибка сохранения в бд:', error);
+      throw error;
     }
   }
-});
 
+  async getAllMessages(): Promise<any[]> {
+    return await this.messageModel.find().exec();
+  }
+
+  async getMessagesByDrivers() {
+    // return await this.messageModel.find({ Driver: { $in: drivers } }).exec();
+    мне нужно сортировать все заявки по полю Driver
+тем самым я хочу получить массив водителей и все их заказы
+так как сейчас они разбросаны в бд 
+  }
+}
