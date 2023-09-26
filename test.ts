@@ -12,6 +12,7 @@ export interface IContactInformation {
   contractor: string;
   id: string;
 }
+https://kaspi.kz/shop/api/v2/orderentries/MTQwMjYzNjcwIyMw/relationships/product
 
 import { type IOrder } from './order.interface';
 
