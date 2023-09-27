@@ -1,54 +1,114 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { MessageDocument } from '../schemas/message.shema';
-import { DBService } from '../db/db.service'; // 1. Импортируем DBService
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+import * as mongoose from 'mongoose';
 
-@Injectable()
-export class DriversService {
-  constructor(
-    @InjectModel('Message') private messageModel: Model<MessageDocument>,
-    private readonly dbService: DBService, // 2. Инъекция DBService
-  ) {}
+export type MessageDocument = Document & Message;
 
-  async getDrivers() {
-    return await this.dbService.getDriversTest(); // 3. Вызов метода getDriversTest из dbService
-  }
+@Schema()
+class ArrayStrings {
+  @Prop()
+  Shipping_Point: string;
+  @Prop()
+  Goods: string;
+  @Prop()
+  Quantity: string;
+  @Prop()
+  Item_Status: string;
+  @Prop()
+  Pickup_Point: string;
+  @Prop()
+  Delivery_Point: string;
+  @Prop()
+  Pickup_Latitude: string;
+  @Prop()
+  Pickup_Longitude: string;
+  @Prop()
+  Delivery_Latitude: string;
+  @Prop()
+  Delivery_Longitude: string;
+  @Prop()
+  Pickup_Time: string;
+  @Prop()
+  Delivery_Time: string;
+}
+
+@Schema()
+class ContactInformation {
+  @Prop()
+  City: string;
+  @Prop()
+  Delivery_Condition: string;
+  @Prop()
+  Date_Time_delivery: string;
+  @Prop()
+  Time_Window: string;
+  @Prop()
+  Latitude: string;
+  @Prop()
+  Longitude: string;
+  @Prop()
+  Street: string;
+  @Prop()
+  Home: string;
+  @Prop()
+  Phone: string;
+  @Prop()
+  Apartment: string;
+  @Prop()
+  Contractor: string;
+}
+
+@Schema({ versionKey: false })
+class StructureQuantities {
+  @Prop()
+  TotalWeight: string;
+  @Prop()
+  TotalAmount: string;
+}
+
+@Schema({ versionKey: false })
+class Chronology {
+  @Prop()
+  PPO: string;
+ 
+}
+
+
+@Schema({ versionKey: false })
+class ArrayChronologies {
+  @Prop()
+  PPO: string;
+  @Prop()
+  Chronology: Chronology[];
 }
 
 
 
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { MessageSchema } from '../schemas/message.shema';
-import { DBService } from './db.service';
-import { DBController } from './db.controller';
 
-@Module({
-  imports: [
-    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
-  ],
-  providers: [DBService],
-  exports: [DBService],  // Экспорт DBService
-  controllers: [DBController],
-})
-export class DBModule {}
+@Schema({ versionKey: false })
+export class Message {
+  @Prop()
+  Number: string;
+  @Prop()
+  Date: string;
+  @Prop()
+  Organization: string;
+  @Prop()
+  DocumentStatus: string;
+  @Prop()
+  Driver: string;
+  @Prop()
+  ISR: string;
+  @Prop()
+  Informal_Document: string;
+  @Prop()
+  SKU_Weight: string;
+  @Prop({ type: mongoose.Schema.Types.Array })
+  ArrayStrings: ArrayStrings[];
+  @Prop()
+  ContactInformation: ContactInformation;
+  StructureQuantities: StructureQuantities;
+  ArrayChronologies: ArrayChronologies[];
+}
 
-
-
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { MessageSchema } from '../schemas/message.shema';
-import { DriversService } from './drivers.service';
-import { DriversController } from './drivers.controller';
-import { DBModule } from '../db/db.module';  // Импорт DBModule
-
-@Module({
-  imports: [
-    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
-    DBModule  // Добавьте DBModule в массив импорта
-  ],
-  controllers: [DriversController],
-  providers: [DriversService],
-})
-export class DriversModule {}
+export const MessageSchema = SchemaFactory.createForClass(Message);
