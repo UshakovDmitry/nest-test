@@ -1,125 +1,159 @@
-[
-      {
-        id: 123423512,
-        driver: 'Шарапов Алексей Юрьевич',
-        car_number: 'М 840 ОР 750',
-        car_model: 'Киа Рио',
-        orders: [
-          {
-            order_status: 'Доставлен',
-            order_number: '№№12341234',
-            order_delivery_time: '08.09.2023 12:33:21',
-            order_delivery_latitude: '76.122021',
-            order_delivery_longitude: '43.122021',
-            order_delivery_point: '0',
-            order_pickup_time: '08.09.2023 09:13:29',
-            order_pickup_latitude: '76.12287214',
-            order_pickup_longitude: '43.1220345',
-            order_pickup_point: '1',
-            order_name: '241-010 / холодильник Nord',
-            order_weight: '119',
-            order_price: '180000',
-            order_quantity: '2',
-            order_type_payment: 'Наличные',
-            order_contragent: 'ALSER.kz',
-            order_PPO_number: '1123456789',
-            order_PPO_status: 'Доставляется',
-            contactInformation: {
-              city: 'Алматы',
-              street: 'Панфилова',
-              house: '29',
-              apartment: '49',
-              contractor: 'Питьков Никита Сергеевич',
-              latitude: '76.12287214',
-              longitude: '43.1220345',
-              phone: '87771234567',
-              time_window: '09:00-15:00',
-              date_time_delivery: '08.09.2023 до 15:00',
-              delivrery_condition: 'Доставка',
-            },
-          },
-        ],
-      },
-      {
-        id: 21432351,
-        driver: 'Карандашов Артем Валерьевич',
-        car_number: 'A 440 ОР 777',
-        car_model: 'LADA Largus',
-        orders: [
-          {
-            order_status: 'В пути',
-            order_number: '№№12341234',
-            order_delivery_time: '08.09.2023 12:33:21',
-            order_delivery_latitude: '76.122021',
-            order_delivery_longitude: '43.122021',
-            order_delivery_point: '0',
-            order_pickup_time: '08.09.2023 09:13:29',
-            order_pickup_latitude: '76.12287214',
-            order_pickup_longitude: '43.1220345',
-            order_pickup_point: '1',
-            order_name: 'Стиральная машина Siemens',
-            order_weight: '100',
-            order_price: '180000',
-            order_quantity: '2',
-            order_type_payment: 'Каспи Онлайн',
-            order_contragent: 'ALSER.kz',
-            order_PPO_number: '1123456789',
-            order_PPO_status: 'Доставляется',
-            contactInformation: {
-              city: 'Алматы',
-              street: 'Панфилова',
-              house: '29',
-              apartment: '49',
-              contractor: 'Чемагин Никита Сергеевич',
-              latitude: '76.12287214',
-              longitude: '43.1220345',
-              phone: '87771234567',
-              time_window: '09:00-15:00',
-              date_time_delivery: '08.09.2023 до 18:00',
-              delivrery_condition: 'Доставка',
-            },
-          },
-        ],
-      },
-      {
-        id: 465882,
-        driver: 'Викулин Алексей Юрьевич',
-        car_number: 'А 888 МР 77',
-        car_model: 'Кадди',
-        orders: [
-          {
-            order_status: 'Доставлен',
-            order_number: '№№12341234',
-            order_delivery_time: '08.09.2023 12:33:21',
-            order_delivery_latitude: '76.122021',
-            order_delivery_longitude: '43.122021',
-            order_delivery_point: '0',
-            order_pickup_time: '08.09.2023 09:13:29',
-            order_pickup_latitude: '76.12287214',
-            order_pickup_longitude: '43.1220345',
-            order_pickup_point: '1',
-            order_name: 'MacBook Pro 16',
-            order_weight: '1.5',
-            order_price: '1180000',
-            order_quantity: '2',
-            order_type_payment: 'Наличные',
-            order_contragent: 'ALSER.kz',
-            order_PPO_number: '1123456789',
-            order_PPO_status: 'Доставляется',
-            contactInformation: {
-              city: 'Алматы',
-              street: 'Панфилова',
-              house: '29',
-              apartment: '49',
-              contractor: 'Перов Роман Сергеевич',
-              latitude: '76.12287214',
-              longitude: '43.1220345',
-              phone: '87771234567',
-              time_window: '09:00-15:00',
-              date_time_delivery: '08.09.2023 до 20:00',
-              delivrery_condition: 'Доставка',
-            },
-          },
-        ],
-      },
-    ];
+drivers.controller.ts
+import { Controller, Get } from '@nestjs/common';
+import { DriversService } from './drivers.service';
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags('drivers')
+@Controller('/api/drivers')
+export class DriversController {
+  constructor(private readonly driversService: DriversService) {}
+
+  @Get()
+  async getDrivers() {
+    return await this.driversService.getDrivers();
+  }
+}
+
+drivers.module.ts
+import { Module } from '@nestjs/common';
+// import { MongooseModule } from '@nestjs/mongoose';
+import { DriversService } from './drivers.service';
+// import { MessageSchema } from '../schemas/message.shema';
+import { DriversController } from './drivers.controller';
+
+@Module({
+  controllers: [DriversController],
+  providers: [DriversService],
+})
+export class DriversModule {}
+
+drivers.service.ts
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { MessageDocument } from '../schemas/message.shema';
+
+@Injectable()
+export class DriversService {
+  constructor(
+    @InjectModel('Message') private messageModel: Model<MessageDocument>,
+  ) {}
+
+  async getDrivers() {
+      
+  }
+}
+
+db.controller.ts
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { DBService } from './db.service';
+// import { DriversService } from 'src/drivers/drivers.service';
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags('getMessages')
+@Controller('/api/getMessages')
+export class DBController {
+  constructor(
+    private readonly DBService: DBService,
+    // private readonly driversService: DriversService,
+    ) {}
+
+  @Get()
+  async getAllMessages() {
+    return this.DBService.getAllMessages();
+  }
+
+  @Post()
+  async saveMessage(@Body() messageData: any) {
+    return this.DBService.saveMessage(messageData);
+  }
+
+  @Get('/test')
+  async test() {
+    return this.DBService.getDriversTest();
+  }
+}
+
+
+db.module.ts
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { DBService } from './db.service';
+import { MessageSchema } from '../schemas/message.shema';
+import { DBController } from './db.controller';
+
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
+  ],
+  providers: [DBService],
+  exports: [DBService],
+  controllers: [DBController],
+})
+export class DBModule {}
+
+db.service.ts
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { MessageDocument } from '../schemas/message.shema';
+
+@Injectable()
+export class DBService {
+  constructor(
+    @InjectModel('Message') private messageModel: Model<MessageDocument>,
+  ) {}
+
+  async saveMessage(messageData: any) {
+    try {
+      const parsedData =
+        typeof messageData === 'string' ? JSON.parse(messageData) : messageData;
+      const createdMessage = new this.messageModel(parsedData);
+      return createdMessage.save();
+    } catch (error) {
+      console.error('Ошибка сохранения в бд:', error);
+      throw error;
+    }
+  }
+
+  async getAllMessages(): Promise<any[]> {
+    return await this.messageModel.find().exec();
+  }
+
+  async processNewMessage(messageData: any) {
+    try {
+      // TODO - Проверить {upsert: true}
+      /**
+       * return await this.messageModel
+          .update({ Number: messageData.Number }, messageData, {upsert: true})
+          .exec();
+       */
+      const existingMessage = await this.messageModel
+        .findOne({ Number: messageData.Number })
+        .exec();
+
+      if (existingMessage) {
+        return await this.messageModel
+          .updateOne({ Number: messageData.Number }, messageData)
+          .exec();
+      } else {
+        const parsedData =
+          typeof messageData === 'string'
+            ? JSON.parse(messageData)
+            : messageData;
+        const createdMessage = new this.messageModel(parsedData);
+        return createdMessage.save();
+      }
+    } catch (error) {
+      console.error('Ошибка при обработке нового сообщения:', error);
+      throw error;
+    }
+  }
+  async getDriversTest() {
+    // Получить все уникальные имена из коллекции по полю Driver
+    const collectionDriverNames = await this.messageModel.distinct('Driver').exec();
+    for (const driver in collectionDriverNames) {
+      console.log(driver);
+    }
+}
+}
