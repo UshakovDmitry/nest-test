@@ -148,6 +148,16 @@ export class DBService {
     const collectionDriverNames = await this.messageModel.distinct('Driver').exec();
     for (const driver in collectionDriverNames) {
       console.log(driver);
-    }
-}
-}
+
+Nest] 25036  - 27.09.2023, 15:18:23     LOG [NestFactory] Starting Nest application...
+[Nest] 25036  - 27.09.2023, 15:18:23     LOG [InstanceLoader] MongooseModule dependencies initialized +28ms
+[Nest] 25036  - 27.09.2023, 15:18:23   ERROR [ExceptionHandler] Nest can't resolve dependencies of the DriversService (?). Please make sure that the argument MessageModel at index [0] is available in th
+e DriversModule context.
+
+Potential solutions:
+- Is DriversModule a valid NestJS module?
+- If MessageModel is a provider, is it part of the current DriversModule?
+- If MessageModel is exported from a separate @Module, is that module imported within DriversModule?
+  @Module({
+    imports: [ /* the Module containing MessageModel */ ]
+  })
