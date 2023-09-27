@@ -122,12 +122,6 @@ export class DBService {
 
   async processNewMessage(messageData: any) {
     try {
-      // TODO - Проверить {upsert: true}
-      /**
-       * return await this.messageModel
-          .update({ Number: messageData.Number }, messageData, {upsert: true})
-          .exec();
-       */
       const existingMessage = await this.messageModel
         .findOne({ Number: messageData.Number })
         .exec();
