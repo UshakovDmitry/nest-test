@@ -1,11 +1,8 @@
-"ArrayChronologies": [
-      {
-        "PPO": "8149234",
-        "Chronology": [
-          "Оформлен",
-          "Доставляется до клиента (на складе отгрузки)",
-          "Доставляется",
-          "Сделка завершена"
-        ]
-      }
-    ]
+@Schema({ versionKey: false })
+class ArrayChronologies {
+  @Prop()
+  PPO: string;
+
+  @Prop([String])  // Указание, что это массив строк
+  Chronology: string[];
+}
