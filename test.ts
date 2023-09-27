@@ -1,101 +1,91 @@
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { MessageDocument } from '../schemas/message.shema';
 
-_id
-650bc83ec5adae20b71a879c
-Number
-"№№00015934"
-Date
-"14.08.2023 15:53:04"
-Organization
-"TOO Gulser Computers (Гулсер Компьютерс)"
-DocumentStatus
-"Доставляется"
-Driver
-"Абдалиев Аязбек Ибраевич"
-ISR
-"(747)2667569"
-Informal_Document
-"Заказ покупателя ППО 000000080238 от 14.08.2023 15:46:12"
-SKU_Weight
-""
+@Injectable()
+export class MessageService {
+  constructor(
+    @InjectModel('Message') private messageModel: Model<MessageDocument>,
+  ) {}
 
-ArrayStrings
-Array (2)
+  async saveMessage(messageData: any) {
+    try {
+      const parsedData =
+        typeof messageData === 'string' ? JSON.parse(messageData) : messageData;
+      const createdMessage = new this.messageModel(parsedData);
+      return createdMessage.save();
+    } catch (error) {
+      console.error('Ошибка сохранения в бд:', error);
+      throw error;
+    }
+  }
 
-0
-Object
-Shipping_Point
-"Алматы ул.Кабдолова 1/4 ТРК Grand Park"
-Goods
-""
-Quantity
-"1"
-Item_Status
-""
-Pickup_Point
-"0"
-Delivery_Point
-"0"
-Pickup_Latitude
-"43,238745"
-Pickup_Longitude
-"76,856582"
-Delivery_Latitude
-"0"
-Delivery_Longitude
-"0"
-Pickup_Time
-"01.01.0001 0:00:00"
-Delivery_Time
-"01.01.0001 0:00:00"
+  async getAllMessages(): Promise<any[]> {
+    return await this.messageModel.find().exec();
+  }
 
-1
-Object
-Shipping_Point
-"Алматы ул.Кабдолова 1/4 ТРК Grand Park"
-Goods
-""
-Quantity
-"1"
-Item_Status
-""
-Pickup_Point
-"0"
-Delivery_Point
-"0"
-Pickup_Latitude
-"43,238745"
-Pickup_Longitude
-"76,856582"
-Delivery_Latitude
-"0"
-Delivery_Longitude
-"0"
-Pickup_Time
-"01.01.0001 0:00:00"
-Delivery_Time
-"01.01.0001 0:00:00"
+  async processNewMessage(messageData: any) {
+    try {
+      const existingMessage = await this.messageModel.findOne({ Number: messageData.Number }).exec();
 
-ContactInformation
-Object
-City
-"Алматы"
-Delivery_Condition
-"Доставка"
-Date_Time_delivery
-"2023-08-16 К До 20:00"
-Time_Window
-"15:00-18:00"
-Latitude
-"43,3189165"
-Longitude
-"76,93994950000001"
-Street
-"нет данных"
-Home
-"74"
-Phone
-"(747)2667569"
-Apartment
-"нет данных"
-Contractor
-"АЛЕКСЕЙ ТРУНКИН"
+      if (existingMessage) {
+        return await this.messageModel.updateOne({ Number: messageData.Number }, messageData).exec();
+      } else {
+        const parsedData =
+          typeof messageData === 'string' ? JSON.parse(messageData) : messageData;
+        const createdMessage = new this.messageModel(parsedData);
+        return createdMessage.save();
+      }
+    } catch (error) {
+      console.error('Ошибка при обработке нового сообщения:', error);
+      throw error;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import { Injectable } from '@nestjs/common';
+import { MessageService } from '../message/message.service';
+import { Observer } from '../observer';
+import { messageSubject } from '../listener-rabbitMQ';
+
+@Injectable()
+export class RabbitMQService implements Observer {
+  constructor(private readonly messageService: MessageService) {
+    messageSubject.addObserver(this);
+  }
+
+  public update(messageArray: Array<any>): void {
+    console.log('Получено сообщение: ', messageArray);
+    this.processReceivedMessages(messageArray);
+  }
+
+  private async processReceivedMessages(messageArray: Array<any>): Promise<void> {
+    try {
+      for (const message of messageArray) {
+        console.log('Обработка сообщения: ', message);
+        await this.messageService.processNewMessage(message);
+      }
+    } catch (error) {
+      console.log('Ошибка обработки полученных сообщений: ', error);
+    }
+  }
+}
+
+
+
+
