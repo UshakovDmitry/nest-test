@@ -125,4 +125,10 @@ export class Message {
   ArrayChronologies: ArrayChronologies[];
 }
 
+
+
+
+DateCreated
+"Thu Sep 28 2023 11:31:20 GMT+0600 (East Kazakhstan Time)"
+
 export const MessageSchema = SchemaFactory.createForClass(Message);
