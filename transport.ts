@@ -1,34 +1,57 @@
-@Injectable()
-export class DBService {
+transportRequests.controller
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { TransportRequestsService } from './transportRequests.service';
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags('getMessages')
+@Controller('/api/getTranportRequests')
+export class TransportRequestsController {
   constructor(
-    @InjectModel('Message') private messageModel: Model<MessageDocument>,
-  ) {}
+    private readonly transportRequestsService: TransportRequestsService,
+  ) 
+  {}
 
-  async saveMessage(messageData: any) {
-    try {
-      const parsedData =
-        typeof messageData === 'string' ? JSON.parse(messageData) : messageData;
-      const currentDate = new Date();
-      parsedData.DateCreated = `${currentDate.getDate()}-${
-        currentDate.getMonth() + 1
-      }-${currentDate.getFullYear()}`;
-
-      const existingMessage = await this.messageModel.findOne({ Number: parsedData.Number }).exec();
-
-      if (existingMessage) {
-        // Если сообщение с таким номером уже существует, обновляем его
-        const updatedMessage = await this.messageModel.findOneAndUpdate({ Number: parsedData.Number }, parsedData, { new: true }).exec();
-        console.log('Message updated:', updatedMessage.Number);
-        return updatedMessage;
-      } else {
-        // Если сообщения с таким номером нет, создаем новое
-        const createdMessage = new this.messageModel(parsedData);
-        console.log('New message created:', createdMessage.Number);
-        return createdMessage.save();
-      }
-    } catch (error) {
-      console.error('Ошибка сохранения в бд:', error);
-      throw error;
-    }
+  @Get()
+  async getAllTransportRequests() {
+    return this.transportRequestsService.getAllTransportRequests();
   }
+
+}
+
+transportRequests.module
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MessageSchema } from '../schemas/message.shema';
+import { TransportRequestsService } from './transportRequests.service';
+import { TransportRequestsController } from './transportRequests.controller';
+import { DBModule } from '../db/db.module';  
+
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
+    DBModule  
+  ],
+  controllers: [TransportRequestsController],
+  providers: [TransportRequestsService],
+})
+export class TransportRequestsModule {}
+
+transportRequests.service
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { MessageDocument } from '../schemas/message.shema';
+import { DBService } from '../db/db.service'; 
+
+
+@Injectable()
+export class TransportRequestsService {
+    constructor(
+        @InjectModel('Message') private messageModel: Model<MessageDocument>,
+        private readonly dbService: DBService, 
+      ) {}
+    
+        async getAllTransportRequests(): Promise<any[]> {
+            return await this.dbService.getAllTransportRequests();
+        }
 }
