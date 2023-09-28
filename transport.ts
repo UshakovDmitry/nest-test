@@ -128,7 +128,8 @@ export class Message {
 
 
 
-DateCreated
-"Thu Sep 28 2023 11:31:20 GMT+0600 (East Kazakhstan Time)"
+const currentDate = new Date();
+      parsedData.DateCreated = `${currentDate.getDate()}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`; // Форматирование даты
+
 
 export const MessageSchema = SchemaFactory.createForClass(Message);
