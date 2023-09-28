@@ -1,9 +1,66 @@
-я хочу добавить логику которая будет добавлять в обьект записи поле "created" в которое я буду записывать текущую дату  
-функция записи в бд
-async saveMessage(messageData: any) {
+мне нужно реализовать POST запрос который будет теперь дополнительно дату и возвращаться водителей у которых поле DateCreated совпадает в бд
+реализуй и напиши пример запроса для проверки в постмане
+
+drivers.controller.ts
+import { Controller, Get } from '@nestjs/common';
+import { DriversService } from './drivers.service';
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags('drivers')
+@Controller('/api/drivers')
+export class DriversController {
+  constructor(private readonly driversService: DriversService) {}
+
+  @Get()
+  async getDrivers() {
+    return await this.driversService.getDrivers();
+  }
+}
+
+drivers.service.ts
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { MessageDocument } from '../schemas/message.shema';
+import { DBService } from '../db/db.service'; 
+@Injectable()
+export class DriversService {
+  constructor(
+    @InjectModel('Message') private messageModel: Model<MessageDocument>,
+    private readonly dbService: DBService, 
+  ) {}
+
+  async getDrivers() {
+    return await this.dbService.getDriversTest(); 
+  }
+}
+
+
+
+
+
+db.service.ts
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { MessageDocument } from '../schemas/message.shema';
+
+@Injectable()
+export class DBService {
+  constructor(
+    @InjectModel('Message') private messageModel: Model<MessageDocument>,
+  ) {}
+
+  async saveMessage(messageData: any) {
     try {
       const parsedData =
         typeof messageData === 'string' ? JSON.parse(messageData) : messageData;
+        // TODO - Создание поля DateCreated для дальнейшей сортировки по дате
+      const currentDate = new Date();
+      parsedData.DateCreated = `${currentDate.getDate()}-${
+        currentDate.getMonth() + 1
+      }-${currentDate.getFullYear()}`;
+
       const createdMessage = new this.messageModel(parsedData);
       return createdMessage.save();
     } catch (error) {
@@ -11,6 +68,12 @@ async saveMessage(messageData: any) {
       throw error;
     }
   }
+
+  async getAllMessages(): Promise<any[]> {
+    return await this.messageModel.find().exec();
+  }
+
+}
 
   
 схема записи
@@ -98,6 +161,8 @@ export class Message {
   @Prop()
   Date: string;
   @Prop()
+  DateCreated: string;
+  @Prop()
   Organization: string;
   @Prop()
   DocumentStatus: string;
@@ -124,12 +189,5 @@ export class Message {
   @Prop({ type: mongoose.Schema.Types.Array })
   ArrayChronologies: ArrayChronologies[];
 }
-
-
-
-
-const currentDate = new Date();
-      parsedData.DateCreated = `${currentDate.getDate()}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`; // Форматирование даты
-
 
 export const MessageSchema = SchemaFactory.createForClass(Message);
