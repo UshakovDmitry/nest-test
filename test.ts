@@ -45,3 +45,20 @@ export class ApplicationDetailViewModel {
 }
 
 
+
+
+
+
+
+вот как записываю в роутер
+ goToTransportRequestDetail(row: any) {
+    router.push({
+      name: 'ApplicationDetail',
+      params: { id: row.number },
+      query: {
+        number: row.number,
+      },
+    });
+  }
+
+
