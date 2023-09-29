@@ -1,657 +1,124 @@
-2023-09-29 10:29:00	
-  ArrayChronologies: [ { PPO: '8149234', Chronology: [Array] } ]
-2023-09-29 10:29:00	
-  },
-2023-09-29 10:29:00	
-    _id: new ObjectId("65164be43ed9d34fe783e37f")
-2023-09-29 10:29:00	
-    TotalAmount: '27990',
-2023-09-29 10:29:00	
-    TotalWeight: '0.4',
-2023-09-29 10:29:00	
-  StructureQuantities: {
-2023-09-29 10:29:00	
-  },
-2023-09-29 10:29:00	
-    _id: new ObjectId("65164be43ed9d34fe783e37e")
-2023-09-29 10:29:00	
-    Contractor: 'Таирова Жанета',
-2023-09-29 10:29:00	
-    Apartment: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-    Phone: '(706)4192015',
-2023-09-29 10:29:00	
-    Home: '115',
-2023-09-29 10:29:00	
-    Street: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-    Longitude: '76,938656',
-2023-09-29 10:29:00	
-    Latitude: '43,253029',
-2023-09-29 10:29:00	
-    Time_Window: 'нет данных',
-2023-09-29 10:29:00	
-    Date_Time_delivery: '2023-02-03 До 20:00',
-2023-09-29 10:29:00	
-    Delivery_Condition: 'Доставка',
-2023-09-29 10:29:00	
-    City: 'Алматы',
-2023-09-29 10:29:00	
-  ContactInformation: {
-2023-09-29 10:29:00	
-  ],
-2023-09-29 10:29:00	
+у меня проблема
+когда у меня приходит сообщение из rabbitMQ я его записываю с помощью Obsrver
+но проблема в том что приходит одно сообщение а записывается их два
+я поставил console log и увидел что console log внутри 
+ update(messageArray: Array<any>): void {
+    console.log('Получено сообщение:', messageArray);
+    this.saveMessageToDb(messageArray);
+  }
+
+а также вынутри 
+  public notifyObservers(message: string | Array<any>): void {
+    for (const observer of this.observers) {
+    console.log('ПРОБЕГАЮ ПО ВСЕМ ПОДПИСЧИКАМ', message);
+      observer.update(message);
     }
-2023-09-29 10:29:00	
-      Delivery_Time: '01.01.0001 15:00:00'
-2023-09-29 10:29:00	
-      Pickup_Time: '01.01.0001 9:00:00',
-2023-09-29 10:29:00	
-      Delivery_Longitude: '14',
-2023-09-29 10:29:00	
-      Delivery_Latitude: '15',
-2023-09-29 10:29:00	
-      Pickup_Longitude: '15',
-2023-09-29 10:29:00	
-      Pickup_Latitude: '12',
-2023-09-29 10:29:00	
-      Delivery_Point: '2',
-2023-09-29 10:29:00	
-      Pickup_Point: '1',
-2023-09-29 10:29:00	
-      Item_Status: 'Забран',
-2023-09-29 10:29:00	
-      Price: '27 990',
-2023-09-29 10:29:00	
-      Weight: '0,4',
-2023-09-29 10:29:00	
-      Brand: 'Яндекс',
-2023-09-29 10:29:00	
-      ShippingAddress: 'Almaty, Rayymbeka, 127/147',
-2023-09-29 10:29:00	
-      Count: '1',
-2023-09-29 10:29:00	
-      Goods: 'Умная Колонка Яндекс.Станция Лайт, Мята (YNDX-00025 Green)',
-2023-09-29 10:29:00	
-      SKU: '1330426',
-2023-09-29 10:29:00	
-      PPOStatus: 'Сделка завершена',
-2023-09-29 10:29:00	
-      NuberPPO: '8149234',
-2023-09-29 10:29:00	
-    {
-2023-09-29 10:29:00	
-  ArrayStrings: [
-2023-09-29 10:29:00	
-  FilterContractor: 'Alser',
-2023-09-29 10:29:00	
-  Informal_Document: 'Заказ покупателя ППО',
-2023-09-29 10:29:00	
-  loanAgreementStatus: 'ОПЛАЧЕН',
-2023-09-29 10:29:00	
-  TypePayment: 'Кредит',
-2023-09-29 10:29:00	
-  NuberPPO: '8149234',
-2023-09-29 10:29:00	
-  ISR: '240783461',
-2023-09-29 10:29:00	
-  Driver: 'Чунаев Марат Чакенович',
-2023-09-29 10:29:00	
-  DocumentStatus: 'Отказ водителя',
-2023-09-29 10:29:00	
-  Organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-2023-09-29 10:29:00	
-  DateCreated: '29-9-2023',
-2023-09-29 10:29:00	
-  Date: '27.09.2023 11:03:39',
-2023-09-29 10:29:00	
-  Number: '№№00015684',
-2023-09-29 10:29:00	
-  _id: new ObjectId("6515504f574d28b99754fd60"),
-2023-09-29 10:29:00	
-existingMessage {
-2023-09-29 10:29:00	
+  }
+
+срабатывают два раза 
+
+при этом console log внутри файла listener-rabbitMQ срабатывает 1 раз 
+
+вот файлы
+
+ listener-rabbitMQ
+const amqp = require('amqplib/callback_api');
+import { Subject } from './observer';
+
+export const messageSubject = new Subject();
+
+amqp.connect(
+  'amqp://tms:26000567855499290979@rabbitmq.next.local',
+  function (errorConnect, connection) {
+    if (errorConnect) {
+      throw 'Ошибка подключения к rabbitMQ: ' + errorConnect;
+    }
+    connection.createChannel(function (errorCreateChannel, channel) {
+      if (errorCreateChannel) {
+        throw 'Ошибка создания канала: ' + errorCreateChannel;
+      }
+      const queue = 'TmsQueue';
+
+      channel.assertQueue(queue, {
+        durable: true,
+      });
+
+      channel.consume(
+        queue,
+        function (msg: any) {
+          const messageObj = JSON.parse(msg.content.toString());
+          console.log('Сообщение из TmsQueue', messageObj);
+          messageSubject.notifyObservers(messageObj);
+        },
+        {
+          noAck: true,
+        },
+      );
+    });
+  },
+);
+
+
+
+rabbitmq.service
+import { Injectable } from '@nestjs/common';
+import { DBService } from '../db/db.service';
+import { Observer } from '../observer';
+import { messageSubject } from '../listener-rabbitMQ';
+
+@Injectable()
+export class RabbitMQService implements Observer {
+  constructor(private readonly DBService: DBService) {
+    messageSubject.addObserver(this);
+  }
+
+   update(messageArray: Array<any>): void {
+    console.log('Получено сообщение:', messageArray);
+    this.saveMessageToDb(messageArray);
+  }
+  private async saveMessageToDb(messageArray: Array<any>): Promise<void> {
+    try {
+      for (const message of messageArray) {
+        // console.log('Сохранение в базу данных...', messageArray);
+        console.log('Сохранено в базу данных:', message);
+        await this.DBService.saveMessage(message);
+      }
+    } catch (error) {
+      console.log('Ошибка сохранения в базу данных:', error);
+    }
+  }
 }
-2023-09-29 10:29:00	
-  DateCreated: '29-9-2023'
-2023-09-29 10:29:00	
-  ArrayChronologies: [ { PPO: '8149234', Chronology: [Array] } ],
-2023-09-29 10:29:00	
-  StructureQuantities: { TotalWeight: 0.4, TotalAmount: 27990 },
-2023-09-29 10:29:00	
-  },
-2023-09-29 10:29:00	
-    Contractor: 'Таирова Жанета'
-2023-09-29 10:29:00	
-    Apartment: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-    Phone: '(706)4192015',
-2023-09-29 10:29:00	
-    Home: '115',
-2023-09-29 10:29:00	
-    Street: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-    Longitude: '76,938656',
-2023-09-29 10:29:00	
-    Latitude: '43,253029',
-2023-09-29 10:29:00	
-    Time_Window: 'нет данных',
-2023-09-29 10:29:00	
-    Date_Time_delivery: '2023-02-03 До 20:00',
-2023-09-29 10:29:00	
-    Delivery_Condition: 'Доставка',
-2023-09-29 10:29:00	
-    City: 'Алматы',
-2023-09-29 10:29:00	
-  ContactInformation: {
-2023-09-29 10:29:00	
-  ],
-2023-09-29 10:29:00	
-    }
-2023-09-29 10:29:00	
-      Delivery_Time: '01.01.0001 15:00:00'
-2023-09-29 10:29:00	
-      Pickup_Time: '01.01.0001 9:00:00',
-2023-09-29 10:29:00	
-      Delivery_Longitude: '14',
-2023-09-29 10:29:00	
-      Delivery_Latitude: '15',
-2023-09-29 10:29:00	
-      Pickup_Longitude: '15',
-2023-09-29 10:29:00	
-      Pickup_Latitude: '12',
-2023-09-29 10:29:00	
-      Delivery_Point: '2',
-2023-09-29 10:29:00	
-      Pickup_Point: '1',
-2023-09-29 10:29:00	
-      Item_Status: 'Забран',
-2023-09-29 10:29:00	
-      Price: '27 990',
-2023-09-29 10:29:00	
-      Weight: '0,4',
-2023-09-29 10:29:00	
-      Brand: 'Яндекс',
-2023-09-29 10:29:00	
-      ShippingAddress: 'Almaty, Rayymbeka, 127/147',
-2023-09-29 10:29:00	
-      Count: '1',
-2023-09-29 10:29:00	
-      Goods: 'Умная Колонка Яндекс.Станция Лайт, Мята (YNDX-00025 Green)',
-2023-09-29 10:29:00	
-      SKU: '1330426',
-2023-09-29 10:29:00	
-      PPOStatus: 'Сделка завершена',
-2023-09-29 10:29:00	
-      NuberPPO: '8149234',
-2023-09-29 10:29:00	
-    {
-2023-09-29 10:29:00	
-  ArrayStrings: [
-2023-09-29 10:29:00	
-  NumberCar: 'M121240',
-2023-09-29 10:29:00	
-  CarModel: 'Gazel',
-2023-09-29 10:29:00	
-  FilterContractor: 'Alser',
-2023-09-29 10:29:00	
-  Informal_Document: 'Заказ покупателя ППО',
-2023-09-29 10:29:00	
-  loanAgreementStatus: 'ОПЛАЧЕН',
-2023-09-29 10:29:00	
-  TypePayment: 'Кредит',
-2023-09-29 10:29:00	
-  NuberPPO: '8149234',
-2023-09-29 10:29:00	
-  ISR: '240783461',
-2023-09-29 10:29:00	
-  Driver: 'Чунаев Марат Чакенович',
-2023-09-29 10:29:00	
-  DocumentStatus: 'Отказ водителя',
-2023-09-29 10:29:00	
-  Organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-2023-09-29 10:29:00	
-  Date: '27.09.2023 11:03:39',
-2023-09-29 10:29:00	
-  Number: '№№00015684',
-2023-09-29 10:29:00	
-Сохранено в базу данных: {
-2023-09-29 10:29:00	
-]
-2023-09-29 10:29:00	
-  }
-2023-09-29 10:29:00	
-    DateCreated: '29-9-2023'
-2023-09-29 10:29:00	
-    ArrayChronologies: [ [Object] ],
-2023-09-29 10:29:00	
-    StructureQuantities: { TotalWeight: 0.4, TotalAmount: 27990 },
-2023-09-29 10:29:00	
-    },
-2023-09-29 10:29:00	
-      Contractor: 'Таирова Жанета'
-2023-09-29 10:29:00	
-      Apartment: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-      Phone: '(706)4192015',
-2023-09-29 10:29:00	
-      Home: '115',
-2023-09-29 10:29:00	
-      Street: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-      Longitude: '76,938656',
-2023-09-29 10:29:00	
-      Latitude: '43,253029',
-2023-09-29 10:29:00	
-      Time_Window: 'нет данных',
-2023-09-29 10:29:00	
-      Date_Time_delivery: '2023-02-03 До 20:00',
-2023-09-29 10:29:00	
-      Delivery_Condition: 'Доставка',
-2023-09-29 10:29:00	
-      City: 'Алматы',
-2023-09-29 10:29:00	
-    ContactInformation: {
-2023-09-29 10:29:00	
-    ArrayStrings: [ [Object] ],
-2023-09-29 10:29:00	
-    NumberCar: 'M121240',
-2023-09-29 10:29:00	
-    CarModel: 'Gazel',
-2023-09-29 10:29:00	
-    FilterContractor: 'Alser',
-2023-09-29 10:29:00	
-    Informal_Document: 'Заказ покупателя ППО',
-2023-09-29 10:29:00	
-    loanAgreementStatus: 'ОПЛАЧЕН',
-2023-09-29 10:29:00	
-    TypePayment: 'Кредит',
-2023-09-29 10:29:00	
-    NuberPPO: '8149234',
-2023-09-29 10:29:00	
-    ISR: '240783461',
-2023-09-29 10:29:00	
-    Driver: 'Чунаев Марат Чакенович',
-2023-09-29 10:29:00	
-    DocumentStatus: 'Отказ водителя',
-2023-09-29 10:29:00	
-    Organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-2023-09-29 10:29:00	
-    Date: '27.09.2023 11:03:39',
-2023-09-29 10:29:00	
-    Number: '№№00015684',
-2023-09-29 10:29:00	
-  {
-2023-09-29 10:29:00	
-Получено сообщение: [
-2023-09-29 10:29:00	
-]
-2023-09-29 10:29:00	
-  }
-2023-09-29 10:29:00	
-    DateCreated: '29-9-2023'
-2023-09-29 10:29:00	
-    ArrayChronologies: [ [Object] ],
-2023-09-29 10:29:00	
-    StructureQuantities: { TotalWeight: 0.4, TotalAmount: 27990 },
-2023-09-29 10:29:00	
-    },
-2023-09-29 10:29:00	
-      Contractor: 'Таирова Жанета'
-2023-09-29 10:29:00	
-      Apartment: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-      Phone: '(706)4192015',
-2023-09-29 10:29:00	
-      Home: '115',
-2023-09-29 10:29:00	
-      Street: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-      Longitude: '76,938656',
-2023-09-29 10:29:00	
-      Latitude: '43,253029',
-2023-09-29 10:29:00	
-      Time_Window: 'нет данных',
-2023-09-29 10:29:00	
-      Date_Time_delivery: '2023-02-03 До 20:00',
-2023-09-29 10:29:00	
-      Delivery_Condition: 'Доставка',
-2023-09-29 10:29:00	
-      City: 'Алматы',
-2023-09-29 10:29:00	
-    ContactInformation: {
-2023-09-29 10:29:00	
-    ArrayStrings: [ [Object] ],
-2023-09-29 10:29:00	
-    NumberCar: 'M121240',
-2023-09-29 10:29:00	
-    CarModel: 'Gazel',
-2023-09-29 10:29:00	
-    FilterContractor: 'Alser',
-2023-09-29 10:29:00	
-    Informal_Document: 'Заказ покупателя ППО',
-2023-09-29 10:29:00	
-    loanAgreementStatus: 'ОПЛАЧЕН',
-2023-09-29 10:29:00	
-    TypePayment: 'Кредит',
-2023-09-29 10:29:00	
-    NuberPPO: '8149234',
-2023-09-29 10:29:00	
-    ISR: '240783461',
-2023-09-29 10:29:00	
-    Driver: 'Чунаев Марат Чакенович',
-2023-09-29 10:29:00	
-    DocumentStatus: 'Отказ водителя',
-2023-09-29 10:29:00	
-    Organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-2023-09-29 10:29:00	
-    Date: '27.09.2023 11:03:39',
-2023-09-29 10:29:00	
-    Number: '№№00015684',
-2023-09-29 10:29:00	
-  {
-2023-09-29 10:29:00	
-ПРОБЕГАЮ ПО ВСЕМ ОБЬЮЗАМ [
-2023-09-29 10:29:00	
+
+
+
+observer
+
+export interface Observer {
+  update(message: string | Array<any>): void;
 }
-2023-09-29 10:29:00	
-  ArrayChronologies: [ { PPO: '8149234', Chronology: [Array] } ]
-2023-09-29 10:29:00	
-  StructureQuantities: { TotalWeight: 0.4, TotalAmount: 27990 },
-2023-09-29 10:29:00	
-  },
-2023-09-29 10:29:00	
-    Contractor: 'Таирова Жанета'
-2023-09-29 10:29:00	
-    Apartment: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-    Phone: '(706)4192015',
-2023-09-29 10:29:00	
-    Home: '115',
-2023-09-29 10:29:00	
-    Street: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-    Longitude: '76,938656',
-2023-09-29 10:29:00	
-    Latitude: '43,253029',
-2023-09-29 10:29:00	
-    Time_Window: 'нет данных',
-2023-09-29 10:29:00	
-    Date_Time_delivery: '2023-02-03 До 20:00',
-2023-09-29 10:29:00	
-    Delivery_Condition: 'Доставка',
-2023-09-29 10:29:00	
-    City: 'Алматы',
-2023-09-29 10:29:00	
-  ContactInformation: {
-2023-09-29 10:29:00	
-  ],
-2023-09-29 10:29:00	
+
+export class Subject {
+  private observers: Observer[] = [];
+
+  public addObserver(observer: Observer): void {
+    this.observers.push(observer);
+  }
+
+  public removeObserver(observer: Observer): void {
+    const observerIndex = this.observers.indexOf(observer);
+    if (observerIndex !== -1) {
+      this.observers.splice(observerIndex, 1);
     }
-2023-09-29 10:29:00	
-      Delivery_Time: '01.01.0001 15:00:00'
-2023-09-29 10:29:00	
-      Pickup_Time: '01.01.0001 9:00:00',
-2023-09-29 10:29:00	
-      Delivery_Longitude: '14',
-2023-09-29 10:29:00	
-      Delivery_Latitude: '15',
-2023-09-29 10:29:00	
-      Pickup_Longitude: '15',
-2023-09-29 10:29:00	
-      Pickup_Latitude: '12',
-2023-09-29 10:29:00	
-      Delivery_Point: '2',
-2023-09-29 10:29:00	
-      Pickup_Point: '1',
-2023-09-29 10:29:00	
-      Item_Status: 'Забран',
-2023-09-29 10:29:00	
-      Price: '27 990',
-2023-09-29 10:29:00	
-      Weight: '0,4',
-2023-09-29 10:29:00	
-      Brand: 'Яндекс',
-2023-09-29 10:29:00	
-      ShippingAddress: 'Almaty, Rayymbeka, 127/147',
-2023-09-29 10:29:00	
-      Count: '1',
-2023-09-29 10:29:00	
-      Goods: 'Умная Колонка Яндекс.Станция Лайт, Мята (YNDX-00025 Green)',
-2023-09-29 10:29:00	
-      SKU: '1330426',
-2023-09-29 10:29:00	
-      PPOStatus: 'Сделка завершена',
-2023-09-29 10:29:00	
-      NuberPPO: '8149234',
-2023-09-29 10:29:00	
-    {
-2023-09-29 10:29:00	
-  ArrayStrings: [
-2023-09-29 10:29:00	
-  NumberCar: 'M121240',
-2023-09-29 10:29:00	
-  CarModel: 'Gazel',
-2023-09-29 10:29:00	
-  FilterContractor: 'Alser',
-2023-09-29 10:29:00	
-  Informal_Document: 'Заказ покупателя ППО',
-2023-09-29 10:29:00	
-  loanAgreementStatus: 'ОПЛАЧЕН',
-2023-09-29 10:29:00	
-  TypePayment: 'Кредит',
-2023-09-29 10:29:00	
-  NuberPPO: '8149234',
-2023-09-29 10:29:00	
-  ISR: '240783461',
-2023-09-29 10:29:00	
-  Driver: 'Чунаев Марат Чакенович',
-2023-09-29 10:29:00	
-  DocumentStatus: 'Отказ водителя',
-2023-09-29 10:29:00	
-  Organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-2023-09-29 10:29:00	
-  Date: '27.09.2023 11:03:39',
-2023-09-29 10:29:00	
-  Number: '№№00015684',
-2023-09-29 10:29:00	
-Сохранено в базу данных: {
-2023-09-29 10:29:00	
-]
-2023-09-29 10:29:00	
   }
-2023-09-29 10:29:00	
-    ArrayChronologies: [ [Object] ]
-2023-09-29 10:29:00	
-    StructureQuantities: { TotalWeight: 0.4, TotalAmount: 27990 },
-2023-09-29 10:29:00	
-    },
-2023-09-29 10:29:00	
-      Contractor: 'Таирова Жанета'
-2023-09-29 10:29:00	
-      Apartment: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-      Phone: '(706)4192015',
-2023-09-29 10:29:00	
-      Home: '115',
-2023-09-29 10:29:00	
-      Street: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-      Longitude: '76,938656',
-2023-09-29 10:29:00	
-      Latitude: '43,253029',
-2023-09-29 10:29:00	
-      Time_Window: 'нет данных',
-2023-09-29 10:29:00	
-      Date_Time_delivery: '2023-02-03 До 20:00',
-2023-09-29 10:29:00	
-      Delivery_Condition: 'Доставка',
-2023-09-29 10:29:00	
-      City: 'Алматы',
-2023-09-29 10:29:00	
-    ContactInformation: {
-2023-09-29 10:29:00	
-    ArrayStrings: [ [Object] ],
-2023-09-29 10:29:00	
-    NumberCar: 'M121240',
-2023-09-29 10:29:00	
-    CarModel: 'Gazel',
-2023-09-29 10:29:00	
-    FilterContractor: 'Alser',
-2023-09-29 10:29:00	
-    Informal_Document: 'Заказ покупателя ППО',
-2023-09-29 10:29:00	
-    loanAgreementStatus: 'ОПЛАЧЕН',
-2023-09-29 10:29:00	
-    TypePayment: 'Кредит',
-2023-09-29 10:29:00	
-    NuberPPO: '8149234',
-2023-09-29 10:29:00	
-    ISR: '240783461',
-2023-09-29 10:29:00	
-    Driver: 'Чунаев Марат Чакенович',
-2023-09-29 10:29:00	
-    DocumentStatus: 'Отказ водителя',
-2023-09-29 10:29:00	
-    Organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-2023-09-29 10:29:00	
-    Date: '27.09.2023 11:03:39',
-2023-09-29 10:29:00	
-    Number: '№№00015684',
-2023-09-29 10:29:00	
-  {
-2023-09-29 10:29:00	
-Получено сообщение: [
-2023-09-29 10:29:00	
-]
-2023-09-29 10:29:00	
+
+  public notifyObservers(message: string | Array<any>): void {
+    for (const observer of this.observers) {
+    console.log('ПРОБЕГАЮ ПО ВСЕМ ПОДПИСЧИКАМ', message);
+      observer.update(message);
+    }
   }
-2023-09-29 10:29:00	
-    ArrayChronologies: [ [Object] ]
-2023-09-29 10:29:00	
-    StructureQuantities: { TotalWeight: 0.4, TotalAmount: 27990 },
-2023-09-29 10:29:00	
-    },
-2023-09-29 10:29:00	
-      Contractor: 'Таирова Жанета'
-2023-09-29 10:29:00	
-      Apartment: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-      Phone: '(706)4192015',
-2023-09-29 10:29:00	
-      Home: '115',
-2023-09-29 10:29:00	
-      Street: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-      Longitude: '76,938656',
-2023-09-29 10:29:00	
-      Latitude: '43,253029',
-2023-09-29 10:29:00	
-      Time_Window: 'нет данных',
-2023-09-29 10:29:00	
-      Date_Time_delivery: '2023-02-03 До 20:00',
-2023-09-29 10:29:00	
-      Delivery_Condition: 'Доставка',
-2023-09-29 10:29:00	
-      City: 'Алматы',
-2023-09-29 10:29:00	
-    ContactInformation: {
-2023-09-29 10:29:00	
-    ArrayStrings: [ [Object] ],
-2023-09-29 10:29:00	
-    NumberCar: 'M121240',
-2023-09-29 10:29:00	
-    CarModel: 'Gazel',
-2023-09-29 10:29:00	
-    FilterContractor: 'Alser',
-2023-09-29 10:29:00	
-    Informal_Document: 'Заказ покупателя ППО',
-2023-09-29 10:29:00	
-    loanAgreementStatus: 'ОПЛАЧЕН',
-2023-09-29 10:29:00	
-    TypePayment: 'Кредит',
-2023-09-29 10:29:00	
-    NuberPPO: '8149234',
-2023-09-29 10:29:00	
-    ISR: '240783461',
-2023-09-29 10:29:00	
-    Driver: 'Чунаев Марат Чакенович',
-2023-09-29 10:29:00	
-    DocumentStatus: 'Отказ водителя',
-2023-09-29 10:29:00	
-    Organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-2023-09-29 10:29:00	
-    Date: '27.09.2023 11:03:39',
-2023-09-29 10:29:00	
-    Number: '№№00015684',
-2023-09-29 10:29:00	
-  {
-2023-09-29 10:29:00	
-ПРОБЕГАЮ ПО ВСЕМ ОБЬЮЗАМ [
-2023-09-29 10:29:00	
-]
-2023-09-29 10:29:00	
-  }
-2023-09-29 10:29:00	
-    ArrayChronologies: [ [Object] ]
-2023-09-29 10:29:00	
-    StructureQuantities: { TotalWeight: 0.4, TotalAmount: 27990 },
-2023-09-29 10:29:00	
-    },
-2023-09-29 10:29:00	
-      Contractor: 'Таирова Жанета'
-2023-09-29 10:29:00	
-      Apartment: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-      Phone: '(706)4192015',
-2023-09-29 10:29:00	
-      Home: '115',
-2023-09-29 10:29:00	
-      Street: 'Кайсар Плаза',
-2023-09-29 10:29:00	
-      Longitude: '76,938656',
-2023-09-29 10:29:00	
-      Latitude: '43,253029',
-2023-09-29 10:29:00	
-      Time_Window: 'нет данных',
-2023-09-29 10:29:00	
-      Date_Time_delivery: '2023-02-03 До 20:00',
-2023-09-29 10:29:00	
-      Delivery_Condition: 'Доставка',
-2023-09-29 10:29:00	
-      City: 'Алматы',
-2023-09-29 10:29:00	
-    ContactInformation: {
-2023-09-29 10:29:00	
-    ArrayStrings: [ [Object] ],
-2023-09-29 10:29:00	
-    NumberCar: 'M121240',
-2023-09-29 10:29:00	
-    CarModel: 'Gazel',
-2023-09-29 10:29:00	
-    FilterContractor: 'Alser',
-2023-09-29 10:29:00	
-    Informal_Document: 'Заказ покупателя ППО',
-2023-09-29 10:29:00	
-    loanAgreementStatus: 'ОПЛАЧЕН',
-2023-09-29 10:29:00	
-    TypePayment: 'Кредит',
-2023-09-29 10:29:00	
-    NuberPPO: '8149234',
-2023-09-29 10:29:00	
-    ISR: '240783461',
-2023-09-29 10:29:00	
-    Driver: 'Чунаев Марат Чакенович',
-2023-09-29 10:29:00	
-    DocumentStatus: 'Отказ водителя',
-2023-09-29 10:29:00	
-    Organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-2023-09-29 10:29:00	
-    Date: '27.09.2023 11:03:39',
-2023-09-29 10:29:00	
-    Number: '№№00015684',
-2023-09-29 10:29:00	
-  {
-2023-09-29 10:29:00	
-Сообщение из TmsQueue [
-  })
+}
+
+
+
+
