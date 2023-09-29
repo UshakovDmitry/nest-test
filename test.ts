@@ -24,9 +24,8 @@ export class ApplicationDetailModel implements ApplicationDetailModel {
 
   constructor() {
     this.transportRequest = {};
-    this.transportRequestDelivery = {};
+    this.transportRequestDelivery = [];
   }
 }
-
-Type '{}' is missing the following properties from type 'ITransportRequestDelivery': numberPPO, number1C, ISR, status, and 2 more.ts(2740)
+Type 'undefined[]' is missing the following properties from type 'ITransportRequestDelivery': numberPPO, number1C, ISR, status, and 2 more.ts(2740)
 (property) ApplicationDetailModel.transportRequestDelivery: ITransportRequestDelivery
