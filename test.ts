@@ -1,4 +1,4 @@
-export interface ITransportRequestDelivery {
+export interface ITransportRequestDeliveryItem {
   numberPPO: string;
   number1C: string;
   ISR: string;
@@ -13,6 +13,8 @@ export interface ITransportRequestDelivery {
   };
 }
 
+export type ITransportRequestDelivery = ITransportRequestDeliveryItem[];
+
 export interface ApplicationDetailModel {
   transportRequest: any;
   transportRequestDelivery: ITransportRequestDelivery;
@@ -24,8 +26,6 @@ export class ApplicationDetailModel implements ApplicationDetailModel {
 
   constructor() {
     this.transportRequest = {};
-    this.transportRequestDelivery = [];
+    this.transportRequestDelivery = []; // Теперь это пустой массив
   }
 }
-Type 'undefined[]' is missing the following properties from type 'ITransportRequestDelivery': numberPPO, number1C, ISR, status, and 2 more.ts(2740)
-(property) ApplicationDetailModel.transportRequestDelivery: ITransportRequestDelivery
