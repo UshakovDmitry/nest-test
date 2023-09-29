@@ -1,32 +1,29 @@
-async getTransportRequestByNumber(number: string): Promise<any> {
-    return await this.messageModel.findOne({ Number: number }).exec();
-}
+  goToTransportRequestDetail(row: any) {
+    router.push({
+      name: 'ApplicationDetail',
+      params: { id: row.number },
+      query: {
+        number: row.number,
+      },
+    });
+  }
 
 
+import router from '../../router';
+import { ApplicationDetail } from './application-detail.model';
 
+export class ApplicationDetailViewModel {
+  model: ApplicationDetail;
 
-async getTransportRequestByNumber(number: string): Promise<any> {
-    return await this.dbService.getTransportRequestByNumber(number);
-}
+  constructor(model: any) {
+    this.model = model;
+    this.getTransportRequestByNumber();
+  }
 
+  getTransportRequestByNumber() {}
 
-
-
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
-
-...
-
-@Post('getByNumber')
-async getTransportRequestByNumber(@Body('number') number: string) {
-    return this.transportRequestsService.getTransportRequestByNumber(number);
-}
-
-
-
-
-
-
-
-{
-    "number": "12345"
+  test() {
+    console.log('test');
+  }
+    
 }
