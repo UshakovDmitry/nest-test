@@ -1,3 +1,11 @@
+Property 'query' does not exist on type 'Ref<RouteLocationNormalizedLoaded>'.ts(2339)
+any
+
+
+
+
+
+
 import router from '../../router';
 import { ApplicationDetail } from './application-detail.model';
 
@@ -16,7 +24,7 @@ export class ApplicationDetailViewModel {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ number: this.model.number }) // или из router.currentRoute.query.number, если модель еще не обновлена
+        body: JSON.stringify({ number: router.currentRoute.query.number }) 
       });
 
       if (!response.ok) {
@@ -25,8 +33,7 @@ export class ApplicationDetailViewModel {
       }
 
       const data = await response.json();
-      console.log(data); // Здесь будут данные от сервера
-      // TODO: Обновите вашу модель данными от сервера, если это необходимо
+      console.log(data); 
     } catch (error) {
       console.error('Ошибка при получении данных:', error);
     }
@@ -36,21 +43,5 @@ export class ApplicationDetailViewModel {
     console.log('test');
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
