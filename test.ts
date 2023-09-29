@@ -122,3 +122,25 @@ export class Subject {
 
 
 
+
+
+
+class Test {
+  private static instance: Test;
+  private value: any | null;
+  private constructor() {
+    this.value = null;
+  }
+  public static getInstance(
+    storage: any
+  ): Test {
+    if (!Test.instance) {
+      Test.instance = new Test();
+      Test.instance.value = storage;
+    }
+    return Test.instance;
+  }
+}
+
+const testInstance = Test.getInstance("test");
+
