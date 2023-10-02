@@ -1,13 +1,37 @@
-"Date_Time_delivery": "2023-09-30 До 20:00",
+я реализовал post запрос где фронетнд мне присылает дату а я возвращаю всех водителй только с теми заказами которые совпадают с этой датой 
+но почему то он возвращает всех  
+@Post('/by-date')
+  async getDriversByDate(@Body('date') date: string) {
+    console.log('date', date);
+
+    return await this.driversService.getDriversByDate(date);
+  }
 
 
-const dateTimeDelivery = "2023-09-30 До 20:00";
+  async getDriversByDate(date: string) {
+    return await this.dbService.getDriversByDate(date);
+  }
 
-// Используя метод split
-const date = dateTimeDelivery.split(" ")[0];
-console.log(date); // "2023-09-30"
 
-// Используя регулярные выражения
-const regexMatch = dateTimeDelivery.match(/^(\d{4}-\d{2}-\d{2})/);
-const extractedDate = regexMatch ? regexMatch[1] : null;
-console.log(extractedDate); // "2023-09-30"
+
+  async getDriversByDate(date: string) {
+    const drivers = this.getAllDrivers();
+
+    (await drivers).forEach((driver) => {
+      driver.transportRequests.forEach((transportRequest) => {
+        console.log(
+          transportRequest.contactInformation.Date_Time_delivery.split(' ')[0],
+          'Date_Time_delivery',
+        );
+
+        if (
+          transportRequest.contactInformation.Date_Time_delivery.split(
+            '',
+          )[0] === date
+        ) {
+          return transportRequest;
+        }
+      });
+    });
+    return drivers;
+  }
