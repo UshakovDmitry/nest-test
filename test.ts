@@ -1,52 +1,38 @@
-for (const driver of collectionDriverNames) {
-    const driverOne = {
-        driver: driver, // можно сразу присвоить значение
-        сarNumber: '',
-        carModel: '',
-        transportRequests: [],
-    };
-
-    const collection = await this.messageModel
-        .find({ Driver: driver })
-        .exec();
-
-    for (const item of collection) {
-        const driverTransportRequest = {
-            number: item.Number,
-            date: item.Date,
-            dateCreated: item.DateCreated,
-            organization: item.Organization,
-            documentStatus: item.DocumentStatus,
-            ISR: item.ISR,
-            nuberPPO: item.NumberPPO,
-            informalDocument: item.Informal_Document,
-            filterContractor: item.FilterContractor,
-            loanAgreementStatus: item.loanAgreementStatus,
-            typePayment: item.TypePayment,
-            chronologies: item.ArrayChronologies,
-            contactInformation: item.ContactInformation,
-            orders: []
-        };
-
-        driverOne.сarNumber = item.NumberCar;
-        driverOne.carModel = item.CarModel;
-
-        const prepareOrders = collection.map((item) => item.ArrayStrings);
-        const flatOrders = prepareOrders.flat();
-        const hashSummSet = new Set();
-
-        flatOrders.forEach((order) => {
-            const hs = hashSumm(JSON.stringify(order));
-            if (!hashSummSet.has(hs)) {
-                hashSummSet.add(hs);
-                driverTransportRequest.orders.push(order);
-            }
-        });
-
-        driverOne.transportRequests.push(driverTransportRequest);
-    }
-
-    drivers.push(driverOne);
+<template>
+  <div class="chronologies">
+    <div
+      class="chronologies__item"
+      v-for="(chronology, index) in chronologies"
+      :key="index"
+      :style="{
+        width: chronology.width,
+        backgroundColor: chronology.color,
+      }"
+    >{{  chronology}}</div>
+  </div>
+</template>
+<script setup lang="ts">
+defineProps({
+  chronologies: {
+    type: Array,
+    required: true,
+  },
+});
+</script>
+<style scoped>
+.chronologies {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
+  height: 10px;
+  margin-top: 20px;
+  /* border: 1px solid #259451; */
 }
-
-return drivers;
+.chronologies__item {
+  height: 10px;
+  border-radius: 10px;
+}
+</style>
