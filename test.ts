@@ -1,356 +1,200 @@
-<template>
-  <div class="test">
-    <div class="table-wrapper">
-      <table class="table-component" v-if="props.rows.length >= 1">
-        <thead>
-          <tr class="table-thead-tr">
-            <th class="table-thead-tr-th" v-for="(header, i) in props.headers">
-              <cell-header-type-toggle
-                v-if="props.config.headers[i].config.type === 2"
-                :config="{
-                  ...props.config.headers[i].config,
-                  value: header,
-                  id: i,
-                }"
-              ></cell-header-type-toggle>
-              <cell-header-type-simple
-                v-if="props.config.headers[i].config.type === 1"
-                :config="{
-                  ...props.config.headers[i].config,
-                  value: header,
-                  id: i,
-                }"
-              ></cell-header-type-simple>
-              <cell-header-type-sort
-                v-if="props.config.headers[i].config.type === 3"
-                :config="{
-                  ...props.config.headers[i].config,
-                  value: header,
-                  id: i,
-                }"
-              ></cell-header-type-sort>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="table-tbody-tr"
-            v-for="(row, rowIndex) in paginatedRows"
-            :key="rowIndex"
-            @click="emits('goToDetail', row)"
-          >
-            <td
-              v-for="(cell, cellIndex, i) in row"
-              :key="cellIndex"
-              class="table-tbody-tr-td"
-              :class="{
-                'table-tbody-tr-td--border': props.border,
-              }"
-            >
-              <cell-rows-type-toggle
-                v-if="props.config.rows[i].config.type === 2"
-                :config="{
-                  ...props.config.rows[i].config,
-                  value: cell,
-                  id: i,
-                }"
-              ></cell-rows-type-toggle>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div v-if="pagination" class="paginator__wrapper">
-      <paginator-component
-        :total-pages="totalPages"
-        :initial-page="1"
-        :currentCity="props.currentCity"
-        @page-change="handlePageChange"
-      />
-    </div>
-  </div>
-</template>
+у меня храняться транспортные заявки в бд
+я хочу пройтись по всем и получить массив водителей и все их транспортные заявки а так же все заказы(ArrayStrings) внутри каждой
+_id
+65166aa64a53e0d6011408da
+Number
+"№№00015684"
+Date
+"27.09.2023 11:03:39"
+DateCreated
+"29-9-2023"
+Organization
+"TOO Gulser Computers (Гулсер Компьютерс)"
+DocumentStatus
+"Повреждение товара"
+Driver
+"Чунаев Марат Чакенович"
+ISR
+"240783461"
+NuberPPO
+"8149234"
+TypePayment
+"Кредит"
+loanAgreementStatus
+"ОПЛАЧЕН"
+Informal_Document
+"Заказ покупателя ППО"
+FilterContractor
+"Alser"
 
-<script setup lang="ts">
-import { ref, computed } from 'vue';
-import PaginatorComponent from '../global/paginator/paginator.vue';
+ArrayStrings
+Array (1)
 
-const props = defineProps({
-  headers: {
-    type: Array,
-    required: true,
-  },
-  rows: {
-    type: Array,
-    required: true,
-  },
-  config: {
-    type: Object,
-    required: true,
-  },
-  pagination: {
-    type: Boolean,
-    required: true,
-  },
-  currentCity: {
-    type: String,
-    required: false,
-  },
-  border: {
-    type: Boolean,
-    required: false,
-  },
-});
-console.log(props.rows, 'props.rows');
+0
+Object
+NuberPPO
+"8149234"
+PPOStatus
+"Сделка завершена"
+SKU
+"1330426"
+Goods
+"Умная Колонка Яндекс.Станция Лайт, Мята (YNDX-00025 Green)"
+Count
+"1"
+ShippingAddress
+"Almaty, Rayymbeka, 127/147"
+Brand
+"Яндекс"
+Weight
+"0,4"
+Price
+"27 990"
+Item_Status
+"Забран"
+Pickup_Point
+"1"
+Delivery_Point
+"2"
+Pickup_Latitude
+"12"
+Pickup_Longitude
+"15"
+Delivery_Latitude
+"15"
+Delivery_Longitude
+"14"
+Pickup_Time
+"01.01.0001 9:00:00"
+Delivery_Time
+"01.01.0001 15:00:00"
 
-const emits = defineEmits(['goToDetail']);
+ContactInformation
+Object
+City
+"Алматы"
+Delivery_Condition
+"Доставка"
+Date_Time_delivery
+"2023-02-03 До 20:00"
+Time_Window
+"нет данных"
+Latitude
+"43,253029"
+Longitude
+"76,938656"
+Street
+"Кайсар Плаза"
+Home
+"115"
+Phone
+"(706)4192015"
+Apartment
+"Кайсар Плаза"
+Contractor
+"Таирова Жанета"
+_id
+651699e0a26df6599121d3b0
 
-const itemsPerPage = ref(7); // Количество элементов на странице
-const currentPage = ref(1); // Текущая страница
+StructureQuantities
+Object
+TotalWeight
+"0.4"
+TotalAmount
+"27990"
+_id
+651699e0a26df6599121d3b1
 
-const totalPages = computed(() =>
-  Math.ceil(props.rows.length / itemsPerPage.value),
-);
+ArrayChronologies
+Array (1)
 
-const paginatedRows = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value;
-  const end = start + itemsPerPage.value;
-
-  return props.rows.slice(start, end);
-});
-
-const handlePageChange = (newPage: number) => {
-  currentPage.value = newPage;
-};
-</script>
-
-<style scoped>
-</style>
+0
+Object
+CarModel
+"Gazel"
+NumberCar
+"M121240"
 
 
-pginator
-<template>
-  <div class="pagination">
-    <div
-      class="first-page-btn"
-      data-test="first-page-btn"
-      @click="goToFirstPage"
-    >
-      <IconComponent
-        :сonfig="{
-          name: 'doubleArrowRight',
-          color: '#23362D4D',
-          width: 28,
-          height: 28,
-        }"
-      ></IconComponent>
-    </div>
-    <div class="prev-page-btn" data-test="prev-page-btn" @click="goToPrevPage">
-      <IconComponent
-        :сonfig="{
-          name: 'keyboardLeft',
-          color: '#23362D4D',
-          width: 24,
-          height: 24,
-        }"
-      ></IconComponent>
-    </div>
 
-    <button
-      v-for="page in totalPages"
-      :key="page"
-      class="page-btn "
-      data-test="page-btn"
-      @click="goToPage(page)"
-      :class="{ active: currentPage === page }"
-    >
-      {{ page }}
-    </button>
+правильно ли я делаю?
+  async getAllDrivers() {
+    // Получить все уникальные имена из коллекции по полю Driver
+    const collectionDriverNames = await this.messageModel
+      .distinct('Driver')
+      .exec();
 
-    <div class="next-page-btn" data-test="next-page-btn" @click="goToNextPage">
-      <IconComponent
-        :сonfig="{
-          name: 'keyboardRight',
-          color: '#23362D4D',
-          width: 24,
-          height: 24,
-        }"
-      ></IconComponent>
-    </div>
-    <div class="last-page-btn" data-test="last-page-btn" @click="goToLastPage">
-      <IconComponent
-        :сonfig="{
-          name: 'doubleArrowRight',
-          color: '#23362D4D',
-          width: 28,
-          height: 28,
-        }"
-      ></IconComponent>
-    </div>
-  </div>
-</template>
+    function hashSumm(str: string) {
+      let hash = 0;
+      if (str.length === 0) return hash;
+      for (let i = 0; i < String(str).length; i++) {
+        const char = String(str).charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash = hash & hash;
+      }
+      return hash;
+    }
 
-<script setup lang="ts">
-import { ref, watch } from 'vue';
-import IconComponent from '../icon/icon.component.vue';
+    const drivers = [];
+    for (const driver of collectionDriverNames) {
+      console.log('driver', driver);
+      
+      const driverOne = {
+        driver: driver,
+        сarNumber: '',
+        carModel: '',
+        transportRequests: [],
+      };
 
-const props = defineProps({
-  totalPages: {
-    type: Number,
-    required: true,
-  },
-  initialPage: {
-    type: Number,
-    required: true,
-  },
-  currentCity: {
-    type: String,
-    required: false,
-  },
-});
+      const collection = await this.messageModel
+        .find({ Driver: driver })
+        .exec();
 
-const emit = defineEmits<{
-  (e: 'page-change', value: number): void;
-}>();
+        console.log('collection', collection);
+        
+      for (const item of collection) {
+        // console.log('item', item);
+        
+        const driverTransportRequest = {
+          number: item.Number,
+          date: item.Date,
+          dateCreated: item.DateCreated,
+          organization: item.Organization,
+          documentStatus: item.DocumentStatus,
+          ISR: item.ISR,
+          nuberPPO: item.NumberPPO,
+          informalDocument: item.Informal_Document,
+          filterContractor: item.FilterContractor,
+          loanAgreementStatus: item.loanAgreementStatus,
+          typePayment: item.TypePayment,
+          chronologies: item.ArrayChronologies,
+          contactInformation: item.ContactInformation,
+          orders: [],
+        };
 
-const currentPage = ref(props.initialPage);
+        driverOne.сarNumber = item.NumberCar;
+        driverOne.carModel = item.CarModel;
+           
+        const prepareOrders = collection.map((item) => item.ArrayStrings);
+        
+        const flatOrders = prepareOrders.flat();
+        const hashSummSet = new Set();
 
-const goToPage = (page: number) => {
-  currentPage.value = page;
-  emit('page-change', page);
-};
+        flatOrders.forEach((order) => {
+          const hs = hashSumm(JSON.stringify(order));
+          if (!hashSummSet.has(hs)) {
+            hashSummSet.add(hs);
+            driverTransportRequest.orders.push(order);
+          }
+        });
 
-const goToPrevPage = () => {
-  if (currentPage.value > 1) {
-    goToPage(currentPage.value - 1);
+        driverOne.transportRequests.push(driverTransportRequest);
+        
+      }
+
+      drivers.push(driverOne);
+    }
+
+    return drivers;
   }
-};
-
-const goToNextPage = () => {
-  if (currentPage.value < props.totalPages) {
-    goToPage(currentPage.value + 1);
-  }
-};
-const goToFirstPage = () => {
-  goToPage(1);
-};
-
-const goToLastPage = () => {
-  goToPage(props.totalPages);
-};
-
-watch(
-  () => props.currentCity,
-  () => {
-    goToPage(1);
-  },
-);
-</script>
-
-<style scoped>
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-.first-page-btn {
-  display: flex;
-  width: 34px;
-  height: 34px;
-  justify-content: center;
-  align-items: center;
-  border-radius: 80px;
-    /* КОСТЫЛЬ */
-  padding: 4px 0px 0px 6px;
-  box-sizing: border-box;
-  outline: none;
-  border: none;
-  box-sizing: border-box;
-  rotate: 180deg;
-  color: var(--text-dark, #23362d);
-  cursor: pointer;
-  background: var(--secondary-grey, #F2F3F5);
-}
-.last-page-btn {
-  display: flex;
-  width: 34px;
-  height: 34px;
-  /* КОСТЫЛЬ */
-  padding: 4px 0px 0px 6px;
-  justify-content: center;
-  align-items: center;
-  border-radius: 80px;
-  padding-top: 5px;
-  outline: none;
-  border: none;
-  color: var(--text-dark, #23362d);
-  cursor: pointer;
-  background: var(--secondary-grey, #F2F3F5);
-}
-.page-btn {
-  display: flex;
-  width: 34px;
-  height: 34px;
-  /* padding: 4px; */
-  /* flex-direction: column; */
-  justify-content: center;
-  align-items: center;
-  border-radius: 80px;
-  outline: none;
-  border: none;
-  color: var(--text-dark, #23362d);
-/* background: var(--secondary-grey, #F2F3F5); */
-background-color: white;
-  cursor: pointer;
-  /* border: 1px solid #813909; */
-}
-.page-btn:hover {
-  background-color: var(--secondary-grey, #F2F3F5);
-}
-
-.next-page-btn {
-  display: flex;
-  width: 34px;
-  height: 34px;
-  /* padding: 4px; */
-  /* flex-direction: column; */
-  justify-content: center;
-  align-items: center;
-  border-radius: 80px;
-  outline: none;
-  border: none;
-  color: var(--text-dark, #23362d);
-background: var(--secondary-grey, #F2F3F5);
-  cursor: pointer;
-  /* border: 1px solid #813909; */
-}
-
-.prev-page-btn {
-  display: flex;
-  width: 34px;
-  height: 34px;
-  /* padding: 4px; */
-  /* flex-direction: column; */
-  justify-content: center;
-  align-items: center;
-  border-radius: 80px;
-  outline: none;
-  border: none;
-  color: var(--text-dark, #23362d);
-background: var(--secondary-grey, #F2F3F5);
-  cursor: pointer;
-  /* border: 1px solid #813909; */
-}
-button.active {
-  border-radius: 80px;
-  background: var(--overlay-activated, rgba(0, 161, 83, 0.12));
-  color: var(--primary-light-mode-dark, #006f39);
-  text-align: center;
-}
-
-button:disabled {
-  /* background-color: #ccc; */
-  cursor: not-allowed;
-}
-</style>
+  
