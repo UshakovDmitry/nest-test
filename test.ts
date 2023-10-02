@@ -1,4 +1,4 @@
-    for (const driver of collectionDriverNames) {
+       for (const driver of collectionDriverNames) {
       const driverTransportRequest = {
         number: '',
         date: '',
@@ -24,8 +24,9 @@
         driver: '',
         сarNumber: '',
         carModel: '',
-        transportRequests: [driverTransportRequest],
+        transportRequests: [],
       };
+      driverOne.transportRequests.push(driverTransportRequest);
 
       driverOne.driver = driver;
 
@@ -68,3 +69,4 @@
 
       drivers.push(driverOne);
     }
+    return drivers;
