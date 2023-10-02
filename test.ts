@@ -1,53 +1,262 @@
 <template>
-  <div class="chronologies">
-    <div
-      class="chronologies__item"
-      v-for="(status, index) in defaultStatusesPPO"
-      :key="index"
-      :style="{ done: chronologies.includes(status) }"
-    >
-      {{ status }}
+  <div class="test">
+    <div class="table-wrapper">
+      <table class="table-component" v-if="props.rows.length >= 1">
+        <thead>
+          <tr class="table-thead-tr">
+            <th class="table-thead-tr-th" v-for="(header, i) in props.headers">
+              <cell-header-type-toggle
+                v-if="props.config.headers[i].config.type === 2"
+                :config="{
+                  ...props.config.headers[i].config,
+                  value: header,
+                  id: i,
+                }"
+              ></cell-header-type-toggle>
+              <cell-header-type-simple
+                v-if="props.config.headers[i].config.type === 1"
+                :config="{
+                  ...props.config.headers[i].config,
+                  value: header,
+                  id: i,
+                }"
+              ></cell-header-type-simple>
+              <cell-header-type-sort
+                v-if="props.config.headers[i].config.type === 3"
+                :config="{
+                  ...props.config.headers[i].config,
+                  value: header,
+                  id: i,
+                }"
+              ></cell-header-type-sort>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="table-tbody-tr"
+            v-for="(row, rowIndex) in paginatedRows"
+            :key="rowIndex"
+            @click="emits('goToDetail', row)"
+          >
+            <td
+              v-for="(cell, cellIndex, i) in row"
+              :key="cellIndex"
+              class="table-tbody-tr-td"
+              :class="{
+                'table-tbody-tr-td--border': props.border,
+              }"
+            >
+              <cell-rows-type-toggle
+                v-if="props.config.rows[i].config.type === 2"
+                :config="{
+                  ...props.config.rows[i].config,
+                  value: cell,
+                  id: i,
+                }"
+              ></cell-rows-type-toggle>
+              <cell-rows-type-simple
+                v-if="props.config.rows[i].config.type === 1"
+                :config="{ ...props.config.rows[i].config, value: cell, id: i }"
+              ></cell-rows-type-simple>
+              <cell-rows-type-status
+                v-if="props.config.rows[i].config.type === 4"
+                :config="{ ...props.config.rows[i].config, value: cell, id: i }"
+              ></cell-rows-type-status>
+              <cell-rows-type-address
+                v-if="props.config.rows[i].config.type === 7"
+                :config="{ ...props.config.rows[i].config, value: cell, id: i }"
+              ></cell-rows-type-address>
+              <cell-rows-type-contractor
+                v-if="props.config.rows[i].config.type === 8"
+                :config="{ ...props.config.rows[i].config, value: cell, id: i }"
+              ></cell-rows-type-contractor>
+              <cell-rows-type-delivery-time
+                v-if="props.config.rows[i].config.type === 9"
+                :config="{ ...props.config.rows[i].config, value: cell, id: i }"
+              ></cell-rows-type-delivery-time>
+              <cell-rows-type-double
+                v-if="props.config.rows[i].config.type === 10"
+                :config="{
+                  ...props.config.rows[i].config,
+                  value: cell,
+                  id: i,
+                }"
+              ></cell-rows-type-double>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div v-if="pagination" class="paginator__wrapper">
+      <paginator-component
+        :total-pages="totalPages"
+        :initial-page="1"
+        :currentCity="props.currentCity"
+        @page-change="handlePageChange"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-defineProps({
-  chronologies: {
+import { ref, computed } from 'vue';
+import PaginatorComponent from '../global/paginator/paginator.vue';
+//headers
+import cellHeaderTypeSimple from '../global/cell-collection/headers/cellTypeSimple.vue';
+import cellHeaderTypeToggle from '../global/cell-collection/headers/cellTypeToggle.vue';
+import cellHeaderTypeSort from '../global/cell-collection/headers/cellTypeSort.vue';
+//rows
+import cellRowsTypeToggle from '../global/cell-collection/rows/cellTypeToggle.vue';
+import cellRowsTypeSimple from '../global/cell-collection/rows/cellTypeSimple.vue';
+import cellRowsTypeStatus from '../global/cell-collection/rows/cellTypeStatus.vue';
+import cellRowsTypeAddress from '../global/cell-collection/rows/cellTypeAddress.vue';
+import cellRowsTypeContractor from '../global/cell-collection/rows/cellTypeContractor.vue';
+import cellRowsTypeDouble from '../global/cell-collection/rows/cellTypeDouble.vue';
+import cellRowsTypeDeliveryTime from '../global/cell-collection/rows/cellTypeDeliveryTime.vue';
+
+const props = defineProps({
+  headers: {
     type: Array,
     required: true,
   },
-  defaultStatusesPPO: {
+  rows: {
     type: Array,
     required: true,
+  },
+  config: {
+    type: Object,
+    required: true,
+  },
+  pagination: {
+    type: Boolean,
+    required: true,
+  },
+  currentCity: {
+    type: String,
+    required: false,
+  },
+  border: {
+    type: Boolean,
+    required: false,
   },
 });
+console.log(props.rows, 'props.rows');
 
+const emits = defineEmits(['goToDetail']);
+
+const itemsPerPage = ref(7); // Количество элементов на странице
+const currentPage = ref(1); // Текущая страница
+
+const totalPages = computed(() =>
+  Math.ceil(props.rows.length / itemsPerPage.value),
+);
+
+const paginatedRows = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+
+  return props.rows.slice(start, end);
+});
+
+const handlePageChange = (newPage: number) => {
+  currentPage.value = newPage;
+};
 </script>
 
 <style scoped>
-.chronologies {
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background-color: white;
+  border-radius: 16px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #c4c9c6;
+  border-radius: 16px;
+}
+.test {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
+  justify-content: space-between;
   width: 100%;
-  height: 10px;
+  height: auto;
+}
+.table-wrapper {
+  white-space: nowrap;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e4e7e5;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+}
+
+.table-component {
+  border-collapse: collapse;
+  background-color: white;
+  border: 1px solid #e4e7e5;
+  background: #fff;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.table-thead-tr {
+  padding-right: 20px;
+  border-bottom: 1px solid #e4e7e5;
+  background-color: #f1f7f4;
+  border-radius: 16px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+  height: 80px;
+}
+
+.table-thead-tr th:first-child {
+  border-top-left-radius: 16px;
+}
+.table-thead-tr th:last-child {
+  border-top-right-radius: 16px;
+}
+.table-thead-tr-th {
+  padding-left: 20px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: #23362d;
+  border-bottom: 1px solid #e4e7e5;
+  text-align: left;
+}
+
+.table-tbody-tr {
+  height: 80px;
+}
+.table-tbody-tr:hover {
+  background-color: #f1f7f4;
+  cursor: pointer;
+}
+
+.table-tbody-tr-td {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #23362d;
+  border-bottom: 1px solid #e4e7e5;
+  text-align: left;
+}
+
+.paginator__wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-top: 20px;
+  width: 100%;
+  height: 80px;
 }
-.chronologies__item {
-  height: 10px;
-  border-radius: 10px;
-}
-.done {
-  background-color: #259451;
+.table-tbody-tr-td--border {
+  border: 1px solid #e4e7e5;
 }
 </style>
-
-
-
-Type '{ done: boolean; }' is not assignable to type 'StyleValue'.
-  Object literal may only specify known properties, and 'done' does not exist in type 'CSSProperties | StyleValue[]'.ts(2322)
-runtime-dom.d.ts(321, 5): The expected type comes from property 'style' which is declared here on type 'HTMLAttributes & ReservedProps & Record<string, unknown>'
-(property) done: boolean
