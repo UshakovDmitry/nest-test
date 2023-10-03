@@ -1,9 +1,20 @@
-   // Проверяем наличие города в списке и добавляем, если его нет
+async getTransportRequests(): Promise<void> {
+    const response = await useGetApi('getTransportRequests');
+    console.log(response.length, 'кол-во заявок');
+    response.forEach((data: any) => {
+      const transformedData = this.transformToTransportRequest(data);
+      const city = this.setCitiesList(transformedData);
+      
+      // Проверяем наличие города в списке и добавляем, если его нет
       if (!this.model.cities.includes(city)) {
           this.model.cities.push(city);
       }
-
-
+      
+      const transformedDataForTable =
+        this.transformToTransportForTable(transformedData);
+      this.model.transportRequests.push(transformedDataForTable);
+    });
+}
 
 
 
