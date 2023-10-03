@@ -1,74 +1,19 @@
-<script setup lang="ts">
-import { ref, watch ,computed } from 'vue';
-import IconComponent from '../icon/icon.component.vue';
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\frontend> npm run build
 
-const props = defineProps({
-  totalPages: {
-    type: Number,
-    required: true,
-  },
-  initialPage: {
-    type: Number,
-    required: true,
-  },
-  currentCity: {
-    type: String,
-    required: false,
-  },
-});
+> alser.dispatcherworkplaceui@0.0.0 build
+> vue-tsc && vite build
 
-const emit = defineEmits<{
-  (e: 'page-change', value: number): void;
-}>();
+src/components/global/paginator/paginator.vue:34:37 - error TS2551: Property 'value' does not exist on type 'number'. Did you mean 'valueOf'?
 
-const currentPage = ref(props.initialPage);
-const centerPage = ref(props.initialPage);
+34       :class="{ active: currentPage.value === page }"
+                                       ~~~~~
 
-const displayedPages = computed(() => {
-  const start = Math.max(centerPage.value - 2, 1);
-  const end = Math.min(centerPage.value + 2, props.totalPages);
+  node_modules/typescript/lib/lib.es5.d.ts:585:5
+    585     valueOf(): number;
+            ~~~~~~~~~~~~~~~~~~
+    'valueOf' is declared here.
 
-  const pages = [];
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-  return pages;
-});
 
-const goToPage = (page: number) => {
-  currentPage.value = page;
-  centerPage.value = page;
-  emit('page-change', page);
-};
+Found 1 error in src/components/global/paginator/paginator.vue:34
 
-const goToPrevPage = () => {
-  if (currentPage.value > 1) {
-    goToPage(currentPage.value - 1);
-  }
-};
-
-const goToNextPage = () => {
-  if (currentPage.value < props.totalPages) {
-    goToPage(currentPage.value + 1);
-  }
-};
-
-const goToFirstPage = () => {
-  goToPage(1);
-};
-
-const goToLastPage = () => {
-  goToPage(props.totalPages);
-};
-
-watch(
-  () => props.currentCity,
-  () => {
-    goToPage(1);
-  },
-);
-</script>
-
-<style scoped>
-  /* ваш стиль */
-</style>
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\frontend>
