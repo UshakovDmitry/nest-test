@@ -1,3 +1,50 @@
+   // Проверяем наличие города в списке и добавляем, если его нет
+      if (!this.model.cities.includes(city)) {
+          this.model.cities.push(city);
+      }
+
+
+
+
+
+
+
+
+
+async getTransportRequests(): Promise<void> {
+    const response = await useGetApi('getTransportRequests');
+    console.log(response.length, 'кол-во заявок');
+
+    // Создаем временный Set для хранения уникальных городов
+    const citiesSet = new Set();
+
+    response.forEach((data: any) => {
+      const transformedData = this.transformToTransportRequest(data);
+      const city = this.setCitiesList(transformedData);
+
+      // Добавляем город в Set
+      citiesSet.add(city);
+      
+      const transformedDataForTable =
+        this.transformToTransportForTable(transformedData);
+      this.model.transportRequests.push(transformedDataForTable);
+    });
+
+    // Конвертируем Set обратно в массив и присваиваем его this.model.cities
+    this.model.cities = [...citiesSet];
+}
+
+
+
+
+
+
+
+
+
+
+
+
 import { useGetApi } from '../../domain/services/getHTTP.service';
 import router from '../../router';
 import { type TransportRequestsModel } from './applications.model';
