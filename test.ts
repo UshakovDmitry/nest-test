@@ -1,3 +1,15 @@
+async getTransportRequests(): Promise<void> {
+    const response = await useGetApi('getTransportRequests');
+    const tempDataArray = [];
+    response.forEach((data: any) => {
+      const transformedData = this.transformToTransportRequest(data);
+      const transformedDataForTable = this.transformToTransportForTable(transformedData);
+      tempDataArray.push(transformedDataForTable);
+    });
+    this.model.transportRequests = tempDataArray;
+}
+
+
 Это мой код обработки данных с сервера
 
 import { useGetApi } from '../../domain/services/getHTTP.service';
