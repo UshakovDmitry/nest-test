@@ -1,3 +1,9 @@
+totalPrice: data.StructureQuantities ? String(data.StructureQuantities.TotalAmount) : "0",
+totalWeight: data.StructureQuantities ? String(data.StructureQuantities.TotalWeight) : "0",
+
+
+
+
 {
     "_id": "65166aa64a53e0d6011408da",
     "Number": "№№00015684",
