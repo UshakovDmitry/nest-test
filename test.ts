@@ -1,3 +1,73 @@
+{
+    "_id": "65166aa64a53e0d6011408da",
+    "Number": "№№00015684",
+    "Date": "27.09.2023 11:03:39",
+    "DateCreated": "29-9-2023",
+    "Organization": "TOO Gulser Computers (Гулсер Компьютерс)",
+    "DocumentStatus": "Повреждение товара",
+    "Driver": "Чунаев Марат Чакенович",
+    "ISR": "240783461",
+    "NuberPPO": "8149234",
+    "TypePayment": "Кредит",
+    "loanAgreementStatus": "ОПЛАЧЕН",
+    "Informal_Document": "Заказ покупателя ППО",
+    "FilterContractor": "Alser",
+    "ArrayStrings": [
+        {
+            "NuberPPO": "8149234",
+            "PPOStatus": "Сделка завершена",
+            "SKU": "1330426",
+            "Goods": "Умная Колонка Яндекс.Станция Лайт, Мята (YNDX-00025 Green)",
+            "Count": "1",
+            "ShippingAddress": "Almaty, Rayymbeka, 127/147",
+            "Brand": "Яндекс",
+            "Weight": "0,4",
+            "Price": "27 990",
+            "Item_Status": "Забран",
+            "Pickup_Point": "1",
+            "Delivery_Point": "2",
+            "Pickup_Latitude": "12",
+            "Pickup_Longitude": "15",
+            "Delivery_Latitude": "15",
+            "Delivery_Longitude": "14",
+            "Pickup_Time": "01.01.0001 9:00:00",
+            "Delivery_Time": "01.01.0001 15:00:00"
+        }
+    ],
+    "ContactInformation": {
+        "City": "Алматы",
+        "Delivery_Condition": "Доставка",
+        "Date_Time_delivery": "2023-02-03 До 20:00",
+        "Time_Window": "нет данных",
+        "Latitude": "43,253029",
+        "Longitude": "76,938656",
+        "Street": "Кайсар Плаза",
+        "Home": "115",
+        "Phone": "(706)4192015",
+        "Apartment": "Кайсар Плаза",
+        "Contractor": "Таирова Жанета",
+        "_id": "651699e0a26df6599121d3b0"
+    },
+    "StructureQuantities": {
+        "TotalWeight": "0.4",
+        "TotalAmount": "27990",
+        "_id": "651699e0a26df6599121d3b1"
+    },
+    "ArrayChronologies": [
+        {
+            "PPO": "8149234",
+            "Chronology": [
+                "Оформлен",
+                "Доставляется до клиента (на складе отгрузки)",
+                "Доставляется",
+                "Сделка завершена"
+            ]
+        }
+    ],
+    "CarModel": "Gazel",
+    "NumberCar": "M121240"
+}
+
 import { useGetApi } from '../../domain/services/getHTTP.service';
 import router from '../../router';
 import { type TransportRequestsModel } from './applications.model';
@@ -14,6 +84,8 @@ export class TransportRequestsViewModel {
   async getTransportRequests(): Promise<void> {
     const response = await useGetApi('getTransportRequests');
     response.forEach((data: any) => {
+      console.log(data, 'data');
+
       const transformedData = this.transformToTransportRequest(data);
       const transformedDataForTable =
         this.transformToTransportForTable(transformedData);
@@ -84,98 +156,16 @@ export class TransportRequestsViewModel {
         address: `${data.contactInformation.City}, ${data.contactInformation.Street}, ${data.contactInformation.Home}, ${data.contactInformation.Apartment}`,
         coordinates: `${data.contactInformation.Latitude}, ${data.contactInformation.Longitude}`,
       },
-      skuWeight: ':(',
-
-
+      quantitties: {
+        totalPrice: String(data.StructureQuantities.TotalAmount),
+        totalWeight: String(data.StructureQuantities.TotalWeight),
+      },
     };
   }
 }
 
-
-applications.viewmodel.ts:20 [Vue warn]: Maximum recursive updates exceeded in component <applications.component>. This means you have a reactive effect that is mutating its own dependencies and thus recursively triggering itself. Possible sources include component template, render function, updated hook or watcher source function.
-warn2 @ runtime-core.esm-bundler.js:41
-checkRecursiveUpdates @ runtime-core.esm-bundler.js:379
-check @ runtime-core.esm-bundler.js:349
-flushJobs @ runtime-core.esm-bundler.js:354
-Promise.then (async)
-queueFlush @ runtime-core.esm-bundler.js:270
-queueJob @ runtime-core.esm-bundler.js:264
-(anonymous) @ runtime-core.esm-bundler.js:5810
-triggerEffect @ reactivity.esm-bundler.js:373
-triggerEffects @ reactivity.esm-bundler.js:363
-triggerRefValue @ reactivity.esm-bundler.js:974
-(anonymous) @ reactivity.esm-bundler.js:1135
-triggerEffect @ reactivity.esm-bundler.js:373
-triggerEffects @ reactivity.esm-bundler.js:358
-trigger @ reactivity.esm-bundler.js:348
-set2 @ reactivity.esm-bundler.js:485
-instrumentations.<computed> @ reactivity.esm-bundler.js:412
-(anonymous) @ applications.viewmodel.ts:20
-getTransportRequests @ applications.viewmodel.ts:16
-await in getTransportRequests (async)
-TransportRequestsViewModel @ applications.viewmodel.ts:11
-setup @ applications.component.vue:33
-callWithErrorHandling @ runtime-core.esm-bundler.js:158
-setupStatefulComponent @ runtime-core.esm-bundler.js:7236
-setupComponent @ runtime-core.esm-bundler.js:7197
-mountComponent @ runtime-core.esm-bundler.js:5599
-processComponent @ runtime-core.esm-bundler.js:5565
-patch @ runtime-core.esm-bundler.js:5040
-componentUpdateFn @ runtime-core.esm-bundler.js:5708
-run @ reactivity.esm-bundler.js:178
-instance.update @ runtime-core.esm-bundler.js:5814
-setupRenderEffect @ runtime-core.esm-bundler.js:5822
-mountComponent @ runtime-core.esm-bundler.js:5612
-processComponent @ runtime-core.esm-bundler.js:5565
-patch @ runtime-core.esm-bundler.js:5040
-mountChildren @ runtime-core.esm-bundler.js:5284
-mountElement @ runtime-core.esm-bundler.js:5191
-processElement @ runtime-core.esm-bundler.js:5156
-patch @ runtime-core.esm-bundler.js:5028
-mountChildren @ runtime-core.esm-bundler.js:5284
-mountElement @ runtime-core.esm-bundler.js:5191
-processElement @ runtime-core.esm-bundler.js:5156
-patch @ runtime-core.esm-bundler.js:5028
-mountChildren @ runtime-core.esm-bundler.js:5284
-mountElement @ runtime-core.esm-bundler.js:5191
-processElement @ runtime-core.esm-bundler.js:5156
-patch @ runtime-core.esm-bundler.js:5028
-componentUpdateFn @ runtime-core.esm-bundler.js:5708
-run @ reactivity.esm-bundler.js:178
-instance.update @ runtime-core.esm-bundler.js:5814
-setupRenderEffect @ runtime-core.esm-bundler.js:5822
-mountComponent @ runtime-core.esm-bundler.js:5612
-processComponent @ runtime-core.esm-bundler.js:5565
-patch @ runtime-core.esm-bundler.js:5040
-componentUpdateFn @ runtime-core.esm-bundler.js:5773
-run @ reactivity.esm-bundler.js:178
-instance.update @ runtime-core.esm-bundler.js:5814
-callWithErrorHandling @ runtime-core.esm-bundler.js:158
-flushJobs @ runtime-core.esm-bundler.js:357
-Promise.then (async)
-queueFlush @ runtime-core.esm-bundler.js:270
-queuePostFlushCb @ runtime-core.esm-bundler.js:290
-queueEffectWithSuspense @ runtime-core.esm-bundler.js:1603
-scheduler @ runtime-core.esm-bundler.js:1773
-triggerEffect @ reactivity.esm-bundler.js:373
-triggerEffects @ reactivity.esm-bundler.js:363
-triggerRefValue @ reactivity.esm-bundler.js:974
-(anonymous) @ reactivity.esm-bundler.js:1135
-triggerEffect @ reactivity.esm-bundler.js:373
-triggerEffects @ reactivity.esm-bundler.js:358
-triggerRefValue @ reactivity.esm-bundler.js:974
-(anonymous) @ reactivity.esm-bundler.js:1135
-triggerEffect @ reactivity.esm-bundler.js:373
-triggerEffects @ reactivity.esm-bundler.js:358
-triggerRefValue @ reactivity.esm-bundler.js:974
-set value @ reactivity.esm-bundler.js:1018
-finalizeNavigation @ vue-router.mjs:3355
-(anonymous) @ vue-router.mjs:3220
-Promise.then (async)
-pushWithRedirect @ vue-router.mjs:3187
-push @ vue-router.mjs:3112
-install @ vue-router.mjs:3551
-use @ runtime-core.esm-bundler.js:3752
-(anonymous) @ main.ts:13
-Show 75 more frames
-Show less
+applications.viewmodel.ts:90 Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'TotalAmount')
+    at TransportRequestsViewModel.transformToTransportForTable (applications.viewmodel.ts:90:53)
+    at applications.viewmodel.ts:21:14
+    at Array.forEach (<anonymous>)
+    at TransportRequestsViewModel.getTransportRequests (applications.viewmodel.ts:16:14)
