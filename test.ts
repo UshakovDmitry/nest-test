@@ -1,17 +1,11 @@
-async getTransportRequests(): Promise<void> {
-    const response = await useGetApi('getTransportRequests');
-    const tempDataArray = [];
-    response.forEach((data: any) => {
-      const transformedData = this.transformToTransportRequest(data);
-      const transformedDataForTable = this.transformToTransportForTable(transformedData);
-      tempDataArray.push(transformedDataForTable);
-    });
-    this.model.transportRequests = tempDataArray;
-}
+ПОЧЕМУ БРАУЗЕР ПИШЕТ ЧТО ТУТ ВОЗНИКАЕТ РЕКУРСИЯ?
 
+this.model.transportRequests.push(transformedDataForTable);
 
-Это мой код обработки данных с сервера
+вот ошибка 
+applications.viewmodel.ts:24 [Vue warn]: Maximum recursive updates exceeded in component <applications.component>. This means you have a reactive effect that is mutating its own dependencies and thus recursively triggering itself. Possible sources include component template, render function, updated hook or watcher source function.
 
+    вот код 
 import { useGetApi } from '../../domain/services/getHTTP.service';
 import router from '../../router';
 import { type TransportRequestsModel } from './applications.model';
@@ -27,13 +21,17 @@ export class TransportRequestsViewModel {
 
   async getTransportRequests(): Promise<void> {
     const response = await useGetApi('getTransportRequests');
+    console.log(response.length, 'response');
+    
     response.forEach((data: any) => {
-      console.log(data, 'data');
+      // console.log(data, 'data');
 
       const transformedData = this.transformToTransportRequest(data);
       const transformedDataForTable =
         this.transformToTransportForTable(transformedData);
-      this.model.transportRequests.push(transformedDataForTable);
+        this.model.transportRequests.push(transformedDataForTable);
+      // this.model.transportRequests.push(transformedData);
+
     });
   }
 
@@ -46,6 +44,8 @@ export class TransportRequestsViewModel {
   }
 
   goToTransportRequestDetail(row: any) {
+    console.log('router');
+    
     router.push({
       name: 'ApplicationDetail',
       params: { id: row.number },
@@ -101,13 +101,13 @@ export class TransportRequestsViewModel {
         coordinates: `${data.contactInformation.Latitude}, ${data.contactInformation.Longitude}`,
       },
       quantitties: {
-        totalPrice: data.quantities ? String(data.quantities.TotalAmount) : "---",
-        totalWeight: data.quantities ? String(data.quantities.TotalWeight) : "---",
+        totalPrice: data.quantities
+          ? String(data.quantities.TotalAmount)
+          : '-/-/-',
+        totalWeight: data.quantities
+          ? String(data.quantities.TotalWeight)
+          : '---',
       },
     };
   }
 }
-
-в браузере пишет что рекурсивность на 22 строчке
-
-applications.viewmodel.ts:22 [Vue warn]: Maximum recursive updates exceeded in component <applications.component>. This means you have a reactive effect that is mutating its own dependencies and thus recursively triggering itself. Possible sources include component template, render function, updated hook or watcher source function.
