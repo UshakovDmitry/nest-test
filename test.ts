@@ -1,3 +1,8 @@
+Я хочу отображать элемент с текстом Распределена если config.value.number равен true
+иначе отображать элемент с текстом Не распределена если config.value.number равен false
+
+
+
 <template>
     <div class="cell__wrapper">
      <p class="number"> {{ config.value.number }}</p>
@@ -9,7 +14,7 @@
             width: 20,
             height: 20,
           }"></IconComponent>
-        {{ config.value.status }}</div>
+       <p>Распределена</p></div>
     </div>
   </template>
   
