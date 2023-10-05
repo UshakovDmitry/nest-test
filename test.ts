@@ -1,92 +1,86 @@
-export interface IEmailField {
-  label?: string;
-  input: {
-    type: string;
-    placeholder: string;
-    value: string;
-    isError: boolean;
-    isDisabled: boolean;
-    required: boolean;
-    body_key?: string;
-  };
-  helper: {
-    value: string;
-    isActive: boolean;
-  };
-  isEmpty: () => void;
-  checkValid?: () => void;
-  setValue: (value: string) => void;
+<template>
+  <div
+    class="field"
+    :class="{ invalid: config.helper.isActive && config.input.isError }"
+  >
+    <label for="email-field" class="body-small grey-text">
+      {{ config.label }}
+    </label>
+    <input
+      :type="config.input.type"
+      name="email-field"
+      class="body-medium"
+      :class="{ disabled: config.input.isDisabled }"
+      :value="config.input.value"
+      :placeholder="config.input.placeholder"
+      @focusout="
+        config.setValue(($event.target as HTMLInputElement).value.trim());
+        !config.input.required && config.isEmpty();
+      "
+      @input="
+        config.setValue(($event.target as HTMLInputElement).value.trim());
+        emits('input', config.input.value);
+      "
+    />
+    <div
+      class="label-small red-text"
+      v-if="config.helper.isActive && config.input.isError"
+    >
+      {{ config.helper.value }}
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { IEmailField } from './email-field.model';
+
+ defineProps<{
+  config: IEmailField;
+}>();
+
+const emits = defineEmits(['input']);
+</script>
+
+<style scoped lang="scss">
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  height: 80px;
 }
 
-export class EmailField implements IEmailField {
-  label?: string;
-  input: {
-    type: string;
-    placeholder: string;
-    value: string;
-    isError: boolean;
-    required: boolean;
-    isDisabled: boolean;
-    body_key?: string;
-  };
+input {
+  box-sizing: border-box;
+  background: inherit;
+  border: 1px solid var(--light);
+  border-radius: 16px;
+  width: 100%;
+  height: 40px;
+  padding: 12px;
+  outline: none;
+}
 
-  helper: {
-    value: string;
-    isActive: boolean;
-  };
+input.disabled {
+  border: none;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 143%;
+  letter-spacing: 0.1px;
+  padding: 0;
+}
 
-  constructor(object: {
-    label: string;
-    input: {
-      type: string;
-      placeholder: string;
-      value: string;
-      isError: boolean;
-      required: boolean;
-      isDisabled: boolean;
-      body_key: string;
-    };
-    helper: {
-      value: string;
-      isActive: boolean;
-    };
-  }) {
-    for (const key in object) {
-      this[key] = object[key];
+.invalid {
+  input {
+    border-color: var(--red) !important;
+
+    &::placeholder {
+      color: var(--red) !important;
     }
   }
 
-  setValue(value: string): void {
-    this.input.value = value;
-    this.clearError();
-    if (this.checkValid()) {
-      this.input.isError = true;
-      this.helper.isActive = true;
-      this.helper.value = 'Введите корректный email';
-    }
-  }
-
-  isEmpty(): void {
-    this.clearError();
-    if ((!this.input.value && !this.input.value.length) || this.checkValid()) {
-      this.input.isError = true;
-      this.helper.isActive = true;
-      this.helper.value = this.input.value.length
-        ? 'Введите корректный email'
-        : 'Поле не должно быть пустым';
-    }
-  }
-
-  // При вводе значений в инпут проверяем стал ли он валидным
-  checkValid(): boolean {
-    console.log('checkValid');
-    
-    return !this.input.value.includes('@');
-  }
-
-  clearError(): void {
-    this.input.isError = false;
-    this.helper.isActive = false;
-    this.helper.value = '';
+  label {
+    color: var(--red) !important;
   }
 }
+</style>
