@@ -1,30 +1,228 @@
 GET
-http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.vue
+http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.model.ts?t=1696504961130
 
-GET
-http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.model.ts
+Loading module from “http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.model.ts?t=1696504961130” was blocked because of a disallowed MIME type (“text/html”).
+auth
+Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.model.ts?t=1696504961130”. auth:13:61
+Loading failed for the module with source “http://127.0.0.1:3000/src/public/icons/logo.svg?import”. auth:13:61
+Loading failed for the module with source “http://127.0.0.1:3000/src/domain/interfaces/button.interface.ts?t=1696505347060”. auth:13:61
+Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/button/button.vue?t=1696505347060”. auth:13:61
+Loading failed for the module with source “http://127.0.0.1:3000/src/pages/auth/auth.model.ts?t=1696505131964”. auth:13:61
+Loading failed for the module with source “http://127.0.0.1:3000/src/pages/auth/auth.viewmodel.ts”. auth:13:61
+Loading failed for the module with source “http://127.0.0.1:3000/src/pages/auth/auth.component.vue?vue&type=style&index=0&scoped=a624e9e6&lang.css”. auth:13:61
+Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/fields/password-field/password-field.model.ts?t=1696504961130”. auth:13:61
 
-Loading module from “http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.vue” was blocked because of a disallowed MIME type (“text/html”).
-auth
-Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.vue”. auth:13:45
-Loading module from “http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.model.ts” was blocked because of a disallowed MIME type (“text/html”).
-auth
-Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.model.ts”. auth:13:45
-Loading failed for the module with source “http://127.0.0.1:3000/src/public/icons/logo.svg?import”. auth:13:45
-Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/button/button.vue”. auth:13:45
-Loading failed for the module with source “http://127.0.0.1:3000/src/pages/auth/auth.model.ts”. auth:13:45
-Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/fields/password-field/password-field.model.ts”. auth:13:45
-Loading failed for the module with source “http://127.0.0.1:3000/src/pages/auth/auth.viewmodel.ts”. auth:13:45
-Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/fields/password-field/password-field.vue?t=1696503580072”. auth:13:45
-Loading failed for the module with source “http://127.0.0.1:3000/src/pages/auth/auth.component.vue?vue&type=style&index=0&scoped=a624e9e6&lang.css”. auth:13:45
+<template>
+  <div class="auth">
+    <div class="auth__content">
+      <img :src="logo" alt="logo" />
+      <EmailInput
+        :config="model.login.fields[0]"
+        @input="viewModel.setEmail($event)"
+      ></EmailInput>
+      <!-- <PasswordInput :config="model.login.fields[1]"> </PasswordInput> -->
+      <ButtonComponent
+        :config="model.login.loginBtn"
+        @onClick="viewModel.postData()"
+      ></ButtonComponent>
+    </div>
+  </div>
+</template>
+<script setup lang="ts">
+import logo from '../../public/icons/logo.svg';
+import ButtonComponent from '../../components/global/button/button.vue';
+// import EmailInput from '../../components/global/fields/email-field/email-field.vue';
+import PasswordInput from '../../components/global/fields/password-field/password-field.vue';
+import { Button } from '../../domain/interfaces/button.interface';
+import { AuthModel } from './auth.model';
+import { EmailField } from '../../components/global/fields/email-field/email-field.model';
+import { PasswordField } from '../../components/global/fields/password-field/password-field.model';
+import { AuthViewModel } from './auth.viewmodel';
+import { ref, Ref } from 'vue';
+
+const model: Ref<AuthModel> = ref(new AuthModel({
+  email: '',
+  password: '',
+  login: {
+    fields:[
+      new EmailField ({
+        label: 'Email',
+        input: {
+          type: 'email',
+          placeholder: 'Введите email',
+          value: '',
+          isError: false,
+          isDisabled: false,
+          required: true,
+          body_key: 'email',
+        },
+        helper: {
+          value: 'Пожалуйста, введите email',
+          isActive: false,
+        },
+      }),
+      new PasswordField ({
+        label: 'Пароль',
+        isShowed: false,
+        input: {
+          type: 'password',
+          placeholder: 'Введите пароль',
+          value: '',
+          isError: false,
+          isDisabled: false,
+          required: true,
+          body_key: 'password',
+        },
+        helper: {
+          value: 'Пожалуйста, введите пароль',
+          isActive: false,
+        },
+      }),
+    ],
+    loginBtn: new Button({
+      value: 'Войти',
+      type: 'filled',
+      color: 'green',
+      border: 'large',
+      loading: false,
+      disabled: false,
+      width: '100%',
+    }),
+  }
+}
+  
+));
+const viewModel: Ref<AuthViewModel> = ref(new AuthViewModel(model.value));
+
+</script>
+<style scoped >
+.auth {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(108deg, #01a254 0%, #50d17f 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: -72px;
+  margin-top: -107px;
+  box-sizing: border-box;
+}
+.auth__content {
+  display: flex;
+  width: 420px;
+  padding: 36px;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  box-sizing: border-box;
+
+  background: #fff;
+}
+</style>
+export interface IEmailField {
+  label: string;
+  translateLabel?: string;
+  input: {
+    type: string;
+    placeholder: string;
+    translateKey?: string;
+    value: string;
+    isError: boolean;
+    isDisabled: boolean;
+    required: boolean;
+    body_key?: string;
+  };
+  helper: {
+    value: string;
+    isActive: boolean;
+  };
+  isEmpty: () => void;
+  checkValid: () => void;
+  setValue: (value: string) => void;
+}
+
+export class EmailField implements IEmailField {
+  label: string;
+  translateLabel?: string;
+  input: {
+    type: string;
+    placeholder: string;
+    translateKey?: string;
+    value: string;
+    isError: boolean;
+    required: boolean;
+    isDisabled: boolean;
+    body_key?: string;
+  };
+  helper: {
+    value: string;
+    isActive: boolean;
+  };
+
+  constructor(object: {
+    label: string;
+    translateLabel?: string;
+    input: {
+      type: string;
+      placeholder: string;
+      translateKey?: string;
+      value: string;
+      isError: boolean;
+      required: boolean;
+      isDisabled: boolean;
+      body_key: string;
+    };
+    helper: {
+      value: string;
+      isActive: boolean;
+    };
+  }) {
+    this.label = object.label;
+    this.translateLabel = object.translateLabel;
+    this.input = object.input;
+    this.helper = object.helper;
+  }
+
+  setValue(value: string) {
+    this.input.value = value;
+    this.clearError();
+    if (this.checkValid()) {
+      this.input.isError = true;
+      this.helper.isActive = true;
+      this.helper.value = "Введите корректный email";
+    }
+  }
+
+  isEmpty(): void {
+    this.clearError();
+    if ((!this.input.value && !this.input.value.length) || this.checkValid()) {
+      this.input.isError = true;
+      this.helper.isActive = true;
+      this.helper.value = this.input.value.length
+        ? "Введите корректный email"
+        : "Поле не должно быть пустым";
+    }
+  }
+
+  // При вводе значений в инпут проверяем стал ли он валидным
+  checkValid(): boolean {
+    return !this.input.value.includes("@");
+  }
+
+  clearError() {
+    this.input.isError = false;
+    this.helper.isActive = false;
+    this.helper.value = "";
+  }
+}
 <template>
   <div
     class="field"
     :class="{ invalid: config.helper.isActive && config.input.isError }"
   >
-    <label for="email-field" class="label grey-text">
-      {{ config.label }}
-    </label>
+    <label for="email-field" class="body-small grey-text"></label>
     <input
       :type="config.input.type"
       name="email-field"
@@ -51,34 +249,22 @@ Loading failed for the module with source “http://127.0.0.1:3000/src/pages/aut
 </template>
 
 <script setup lang="ts">
-import { IEmailField } from './email-field.model';
+import { IEmailField } from "./email-field.model";
 
- defineProps<{
+defineProps<{
   config: IEmailField;
 }>();
 
-const emits = defineEmits(['input']);
+const emits = defineEmits(["input"]);
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .field {
   display: flex;
   flex-direction: column;
   gap: 4px;
   width: 100%;
   height: 80px;
-}
-
-.label {
-  color: rgba(4, 48, 27, 0.3);
-
-/* Typography/Body Medium */
-font-family: Rubik;
-font-size: 14px;
-font-style: normal;
-font-weight: 400;
-line-height: 20px; /* 142.857% */
-letter-spacing: 0.5px;
 }
 
 input {
@@ -89,7 +275,6 @@ input {
   width: 100%;
   height: 40px;
   padding: 12px;
-  outline: none;
 }
 
 input.disabled {
@@ -103,110 +288,15 @@ input.disabled {
 
 .invalid {
   input {
-    border-color: #c91e2d !important;
+    border-color: var(--red) !important;
 
     &::placeholder {
-      color: #c91e2d !important;
+      color: var(--red) !important;
     }
   }
 
   label {
-    color: #c91e2d !important;
+    color: var(--red) !important;
   }
 }
 </style>
-export interface IEmailField {
-  label?: string;
-  input: {
-    type: string;
-    placeholder: string;
-    value: string;
-    isError: boolean;
-    isDisabled: boolean;
-    required: boolean;
-    body_key?: string;
-  };
-  helper: {
-    value: string;
-    isActive: boolean;
-  };
-  isEmpty: () => void;
-  checkValid?: () => void;
-  setValue: (value: string) => void;
-}
-
-export class EmailField implements IEmailField {
-  label?: string;
-  input: {
-    type: string;
-    placeholder: string;
-    value: string;
-    isError: boolean;
-    required: boolean;
-    isDisabled: boolean;
-    body_key?: string;
-  };
-
-  helper: {
-    value: string;
-    isActive: boolean;
-  };
-
-  constructor(object: {
-    label: string;
-    input: {
-      type: string;
-      placeholder: string;
-      value: string;
-      isError: boolean;
-      required: boolean;
-      isDisabled: boolean;
-      body_key: string;
-    };
-    helper: {
-      value: string;
-      isActive: boolean;
-    };
-  }) {
-    for (const key in object) {
-      this[key] = object[key];
-    }
-  }
-
-  setValue(value: string): void {
-    this.input.value = value;
-    this.clearError();
-    if (this.checkValid()) {
-      this.input.isError = true;
-      this.helper.isActive = true;
-      this.helper.value = 'Введите корректный email';
-    }
-  }
-
-  isEmpty(): void {
-    this.clearError();
-    if ((!this.input.value && !this.input.value.length) || this.checkValid()) {
-      this.input.isError = true;
-      this.helper.isActive = true;
-      this.helper.value = this.input.value.length
-        ? 'Введите корректный email'
-        : 'Поле не должно быть пустым';
-    }
-  }
-
-  // При вводе значений в инпут проверяем стал ли он валидным
-  checkValid(): boolean {
-    console.log('checkValid');
-    
-    return !this.input.value.includes('@');
-  }
-
-  clearError(): void {
-    this.input.isError = false;
-    this.helper.isActive = false;
-    this.helper.value = '';
-  }
-}
-
-
-
