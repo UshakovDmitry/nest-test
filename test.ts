@@ -1,17 +1,3 @@
-GET
-http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.model.ts?t=1696504961130
-
-Loading module from “http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.model.ts?t=1696504961130” was blocked because of a disallowed MIME type (“text/html”).
-auth
-Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.model.ts?t=1696504961130”. auth:13:61
-Loading failed for the module with source “http://127.0.0.1:3000/src/public/icons/logo.svg?import”. auth:13:61
-Loading failed for the module with source “http://127.0.0.1:3000/src/domain/interfaces/button.interface.ts?t=1696505347060”. auth:13:61
-Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/button/button.vue?t=1696505347060”. auth:13:61
-Loading failed for the module with source “http://127.0.0.1:3000/src/pages/auth/auth.model.ts?t=1696505131964”. auth:13:61
-Loading failed for the module with source “http://127.0.0.1:3000/src/pages/auth/auth.viewmodel.ts”. auth:13:61
-Loading failed for the module with source “http://127.0.0.1:3000/src/pages/auth/auth.component.vue?vue&type=style&index=0&scoped=a624e9e6&lang.css”. auth:13:61
-Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/fields/password-field/password-field.model.ts?t=1696504961130”. auth:13:61
-
 <template>
   <div class="auth">
     <div class="auth__content">
@@ -20,7 +6,7 @@ Loading failed for the module with source “http://127.0.0.1:3000/src/component
         :config="model.login.fields[0]"
         @input="viewModel.setEmail($event)"
       ></EmailInput>
-      <!-- <PasswordInput :config="model.login.fields[1]"> </PasswordInput> -->
+      <PasswordInput :config="model.login.fields[1]"> </PasswordInput>
       <ButtonComponent
         :config="model.login.loginBtn"
         @onClick="viewModel.postData()"
@@ -31,7 +17,7 @@ Loading failed for the module with source “http://127.0.0.1:3000/src/component
 <script setup lang="ts">
 import logo from '../../public/icons/logo.svg';
 import ButtonComponent from '../../components/global/button/button.vue';
-// import EmailInput from '../../components/global/fields/email-field/email-field.vue';
+import EmailInput from '../../components/global/fields/email-field/email-field.vue';
 import PasswordInput from '../../components/global/fields/password-field/password-field.vue';
 import { Button } from '../../domain/interfaces/button.interface';
 import { AuthModel } from './auth.model';
@@ -119,6 +105,96 @@ const viewModel: Ref<AuthViewModel> = ref(new AuthViewModel(model.value));
   box-sizing: border-box;
 
   background: #fff;
+}
+</style>
+
+ОШИБКА
+Type 'IEmailField | IPasswordField' is not assignable to type 'IEmailField'.
+  Type 'IPasswordField' is not assignable to type 'IEmailField'.ts(2322)
+(property) config: IEmailField
+
+
+<template>
+  <div
+    class="field"
+    :class="{ invalid: config.helper.isActive && config.input.isError }"
+  >
+    <label for="email-field" class="body-small grey-text"></label>
+    <input
+      :type="config.input.type"
+      name="email-field"
+      class="body-medium"
+      :class="{ disabled: config.input.isDisabled }"
+      :value="config.input.value"
+      :placeholder="config.input.placeholder"
+      @focusout="
+        config.setValue(($event.target as HTMLInputElement).value.trim());
+        !config.input.required && config.isEmpty();
+      "
+      @input="
+        config.setValue(($event.target as HTMLInputElement).value.trim());
+        emits('input', config.input.value);
+      "
+    />
+    <div
+      class="label-small red-text"
+      v-if="config.helper.isActive && config.input.isError"
+    >
+      {{ config.helper.value }}
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { IEmailField } from "./email-field.model";
+
+defineProps<{
+  config: IEmailField;
+}>();
+
+const emits = defineEmits(["input"]);
+</script>
+
+<style scoped lang="scss">
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  height: 80px;
+}
+
+input {
+  box-sizing: border-box;
+  background: inherit;
+  border: 1px solid var(--light);
+  border-radius: 16px;
+  width: 100%;
+  height: 40px;
+  padding: 12px;
+}
+
+input.disabled {
+  border: none;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 143%;
+  letter-spacing: 0.1px;
+  padding: 0;
+}
+
+.invalid {
+  input {
+    border-color: var(--red) !important;
+
+    &::placeholder {
+      color: var(--red) !important;
+    }
+  }
+
+  label {
+    color: var(--red) !important;
+  }
 }
 </style>
 export interface IEmailField {
@@ -217,86 +293,3 @@ export class EmailField implements IEmailField {
     this.helper.value = "";
   }
 }
-<template>
-  <div
-    class="field"
-    :class="{ invalid: config.helper.isActive && config.input.isError }"
-  >
-    <label for="email-field" class="body-small grey-text"></label>
-    <input
-      :type="config.input.type"
-      name="email-field"
-      class="body-medium"
-      :class="{ disabled: config.input.isDisabled }"
-      :value="config.input.value"
-      :placeholder="config.input.placeholder"
-      @focusout="
-        config.setValue(($event.target as HTMLInputElement).value.trim());
-        !config.input.required && config.isEmpty();
-      "
-      @input="
-        config.setValue(($event.target as HTMLInputElement).value.trim());
-        emits('input', config.input.value);
-      "
-    />
-    <div
-      class="label-small red-text"
-      v-if="config.helper.isActive && config.input.isError"
-    >
-      {{ config.helper.value }}
-    </div>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { IEmailField } from "./email-field.model";
-
-defineProps<{
-  config: IEmailField;
-}>();
-
-const emits = defineEmits(["input"]);
-</script>
-
-<style scoped lang="scss">
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
-  height: 80px;
-}
-
-input {
-  box-sizing: border-box;
-  background: inherit;
-  border: 1px solid var(--light);
-  border-radius: 16px;
-  width: 100%;
-  height: 40px;
-  padding: 12px;
-}
-
-input.disabled {
-  border: none;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 143%;
-  letter-spacing: 0.1px;
-  padding: 0;
-}
-
-.invalid {
-  input {
-    border-color: var(--red) !important;
-
-    &::placeholder {
-      color: var(--red) !important;
-    }
-  }
-
-  label {
-    color: var(--red) !important;
-  }
-}
-</style>
