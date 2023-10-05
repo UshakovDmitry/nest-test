@@ -1,215 +1,212 @@
-main.ts:13 [Vue warn]: Unhandled error during execution of render function 
-  at <EmailField config= EmailField {label: 'Email', input: {…}, helper: {…}} onInput=fn > 
-  at <Auth.component onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
-  at <RouterView> 
-  at <App>
-warn2 @ runtime-core.esm-bundler.js:41
-logError @ runtime-core.esm-bundler.js:216
-handleError @ runtime-core.esm-bundler.js:208
-renderComponentRoot @ runtime-core.esm-bundler.js:853
-componentUpdateFn @ runtime-core.esm-bundler.js:5701
-run @ reactivity.esm-bundler.js:178
-instance.update @ runtime-core.esm-bundler.js:5814
-setupRenderEffect @ runtime-core.esm-bundler.js:5822
-mountComponent @ runtime-core.esm-bundler.js:5612
-processComponent @ runtime-core.esm-bundler.js:5565
-patch @ runtime-core.esm-bundler.js:5040
-mountChildren @ runtime-core.esm-bundler.js:5284
-mountElement @ runtime-core.esm-bundler.js:5191
-processElement @ runtime-core.esm-bundler.js:5156
-patch @ runtime-core.esm-bundler.js:5028
-mountChildren @ runtime-core.esm-bundler.js:5284
-mountElement @ runtime-core.esm-bundler.js:5191
-processElement @ runtime-core.esm-bundler.js:5156
-patch @ runtime-core.esm-bundler.js:5028
-componentUpdateFn @ runtime-core.esm-bundler.js:5708
-run @ reactivity.esm-bundler.js:178
-instance.update @ runtime-core.esm-bundler.js:5814
-setupRenderEffect @ runtime-core.esm-bundler.js:5822
-mountComponent @ runtime-core.esm-bundler.js:5612
-processComponent @ runtime-core.esm-bundler.js:5565
-patch @ runtime-core.esm-bundler.js:5040
-componentUpdateFn @ runtime-core.esm-bundler.js:5773
-run @ reactivity.esm-bundler.js:178
-instance.update @ runtime-core.esm-bundler.js:5814
-callWithErrorHandling @ runtime-core.esm-bundler.js:158
-flushJobs @ runtime-core.esm-bundler.js:357
-Promise.then (async)
-queueFlush @ runtime-core.esm-bundler.js:270
-queuePostFlushCb @ runtime-core.esm-bundler.js:290
-queueEffectWithSuspense @ runtime-core.esm-bundler.js:1603
-scheduler @ runtime-core.esm-bundler.js:1773
-triggerEffect @ reactivity.esm-bundler.js:373
-triggerEffects @ reactivity.esm-bundler.js:363
-triggerRefValue @ reactivity.esm-bundler.js:974
-(anonymous) @ reactivity.esm-bundler.js:1135
-triggerEffect @ reactivity.esm-bundler.js:373
-triggerEffects @ reactivity.esm-bundler.js:358
-triggerRefValue @ reactivity.esm-bundler.js:974
-(anonymous) @ reactivity.esm-bundler.js:1135
-triggerEffect @ reactivity.esm-bundler.js:373
-triggerEffects @ reactivity.esm-bundler.js:358
-triggerRefValue @ reactivity.esm-bundler.js:974
-set value @ reactivity.esm-bundler.js:1018
-finalizeNavigation @ vue-router.mjs:3355
-(anonymous) @ vue-router.mjs:3220
-Promise.then (async)
-pushWithRedirect @ vue-router.mjs:3187
-push @ vue-router.mjs:3112
-install @ vue-router.mjs:3551
-use @ runtime-core.esm-bundler.js:3752
-(anonymous) @ main.ts:13
-main.ts:13 [Vue warn]: Unhandled error during execution of scheduler flush. This is likely a Vue internals bug. Please open an issue at https://new-issue.vuejs.org/?repo=vuejs/core 
-  at <EmailField config= EmailField {label: 'Email', input: {…}, helper: {…}} onInput=fn > 
-  at <Auth.component onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > > 
-  at <RouterView> 
-  at <App>
-warn2 @ runtime-core.esm-bundler.js:41
-logError @ runtime-core.esm-bundler.js:216
-handleError @ runtime-core.esm-bundler.js:208
-callWithErrorHandling @ runtime-core.esm-bundler.js:160
-flushJobs @ runtime-core.esm-bundler.js:357
-Promise.then (async)
-queueFlush @ runtime-core.esm-bundler.js:270
-queuePostFlushCb @ runtime-core.esm-bundler.js:290
-queueEffectWithSuspense @ runtime-core.esm-bundler.js:1603
-scheduler @ runtime-core.esm-bundler.js:1773
-triggerEffect @ reactivity.esm-bundler.js:373
-triggerEffects @ reactivity.esm-bundler.js:363
-triggerRefValue @ reactivity.esm-bundler.js:974
-(anonymous) @ reactivity.esm-bundler.js:1135
-triggerEffect @ reactivity.esm-bundler.js:373
-triggerEffects @ reactivity.esm-bundler.js:358
-triggerRefValue @ reactivity.esm-bundler.js:974
-(anonymous) @ reactivity.esm-bundler.js:1135
-triggerEffect @ reactivity.esm-bundler.js:373
-triggerEffects @ reactivity.esm-bundler.js:358
-triggerRefValue @ reactivity.esm-bundler.js:974
-set value @ reactivity.esm-bundler.js:1018
-finalizeNavigation @ vue-router.mjs:3355
-(anonymous) @ vue-router.mjs:3220
-Promise.then (async)
-pushWithRedirect @ vue-router.mjs:3187
-push @ vue-router.mjs:3112
-install @ vue-router.mjs:3551
-use @ runtime-core.esm-bundler.js:3752
-(anonymous) @ main.ts:13
-runtime-core.esm-bundler.js:843 Uncaught (in promise) TypeError: Class constructor EmailField cannot be invoked without 'new'
-    at renderComponentRoot (runtime-core.esm-bundler.js:843:13)
-    at ReactiveEffect.componentUpdateFn [as fn] (runtime-core.esm-bundler.js:5701:46)
-    at ReactiveEffect.run (reactivity.esm-bundler.js:178:19)
-    at instance.update (runtime-core.esm-bundler.js:5814:51)
-    at setupRenderEffect (runtime-core.esm-bundler.js:5822:5)
-    at mountComponent (runtime-core.esm-bundler.js:5612:5)
-    at processComponent (runtime-core.esm-bundler.js:5565:9)
-    at patch (runtime-core.esm-bundler.js:5040:11)
-    at mountChildren (runtime-core.esm-bundler.js:5284:7)
-    at mountElement (runtime-core.esm-bundler.js:5191:7)
+GET
+http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.vue
+
+GET
+http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.model.ts
+
+Loading module from “http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.vue” was blocked because of a disallowed MIME type (“text/html”).
+auth
+Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.vue”. auth:13:45
+Loading module from “http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.model.ts” was blocked because of a disallowed MIME type (“text/html”).
+auth
+Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/fields/email-field/email-field.model.ts”. auth:13:45
+Loading failed for the module with source “http://127.0.0.1:3000/src/public/icons/logo.svg?import”. auth:13:45
+Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/button/button.vue”. auth:13:45
+Loading failed for the module with source “http://127.0.0.1:3000/src/pages/auth/auth.model.ts”. auth:13:45
+Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/fields/password-field/password-field.model.ts”. auth:13:45
+Loading failed for the module with source “http://127.0.0.1:3000/src/pages/auth/auth.viewmodel.ts”. auth:13:45
+Loading failed for the module with source “http://127.0.0.1:3000/src/components/global/fields/password-field/password-field.vue?t=1696503580072”. auth:13:45
+Loading failed for the module with source “http://127.0.0.1:3000/src/pages/auth/auth.component.vue?vue&type=style&index=0&scoped=a624e9e6&lang.css”. auth:13:45
 <template>
-  <div class="auth">
-    <div class="auth__content">
-      <img :src="logo" alt="logo" />
-      <emailField
-        :config="model.login.fields[0]"
-        @input="viewModel.setEmail($event)"
-      ></emailField>
-      <passwordField :config="model.login.fields[1]"> </passwordField>
-      <ButtonComponent
-        :config="model.login.loginBtn"
-        @onClick="viewModel.postData()"
-      ></ButtonComponent>
+  <div
+    class="field"
+    :class="{ invalid: config.helper.isActive && config.input.isError }"
+  >
+    <label for="email-field" class="label grey-text">
+      {{ config.label }}
+    </label>
+    <input
+      :type="config.input.type"
+      name="email-field"
+      class="body-medium"
+      :class="{ disabled: config.input.isDisabled }"
+      :value="config.input.value"
+      :placeholder="config.input.placeholder"
+      @focusout="
+        config.setValue(($event.target as HTMLInputElement).value.trim());
+        !config.input.required && config.isEmpty();
+      "
+      @input="
+        config.setValue(($event.target as HTMLInputElement).value.trim());
+        emits('input', config.input.value);
+      "
+    />
+    <div
+      class="label-small red-text"
+      v-if="config.helper.isActive && config.input.isError"
+    >
+      {{ config.helper.value }}
     </div>
   </div>
 </template>
-<script setup lang="ts">
-import logo from '../../public/icons/logo.svg';
-import ButtonComponent from '../../components/global/button/button.vue';
-import { AuthModel } from './auth.model';
-import { EmailField } from '../../components/global/fields/email-field/email-field.model';
-import { PasswordField } from '../../components/global/fields/password-field/password-field.model';
-import { AuthViewModel } from './auth.viewmodel';
-import { ref, Ref } from 'vue';
 
-const model: Ref<AuthModel> = ref(new AuthModel({
-  email: '',
-  password: '',
-  login: {
-    fields:[
-      new EmailField ({
-        label: 'Email',
-        input: {
-          type: 'email',
-          placeholder: 'Введите email',
-          value: '',
-          isError: false,
-          isDisabled: false,
-          required: true,
-          body_key: 'email',
-        },
-        helper: {
-          value: 'Пожалуйста, введите email',
-          isActive: false,
-        },
-      }),
-      new PasswordField ({
-        label: 'Пароль',
-        isShowed: false,
-        input: {
-          type: 'password',
-          placeholder: 'Введите пароль',
-          value: '',
-          isError: false,
-          isDisabled: false,
-          required: true,
-          body_key: 'password',
-        },
-        helper: {
-          value: 'Пожалуйста, введите пароль',
-          isActive: false,
-        },
-      }),
-    ],
-    loginBtn: {
-      value: 'Войти',
-      type: 'filled',
-      color: 'green',
-      border: 'large',
-      loading: false,
-      disabled: false,
-      width: '100%',
-    },
+<script setup lang="ts">
+import { IEmailField } from './email-field.model';
+
+ defineProps<{
+  config: IEmailField;
+}>();
+
+const emits = defineEmits(['input']);
+</script>
+
+<style scoped>
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  height: 80px;
+}
+
+.label {
+  color: rgba(4, 48, 27, 0.3);
+
+/* Typography/Body Medium */
+font-family: Rubik;
+font-size: 14px;
+font-style: normal;
+font-weight: 400;
+line-height: 20px; /* 142.857% */
+letter-spacing: 0.5px;
+}
+
+input {
+  box-sizing: border-box;
+  background: inherit;
+  border: 1px solid var(--light);
+  border-radius: 16px;
+  width: 100%;
+  height: 40px;
+  padding: 12px;
+  outline: none;
+}
+
+input.disabled {
+  border: none;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 143%;
+  letter-spacing: 0.1px;
+  padding: 0;
+}
+
+.invalid {
+  input {
+    border-color: #c91e2d !important;
+
+    &::placeholder {
+      color: #c91e2d !important;
+    }
+  }
+
+  label {
+    color: #c91e2d !important;
   }
 }
-  
-));
-const viewModel: Ref<AuthViewModel> = ref(new AuthViewModel(model.value));
-
-</script>
-<style scoped lang="scss">
-.auth {
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(108deg, #01a254 0%, #50d17f 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: -72px;
-  margin-top: -107px;
-  box-sizing: border-box;
-}
-.auth__content {
-  display: flex;
-  width: 420px;
-  padding: 36px;
-  flex-direction: column;
-  align-items: center;
-  gap: 11px;
-  flex-shrink: 0;
-  border-radius: 16px;
-  box-sizing: border-box;
-
-  background: #fff;
-}
 </style>
+export interface IEmailField {
+  label?: string;
+  input: {
+    type: string;
+    placeholder: string;
+    value: string;
+    isError: boolean;
+    isDisabled: boolean;
+    required: boolean;
+    body_key?: string;
+  };
+  helper: {
+    value: string;
+    isActive: boolean;
+  };
+  isEmpty: () => void;
+  checkValid?: () => void;
+  setValue: (value: string) => void;
+}
+
+export class EmailField implements IEmailField {
+  label?: string;
+  input: {
+    type: string;
+    placeholder: string;
+    value: string;
+    isError: boolean;
+    required: boolean;
+    isDisabled: boolean;
+    body_key?: string;
+  };
+
+  helper: {
+    value: string;
+    isActive: boolean;
+  };
+
+  constructor(object: {
+    label: string;
+    input: {
+      type: string;
+      placeholder: string;
+      value: string;
+      isError: boolean;
+      required: boolean;
+      isDisabled: boolean;
+      body_key: string;
+    };
+    helper: {
+      value: string;
+      isActive: boolean;
+    };
+  }) {
+    for (const key in object) {
+      this[key] = object[key];
+    }
+  }
+
+  setValue(value: string): void {
+    this.input.value = value;
+    this.clearError();
+    if (this.checkValid()) {
+      this.input.isError = true;
+      this.helper.isActive = true;
+      this.helper.value = 'Введите корректный email';
+    }
+  }
+
+  isEmpty(): void {
+    this.clearError();
+    if ((!this.input.value && !this.input.value.length) || this.checkValid()) {
+      this.input.isError = true;
+      this.helper.isActive = true;
+      this.helper.value = this.input.value.length
+        ? 'Введите корректный email'
+        : 'Поле не должно быть пустым';
+    }
+  }
+
+  // При вводе значений в инпут проверяем стал ли он валидным
+  checkValid(): boolean {
+    console.log('checkValid');
+    
+    return !this.input.value.includes('@');
+  }
+
+  clearError(): void {
+    this.input.isError = false;
+    this.helper.isActive = false;
+    this.helper.value = '';
+  }
+}
+
 
 
