@@ -1,158 +1,206 @@
-applications.viewmodel.ts:67 Ошибка при получении данных: TypeError: response.json is not a function
-    at Proxy.getTransportRequestsByDateRange (applications.viewmodel.ts:53:35)
-    at Proxy.setTimeRange (applications.viewmodel.ts:35:10)
-    at _createVNode.onSetTimeRange._cache.<computed>._cache.<computed> (applications.component.vue:9:34)
-    at callWithErrorHandling (runtime-core.esm-bundler.js:158:18)
-    at callWithAsyncErrorHandling (runtime-core.esm-bundler.js:166:17)
-    at emit (runtime-core.esm-bundler.js:664:5)
-    at runtime-core.esm-bundler.js:7422:45
-    at handleDate (filters-panel.component.vue:61:3)
-    at callWithErrorHandling (runtime-core.esm-bundler.js:158:18)
-    at callWithAsyncErrorHandling (runtime-core.esm-bundler.js:166:17)
-Определи почему в этом запросе ошибка и исправь
+<template>
+  <div
+    class="field"
+    :class="{ invalid: config.helper.isActive && config.input.isError }"
+  >
+    <label for="email-field" class="body-small grey-text">
+      {{ config.label }}
+    </label>
+    <input
+      :type="config.input.type"
+      name="email-field"
+      class="body-medium"
+      :class="{ disabled: config.input.isDisabled }"
+      :value="config.input.value"
+      :placeholder="config.input.placeholder"
+      @focusout="
+        config.setValue(($event.target as HTMLInputElement).value.trim());
+        !config.input.required && config.isEmpty();
+      "
+      @input="
+        config.setValue(($event.target as HTMLInputElement).value.trim());
+        emits('input', config.input.value);
+      "
+    />
+    <div
+      class="label-small red-text"
+      v-if="config.helper.isActive && config.input.isError"
+    >
+      {{ config.helper.value }}
+    </div>
+  </div>
+</template>
 
+<script setup lang="ts">
+import { IEmailField } from './email-field.model';
 
-  async getTransportRequestsByDateRange(
-    dateStart: string,
-    dateEnd: string,
-  ): Promise<void> {
-    const body = {
-      startDate: dateStart,
-      endDate: dateEnd,
-    };
-    try {
-      const response = usePostApi('getTransportRequestsbyDateRange', body,'sendFormData');
+ defineProps<{
+  config: IEmailField;
+}>();
 
+const emits = defineEmits(['input']);
+</script>
 
-      const data = await response.json();
-      console.log(data, 'data');
+<style scoped lang="scss">
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  height: 80px;
+}
 
-      // Очистить текущие данные перед добавлением новых
-      this.model.transportRequests = [];
+input {
+  box-sizing: border-box;
+  background: inherit;
+  border: 1px solid var(--light);
+  border-radius: 16px;
+  width: 100%;
+  height: 40px;
+  padding: 12px;
+  outline: none;
+}
 
-      data.forEach((dataItem: any) => {
-        const transformedData = this.transformToTransportRequest(dataItem);
-        const transformedDataForTable =
-          this.transformToTransportForTable(transformedData);
-        this.model.transportRequests.push(transformedDataForTable);
-      });
-      this.model.filteredTransportRequests;
-    } catch (error) {
-      console.error('Ошибка при получении данных:', error);
+input.disabled {
+  border: none;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 143%;
+  letter-spacing: 0.1px;
+  padding: 0;
+}
+
+.invalid {
+  input {
+    border-color: var(--red) !important;
+
+    &::placeholder {
+      color: var(--red) !important;
     }
   }
-usePostApi
-import { httpProvider } from "../providers/http.provider";
-import { urls } from "../resourse/config/urls";
 
-export function usePostApi(method: string, body?: any, sendType = 'sendJSON') {
-    function getURL(apiName: string) {
-        if (import.meta.env.PROD) {
-            return urls[apiName].production;
-        }
-        return urls[apiName].development;
-    }
-
-    function fetch(apiName: string) {
-        const URL: string = getURL(apiName);
-        const METHOD: string = "POST";
-        const BODY = body;
-        const SENDTYPE = sendType;
-
-        return httpProvider(URL, METHOD, BODY, SENDTYPE);
-    }
-
-    const methods: { [key: string]: Function } = {
-        getToken: () => fetch("getToken"),
-        getTransportRequestsbyDateRange: () => fetch("getTransportRequestsbyDateRange"),
-
-    };
-
-
-    return methods[method]();
+  label {
+    color: var(--red) !important;
+  }
 }
-httpProvider
-import { ref, type Ref } from 'vue';
-// import { localStorageService } from "../services/localStorage.service";
+</style>
+export interface IEmailField {
+  label?: string;
+  input: {
+    type: string;
+    placeholder: string;
+    value: string;
+    isError: boolean;
+    isDisabled: boolean;
+    required: boolean;
+    body_key?: string;
+  };
+  helper: {
+    value: string;
+    isActive: boolean;
+  };
+  isEmpty: () => void;
+  checkValid?: () => void;
+  setValue: (value: string) => void;
+}
 
-export async function httpProvider(
-  url: string,
-  method: string,
-  body?: any,
-  sendType?: string,
-) {
-  // const tokenAuth: string = `Bearer ${localStorageService.getValue("token")}` || "";
+export class EmailField implements IEmailField {
+  label?: string;
+  input: {
+    type: string;
+    placeholder: string;
+    value: string;
+    isError: boolean;
+    required: boolean;
+    isDisabled: boolean;
+    body_key?: string;
+  };
 
-  const promise: Ref<Promise<any> | undefined> = ref();
+  helper: {
+    value: string;
+    isActive: boolean;
+  };
 
-  switch (method) {
-    case 'GET':
-      promise.value = fetch(url, {
-        method: 'GET',
-        // headers: {
-        //   Authorization: tokenAuth,
-        // },
-      });
-      break;
-    case 'POST':
-      if (sendType === 'sendFormData') {
-        promise.value = fetch(url, {
-          // headers: {
-          //   Authorization: tokenAuth,
-          // },
-          method: 'POST',
-          body: new URLSearchParams(body),
-        });
-      } else if ('sendJSON') {
-        promise.value = fetch(url, {
-          headers: {
-            // Authorization: tokenAuth,
-            'Content-Type': 'application/json',
+  constructor(object: {
+    label: string;
+    input: {
+      type: string;
+      placeholder: string;
+      value: string;
+      isError: boolean;
+      required: boolean;
+      isDisabled: boolean;
+      body_key: string;
+    };
+    helper: {
+      value: string;
+      isActive: boolean;
+    };
+  }) {
+    for (const key in object) {
+      this[key] = object[key];
+    }
+  }
+
+  setValue(value: string): void {
+    this.input.value = value;
+    this.clearError();
+    if (this.checkValid()) {
+      this.input.isError = true;
+      this.helper.isActive = true;
+      this.helper.value = 'Введите корректный email';
+    }
+  }
+
+  isEmpty(): void {
+    this.clearError();
+    if ((!this.input.value && !this.input.value.length) || this.checkValid()) {
+      this.input.isError = true;
+      this.helper.isActive = true;
+      this.helper.value = this.input.value.length
+        ? 'Введите корректный email'
+        : 'Поле не должно быть пустым';
+    }
+  }
+
+  // При вводе значений в инпут проверяем стал ли он валидным
+  checkValid(): boolean {
+    console.log('checkValid');
+    
+    return !this.input.value.includes('@');
+  }
+
+  clearError(): void {
+    this.input.isError = false;
+    this.helper.isActive = false;
+    this.helper.value = '';
+  }
+}
+
+ЭТОЙ МОЙ КОМПОНЕНТ
+вот ошибка 
+Uncaught SyntaxError: The requested module '/src/components/global/fields/email-field/email-field.model.ts' does not provide an export named 'IEmailField' (at email-field.vue:35:10)
+
+вот что я передаю
+      <emailField
+        :config="{
+          label: 'Email',
+          input: {
+            type: 'email',
+            placeholder: 'Введите email',
+            value: '',
+            isError: false,
+            isDisabled: false,
+            required: true,
           },
-          method: 'POST',
-          body: JSON.stringify(body),
-        });
-      } else {
-        const error: Error = new Error();
-        error.name = '[КРИТИЧЕСКАЯ ОШИБКА]';
-        error.message =
-          'Укажите тип исполняемого POST запроса (sendFormData или sendJSON). Подробнее /core/useFetch';
-        throw error;
-      }
-      break;
-  }
+          helper: {
+            value: 'Пожалуйста, введите email',
+            isActive: false,
+          },
+        }"
+        @input="viewModel.setEmail($event)"
+      ></emailField> 
 
-  if (promise.value == null) {
-    const error: Error = new Error();
-    error.name = '[КРИТИЧЕСКАЯ ОШИБКА]';
-    error.message = 'Произошла ошибка при запросе к серверу';
-    throw error;
-  }
-
-  return await promise.value.then(async (res: Response) => {
-    if (res.status === 401 || res.status === 400) {
-      const error: Error = new Error();
-      error.name = '[КРИТИЧЕСКАЯ ОШИБКА]';
-      // error.message = "Авторизация пользователя провалилась";
-      throw error;
-    }
-    return await res.json();
-  });
-}
-urls
-export const urls: any = {
-  getTransportRequests: {
-    production: 'http://tms.next.local/api/getTransportRequests',
-    development: 'http://localhost:4000/api/getTransportRequests',
-  },
-  getDrivers: {
-    production: 'http://tms.next.local/api/getDrivers',
-    development: 'http://localhost:4000/api/getDrivers',
-  },
-  getTransportRequestsbyDateRange: {
-    production: 'http://tms.next.local/api/getTransportRequests/byDateRange',
-    development: 'http://localhost:4000/api/getTransportRequests/byDateRange',
-  },
-};
-
+Type '{ label: string; input: { type: string; placeholder: string; value: string; isError: false; isDisabled: false; required: true; }; helper: { value: string; isActive: false; }; }' is missing the following properties from type 'IEmailField': isEmpty, setValuets(2739)
+(property) config: IEmailField
 
