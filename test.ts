@@ -134,3 +134,16 @@ const emits = defineEmits(['selectCity', 'downloadLoadersAsXLSX', 'search','setT
   background: #fff;
 }
 </style>
+
+
+
+
+
+
+
+  const handleDate = (timeRange) => {
+  dateSelection.value = timeRange;
+  const formattedDates = timeRange.map(date => date.toISOString().split('T')[0]);
+  emits('setTimeRange', formattedDates);
+  // do something else with the data
+}
