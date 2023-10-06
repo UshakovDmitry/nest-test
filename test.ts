@@ -1,8 +1,33 @@
-у меня написан модуль на NEST 
-я хочу избавиться от моковых данных получать и возвращать города по этому адресу 
- GET: http://10.0.1.20/1CHS/hs/TMS/DistributionWorks
+// cities.module.ts
+import { HttpModule } from '@nestjs/axios';
 
-cities.controller
+@Module({
+  imports: [HttpModule],
+  controllers: [CitiesController],
+  providers: [CitiesService],
+})
+export class CitiesModule {}
+
+
+// cities.service.ts
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
+
+@Injectable()
+export class CitiesService {
+  constructor(private readonly httpService: HttpService) {}
+
+  async getDistributedСities() {
+    const response = await firstValueFrom(this.httpService.get('http://10.0.1.20/1CHS/hs/TMS/DistributionWorks'));
+    return response.data;
+  }
+}
+
+
+
+
+// cities.controller.ts
 import { Controller, Get } from '@nestjs/common';
 import { CitiesService } from './cities.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -13,36 +38,7 @@ export class CitiesController {
   constructor(private readonly citiesService: CitiesService) {}
 
   @Get()
-  getLoaders() {
-    return this.citiesService.getDistributedСities();
+  async getLoaders() {
+    return await this.citiesService.getDistributedСities();
   }
 }
-
-
-cities.service
-import { Injectable } from '@nestjs/common';
-
-@Injectable()
-export class CitiesService {
-  private LOADERS: any[] = [
-'астана','алматы'
-  ];
-
-  getDistributedСities() {
-    return this.LOADERS;
-  }
-}
-
-
-cities.module
-import { Module } from '@nestjs/common';
-import { CitiesService } from './cities.service';
-import { CitiesController } from './cities.controller';
-
-@Module({
-  controllers: [CitiesController],
-  providers: [CitiesService],
-})
-export class CitiesModule {}
-
-
