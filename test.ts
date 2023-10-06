@@ -1,160 +1,147 @@
-const handleLogin = () => {
-  // здесь вы можете добавить проверку значений, если это необходимо
-
-  // установить isLogin в true в localStorage
-  localStorage.setItem("isLogin", "true");
-
-  // перенаправить пользователя на главную страницу
-  router.push("/");
-}
-
-Отлично
-теперь давай реализуем логику авторизации
-
-пока что нужно просто ввести любые значения тогда islogin должен стать true
-у меня есть 
-auth.vue
 <template>
-  <div class="auth">
-    <div class="auth__content">
-      <img :src="logo" alt="logo" />
-      <Field
-        :config="model.fields[0]"
-      ></Field>
-      <Field
-        :config="model.fields[1]"
-      ></Field>
-      <div>
-        <ButtonComponent
-          :config="{
-            type: 'filled',
-            color: 'green',
-            value: 'Войти',
-            border: 'large',
-            width: '350px',
-            disabled: false,
-          }"
-        ></ButtonComponent>
-      </div>
+  <div
+    :style="'height:' + config?.input?.height"
+    class="field"
+    :class="{ invalid: config.helper.isActive && config.input.isError }"
+  >
+    <label for="email-field" class="body-small grey-text">
+      <span v-if="config.input.required">{{config.label}} *</span></label
+    >
+    <input
+      v-if="!config.input.isTextarea"
+      :style="
+        'height:' +
+        (config?.input?.height
+          ? 'calc(' + config?.input?.height + '-40px'
+          : '40px')
+      "
+      :class="{ disabled: config.input.isDisabled }"
+      :type="config.input.type || 'text'"
+      :value="config.input.value"
+      :autocomplete="
+        config.input.type === 'password' ? 'new-password' : 'one-time-code'
+      "
+      name="email-field"
+      class="body-medium"
+      :placeholder="config.input.placeholder"
+      :readonly="config.input.isDisabled"
+      :maxLength="config.input.maxLength"
+      @input="
+        emits(
+          'input',
+          ($event.target as HTMLInputElement | HTMLTextAreaElement).value,
+        );
+        config.setValue(
+          ($event.target as HTMLInputElement | HTMLTextAreaElement).value,
+        );
+      "
+      @focusout="config.input.required && config.isEmpty()"
+      @focus="emits('onFocus')"
+      @blur="emits('onBlur')"
+    />
+    <textarea
+      v-if="config.input.isTextarea"
+      :value="config.input.value"
+      :style="'height:' + (config?.input?.height || '40px')"
+      class="body-medium"
+      :placeholder="config.input.placeholder"
+      @input="
+        emits(
+          'input',
+          ($event.target as HTMLInputElement | HTMLTextAreaElement).value,
+        );
+        config.setValue(
+          ($event.target as HTMLInputElement | HTMLTextAreaElement).value,
+        );
+      "
+      @focusout="config.input.required && config.isEmpty()"
+      @focus="emits('onFocus')"
+      @blur="emits('onBlur')"
+    ></textarea>
+
+    <div
+      v-if="config.helper.isActive && config.input.isError"
+      class="label-small red-text"
+    >
+      {{ config.helper.value }}
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
-import logo from '../../public/icons/logo.svg';
-import ButtonComponent from '../../components/global/button/button.vue';
-import { AuthModel } from './auth.model';
-import { AuthViewModel } from './auth.viewmodel';
-import Field from '../../components/global/fields/fieild/field.vue';
-import { FieldModel } from '../../components/global/fields/fieild/field.model';
+import { IField } from './field.model';
 
-import { ref, Ref } from 'vue';
-
-const model: Ref<AuthModel> = ref(new AuthModel({
-  fields: [
-  new FieldModel({
-          label: 'Email',
-          input: {
-            type: 'email',
-            value: '',
-            placeholder: 'Введите Email',
-            isError: false,
-            isDisabled: false,
-            isTextarea: false,
-            required: true,
-            maxLength: 20,
-          },
-          helper: {
-            isActive: true,
-            value: 'test',
-          },
-        }),
-        new FieldModel( {
-          label: 'Пароль',
-          input: {
-            type: 'password',
-            value: '',
-            placeholder: 'Введите пароль',
-            isDisabled: false,
-            isTextarea: false,
-            required: true,
-            maxLength: 20,
-            isError: false,
-          },
-          helper: {
-            isActive: true,
-            value: 'test',
-          },
-        })]
-}));
-const viewModel: Ref<AuthViewModel> = ref(new AuthViewModel(model.value));
+defineProps<{
+  config: IField;
+}>();
+const emits = defineEmits(['input', 'onFocus', 'onBlur']);
 </script>
-<style scoped>
-.auth {
 
-  background: linear-gradient(108deg, #01a254 0%, #50d17f 100%);
+<style scoped>
+.field {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100vh;
-  /* margin-left: -72px;
-  margin-top: -107px; */
-  box-sizing: border-box;
-}
-.auth__content {
-  display: flex;
-  width: 420px;
-  padding: 36px;
   flex-direction: column;
-  align-items: center;
-  gap: 11px;
-  flex-shrink: 0;
-  border-radius: 16px;
+  gap: 4px;
+  width: 100%;
+  height: 80px;
+}
+
+.field input {
   box-sizing: border-box;
-  background: #fff;
+  background: inherit;
+  border: 1px solid var(--light);
+  border-radius: 16px;
+  width: 100%;
+  padding: 12px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 143%;
+  letter-spacing: 0.1px;
+  color: var(--dark);
+  outline: none;
+  transition: border-color 0.2s ease-in-out;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.field textarea {
+  box-sizing: border-box;
+  background: inherit;
+  border: 1px solid var(--light);
+  border-radius: 16px;
+  width: 100%;
+  padding: 12px;
+  resize: none;
+}
+
+.field input::-webkit-outer-spin-button,
+.field input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.field input.disabled {
+  border: none;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 143%;
+  letter-spacing: 0.1px;
+  padding: 0;
+}
+
+.field.invalid input {
+  border-color: #e7344c !important;
+}
+
+.field.invalid input::placeholder {
+  color: #e7344c !important;
+}
+
+.field.invalid label {
+  color: #e7344c !important;
 }
 </style>
 
-auth.model.ts где я опичываю состояния
-
-export interface IAuthModel {
-    email: string;
-    password: string;
-    isShowedPassword?: boolean;
-    fields?: any[];
-
-  }
-  
-  export class AuthModel implements IAuthModel {
-    email: string;
-    password: string; 
-    isShowedPassword?: boolean;
-    fields?: any[];
-  
-    constructor(obj:any) {
-        this.email = '';
-        this.password = '';
-        this.isShowedPassword = false;
-        this.fields = obj.fields;
-
-    }
-  }
-  
-auth.viwModel.ts где я описываю бизнес логику
-import { type AuthModel } from './auth.model';
-export class AuthViewModel {
-  model: AuthModel;
-
-  constructor(model: AuthModel) {
-    this.model = model;
-  }
-}
-
-для инпутов я использую компонент Fieid
-он принимает defineProps<{
-  config: IField;
-}>();
-вот IField
 export interface IField {
     label: string;
     translateLabel?: string | undefined;
