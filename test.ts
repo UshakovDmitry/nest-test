@@ -1,111 +1,3 @@
-я хочу добавить глобально переменную isLogin  в свой проект чтобы разрещать или запрещать посещать приватные роуты
-страница auth должна появляться если isLogin false
-а если после авторизации все успешено то isLogin true 
-также нужно проверять localstoarge на токен
-
-страница auth
-<template>
-  <div class="auth">
-    <div class="auth__content">
-      <img :src="logo" alt="logo" />
-      <Field
-        :config="model.fields[0]"
-      ></Field>
-      <Field
-        :config="model.fields[1]"
-      ></Field>
-      <div>
-        <ButtonComponent
-          :config="{
-            type: 'filled',
-            color: 'green',
-            value: 'Войти',
-            border: 'large',
-            width: '350px',
-            disabled: false,
-          }"
-        ></ButtonComponent>
-      </div>
-    </div>
-  </div>
-</template>
-<script setup lang="ts">
-import logo from '../../public/icons/logo.svg';
-import ButtonComponent from '../../components/global/button/button.vue';
-import { AuthModel } from './auth.model';
-import { AuthViewModel } from './auth.viewmodel';
-import Field from '../../components/global/fields/fieild/field.vue';
-import { FieldModel } from '../../components/global/fields/fieild/field.model';
-
-import { ref, Ref } from 'vue';
-
-const model: Ref<AuthModel> = ref(new AuthModel({
-  fields: [
-  new FieldModel({
-          label: 'Email',
-          input: {
-            type: 'email',
-            value: '',
-            placeholder: 'Введите Email',
-            isError: false,
-            isDisabled: false,
-            isTextarea: false,
-            required: true,
-            maxLength: 20,
-          },
-          helper: {
-            isActive: true,
-            value: 'test',
-          },
-        }),
-        new FieldModel( {
-          label: 'Пароль',
-          input: {
-            type: 'password',
-            value: '',
-            placeholder: 'Введите пароль',
-            isDisabled: false,
-            isTextarea: false,
-            required: true,
-            maxLength: 20,
-            isError: false,
-          },
-          helper: {
-            isActive: true,
-            value: 'test',
-          },
-        })]
-}));
-const viewModel: Ref<AuthViewModel> = ref(new AuthViewModel(model.value));
-</script>
-<style scoped>
-.auth {
-
-  background: linear-gradient(108deg, #01a254 0%, #50d17f 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100vh;
-  /* margin-left: -72px;
-  margin-top: -107px; */
-  box-sizing: border-box;
-}
-.auth__content {
-  display: flex;
-  width: 420px;
-  padding: 36px;
-  flex-direction: column;
-  align-items: center;
-  gap: 11px;
-  flex-shrink: 0;
-  border-radius: 16px;
-  box-sizing: border-box;
-  background: #fff;
-}
-</style>
-
-roter/index.ts
 import {
   createRouter,
   createWebHistory,
@@ -121,6 +13,11 @@ import Couriers from '../pages/couriers/couriers.component.vue';
 import CourierDetail from '../pages/courier-detail/courier-detail.component.vue';
 import TransportRequestsDetail from '../pages/transport-requests-detail/transport-requests-detail.component.vue';
 
+// Инициализация статуса авторизации, если он еще не установлен
+if (localStorage.getItem("isLogin") === null) {
+  localStorage.setItem("isLogin", "false");
+}
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/auth',
@@ -134,7 +31,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: Layout,
-    meta: {hasLayout: true},
+    meta: { hasLayout: true },
     children: [
       {
         path: '',
@@ -184,7 +81,16 @@ const router = createRouter({
   routes,
 });
 
-export default router;
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = localStorage.getItem("isLogin") === "true";
 
-с кормментариями 
-и расскажи как правильно такой функционало реализовывать 
+  if (!to.meta.public && !isAuthenticated) {
+    next("/auth");
+  } else if (to.path === "/auth" && isAuthenticated) {
+    next("/");
+  } else {
+    next();
+  }
+});
+
+export default router;
