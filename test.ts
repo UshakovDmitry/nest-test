@@ -1,26 +1,20 @@
-const handleLogin = () => {
-  // Проверка полей на правильность заполнения
-  let allFieldsValid = true;
-  model.fields.forEach(field => {
-    if (field.isEmpty()) {
-      allFieldsValid = false;
-    }
-  });
+ const chooseStrategy = () => {
+        if (props.drivers && props.drivers.length > 0) {
+          return showDrivers(props.drivers);
+        } else if (props.address) {
+          return showAddress(props.address);
+        } else if (props.search) {
+          return determineAddress(props.city, props.street, props.house);
+        }
+      };
 
-  // Если все поля заполнены верно, продолжаем вход
-  if (allFieldsValid) {
-    localStorage.setItem("isLogin", "true");
-    router.push("/");
-  }
-}
+      const strategy = chooseStrategy();
+      if (strategy) {
+        strategy();
+      } else {
+        console.error("Не выбрана стратегия");
+      }
 
-
-isEmpty(): boolean {
-  if (!this.input.value.length) {
-    this.helper.isActive = true;
-    this.input.isError = true;
-    this.helper.value = "Поле не должно быть пустым";
-    return true;
-  }
-  return false;
-}
+This expression is not callable.
+  Type 'Promise<void>' has no call signatures.ts(2349)
+const strategy: Promise<void>
