@@ -1,295 +1,48 @@
-<template>
-  <div class="auth">
-    <div class="auth__content">
-      <img :src="logo" alt="logo" />
-      <EmailInput
-        :config="model.login.fields[0]"
-        @input="viewModel.setEmail($event)"
-      ></EmailInput>
-      <PasswordInput :config="model.login.fields[1]"> </PasswordInput>
-      <ButtonComponent
-        :config="model.login.loginBtn"
-        @onClick="viewModel.postData()"
-      ></ButtonComponent>
-    </div>
-  </div>
-</template>
-<script setup lang="ts">
-import logo from '../../public/icons/logo.svg';
-import ButtonComponent from '../../components/global/button/button.vue';
-import EmailInput from '../../components/global/fields/email-field/email-field.vue';
-import PasswordInput from '../../components/global/fields/password-field/password-field.vue';
-import { Button } from '../../domain/interfaces/button.interface';
-import { AuthModel } from './auth.model';
-import { EmailField } from '../../components/global/fields/email-field/email-field.model';
-import { PasswordField } from '../../components/global/fields/password-field/password-field.model';
-import { AuthViewModel } from './auth.viewmodel';
-import { ref, Ref } from 'vue';
+у меня написан модуль на NEST 
+я хочу избавиться от моковых данных получать и возвращать города по этому адресу 
+ GET: http://10.0.1.20/1CHS/hs/TMS/DistributionWorks
 
-const model: Ref<AuthModel> = ref(new AuthModel({
-  email: '',
-  password: '',
-  login: {
-    fields:[
-      new EmailField ({
-        label: 'Email',
-        input: {
-          type: 'email',
-          placeholder: 'Введите email',
-          value: '',
-          isError: false,
-          isDisabled: false,
-          required: true,
-          body_key: 'email',
-        },
-        helper: {
-          value: 'Пожалуйста, введите email',
-          isActive: false,
-        },
-      }),
-      new PasswordField ({
-        label: 'Пароль',
-        isShowed: false,
-        input: {
-          type: 'password',
-          placeholder: 'Введите пароль',
-          value: '',
-          isError: false,
-          isDisabled: false,
-          required: true,
-          body_key: 'password',
-        },
-        helper: {
-          value: 'Пожалуйста, введите пароль',
-          isActive: false,
-        },
-      }),
-    ],
-    loginBtn: new Button({
-      value: 'Войти',
-      type: 'filled',
-      color: 'green',
-      border: 'large',
-      loading: false,
-      disabled: false,
-      width: '100%',
-    }),
+cities.controller
+import { Controller, Get } from '@nestjs/common';
+import { CitiesService } from './cities.service';
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags('cities')
+@Controller('/api/getCities')
+export class CitiesController {
+  constructor(private readonly citiesService: CitiesService) {}
+
+  @Get()
+  getLoaders() {
+    return this.citiesService.getDistributedСities();
   }
 }
-  
-));
-const viewModel: Ref<AuthViewModel> = ref(new AuthViewModel(model.value));
-
-</script>
-<style scoped >
-.auth {
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(108deg, #01a254 0%, #50d17f 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: -72px;
-  margin-top: -107px;
-  box-sizing: border-box;
-}
-.auth__content {
-  display: flex;
-  width: 420px;
-  padding: 36px;
-  flex-direction: column;
-  align-items: center;
-  gap: 11px;
-  flex-shrink: 0;
-  border-radius: 16px;
-  box-sizing: border-box;
-
-  background: #fff;
-}
-</style>
-
-ОШИБКА
-Type 'IEmailField | IPasswordField' is not assignable to type 'IEmailField'.
-  Type 'IPasswordField' is not assignable to type 'IEmailField'.ts(2322)
-(property) config: IEmailField
 
 
-<template>
-  <div
-    class="field"
-    :class="{ invalid: config.helper.isActive && config.input.isError }"
-  >
-    <label for="email-field" class="body-small grey-text"></label>
-    <input
-      :type="config.input.type"
-      name="email-field"
-      class="body-medium"
-      :class="{ disabled: config.input.isDisabled }"
-      :value="config.input.value"
-      :placeholder="config.input.placeholder"
-      @focusout="
-        config.setValue(($event.target as HTMLInputElement).value.trim());
-        !config.input.required && config.isEmpty();
-      "
-      @input="
-        config.setValue(($event.target as HTMLInputElement).value.trim());
-        emits('input', config.input.value);
-      "
-    />
-    <div
-      class="label-small red-text"
-      v-if="config.helper.isActive && config.input.isError"
-    >
-      {{ config.helper.value }}
-    </div>
-  </div>
-</template>
+cities.service
+import { Injectable } from '@nestjs/common';
 
-<script setup lang="ts">
-import { IEmailField } from "./email-field.model";
+@Injectable()
+export class CitiesService {
+  private LOADERS: any[] = [
+'астана','алматы'
+  ];
 
-defineProps<{
-  config: IEmailField;
-}>();
-
-const emits = defineEmits(["input"]);
-</script>
-
-<style scoped lang="scss">
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
-  height: 80px;
-}
-
-input {
-  box-sizing: border-box;
-  background: inherit;
-  border: 1px solid var(--light);
-  border-radius: 16px;
-  width: 100%;
-  height: 40px;
-  padding: 12px;
-}
-
-input.disabled {
-  border: none;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 143%;
-  letter-spacing: 0.1px;
-  padding: 0;
-}
-
-.invalid {
-  input {
-    border-color: var(--red) !important;
-
-    &::placeholder {
-      color: var(--red) !important;
-    }
-  }
-
-  label {
-    color: var(--red) !important;
+  getDistributedСities() {
+    return this.LOADERS;
   }
 }
-</style>
-export interface IEmailField {
-  label: string;
-  translateLabel?: string;
-  input: {
-    type: string;
-    placeholder: string;
-    translateKey?: string;
-    value: string;
-    isError: boolean;
-    isDisabled: boolean;
-    required: boolean;
-    body_key?: string;
-  };
-  helper: {
-    value: string;
-    isActive: boolean;
-  };
-  isEmpty: () => void;
-  checkValid: () => void;
-  setValue: (value: string) => void;
-}
 
-export class EmailField implements IEmailField {
-  label: string;
-  translateLabel?: string;
-  input: {
-    type: string;
-    placeholder: string;
-    translateKey?: string;
-    value: string;
-    isError: boolean;
-    required: boolean;
-    isDisabled: boolean;
-    body_key?: string;
-  };
-  helper: {
-    value: string;
-    isActive: boolean;
-  };
 
-  constructor(object: {
-    label: string;
-    translateLabel?: string;
-    input: {
-      type: string;
-      placeholder: string;
-      translateKey?: string;
-      value: string;
-      isError: boolean;
-      required: boolean;
-      isDisabled: boolean;
-      body_key: string;
-    };
-    helper: {
-      value: string;
-      isActive: boolean;
-    };
-  }) {
-    this.label = object.label;
-    this.translateLabel = object.translateLabel;
-    this.input = object.input;
-    this.helper = object.helper;
-  }
+cities.module
+import { Module } from '@nestjs/common';
+import { CitiesService } from './cities.service';
+import { CitiesController } from './cities.controller';
 
-  setValue(value: string) {
-    this.input.value = value;
-    this.clearError();
-    if (this.checkValid()) {
-      this.input.isError = true;
-      this.helper.isActive = true;
-      this.helper.value = "Введите корректный email";
-    }
-  }
+@Module({
+  controllers: [CitiesController],
+  providers: [CitiesService],
+})
+export class CitiesModule {}
 
-  isEmpty(): void {
-    this.clearError();
-    if ((!this.input.value && !this.input.value.length) || this.checkValid()) {
-      this.input.isError = true;
-      this.helper.isActive = true;
-      this.helper.value = this.input.value.length
-        ? "Введите корректный email"
-        : "Поле не должно быть пустым";
-    }
-  }
 
-  // При вводе значений в инпут проверяем стал ли он валидным
-  checkValid(): boolean {
-    return !this.input.value.includes("@");
-  }
-
-  clearError() {
-    this.input.isError = false;
-    this.helper.isActive = false;
-    this.helper.value = "";
-  }
-}
