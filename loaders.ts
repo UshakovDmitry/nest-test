@@ -1,21 +1,3 @@
-import router from '../../router';
-import { useGetApi } from '../../domain/services/getHTTP.service';
-// import { IDashboardDriver } from '../../domain/interfaces/dashboard.interface';
-// import { ITransportRequest } from '../../domain/interfaces/transportRequest.interface';
-import { type CouriersModel } from './couriers.model';
-// import { ITransportRequest } from '../../domain/interfaces/transportRequest.interface';
-export interface ICourier {
-  courierFullName: string;
-  carNumber: string;
-  type: string;
-  schedule: string;
-  hardWindow: string;
-  returnToWarehouse: string;
-  city: string;
-  // phoneNumber: string;
-  // isActive: string;
-}
-
 export class CouriersViewModel {
   model: CouriersModel;
 
@@ -24,34 +6,30 @@ export class CouriersViewModel {
     this.getCouriers();
   }
 
-  // getCouriers(): void {
   async getCouriers(): Promise<void> {
     try {
       const response = await useGetApi('getCouriers');
       console.log(response, 'response');
-      const courier: ICourier = {}
-      response.forEach((item: ICourier) => {
-        courier.courierFullName = item.Drivers;
-        courier.carNumber = item.carNumber;
-        courier.type = item.TypeHiring;
-        courier.schedule = item.Schedule;
-        courier.hardWindow = item.HardTimeWindow;
-        courier.returnToWarehouse = item.ReturnWarehouse;
-        courier.city = item.City;
-        // courier.phoneNumber = item.PhoneNumber;
-        // courier.isActive = item.IsActive;
-      }
-      );
 
-      // this.model.couriers = response;
+      // Маппинг ответа в массив объектов ICourier
+      const couriers: ICourier[] = response.map((item: any): ICourier => ({
+        courierFullName: item.Drivers,       // Используем свойства из ответа сервера
+        carNumber: item.carNumber,
+        type: item.HiringType,               // Предполагаю, что это правильное свойство
+        schedule: item.TimeWindow,           // Аналогично, это предположение
+        hardWindow: item.HardTimeWindow ? 'Да' : 'Нет', // Если это булевое значение
+        returnToWarehouse: item.ReturnWarehouse ? 'Да' : 'Нет', // Аналогично
+        city: item.City,
+      }));
+
+      // Сохраняем массив couriers в вашей модели (предполагая, что у модели есть такое свойство)
+      this.model.couriers = couriers;
+
     } catch (error) {
       throw error;
     }
   }
+}
 
-
-Type '{}' is missing the following properties from type 'ICourier': courierFullName, carNumber, type, schedule, and 3 more.ts(2740)
-Property 'Drivers' does not exist on type 'ICourier'.ts(2339)
-Property 'Schedule' does not exist on type 'ICourier'. Did you mean 'schedule'?ts(2551)
 
 
