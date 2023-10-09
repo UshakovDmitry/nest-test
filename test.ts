@@ -1,97 +1,51 @@
-import {
-  createRouter,
-  createWebHistory,
-  type RouteRecordRaw,
-} from 'vue-router';
-import Auth from '../pages/auth/auth.component.vue';
-import Layout from '../layout/dafault.vue';
-import Dashboard from '../pages/dashboard/dashboard.component.vue';
-import Map from '../pages/map/map.component.vue';
-import TransportRequests from '../pages/transport-requests/transportRequests.component.vue';
-import Transport from '../pages/transport/transport.component.vue';
-import Couriers from '../pages/couriers/couriers.component.vue';
-import CourierDetail from '../pages/courier-detail/courier-detail.component.vue';
-import TransportRequestsDetail from '../pages/transport-requests-detail/transport-requests-detail.component.vue';
+<template>
+  <div class="not-found">
+    <h1>404</h1>
+    <p>Страница не найдена</p>
+    <router-link to="/">Вернуться на главную</router-link>
+  </div>
+</template>
 
-// Инициализация статуса авторизации, если он еще не установлен
-if (localStorage.getItem("isLogin") === null) {
-  localStorage.setItem("isLogin", "false");
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: 'NotFound',
+});
+</script>
+
+<style scoped>
+.not-found {
+  text-align: center;
+  padding: 50px;
 }
 
+h1 {
+  font-size: 80px;
+  color: #ff0000;
+}
+
+p {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+</style>
+
+
+
+import NotFound from '../path-to-your-component/NotFound.vue';
+
 const routes: RouteRecordRaw[] = [
+  // ... ваши текущие маршруты
   {
-    path: '/auth',
-    name: 'Auth',
-    component: Auth,
+    path: '/:catchAll(.*)', // Это сработает для всех неизвестных маршрутов
+    name: 'NotFound',
+    component: NotFound,
     meta: {
       public: true,
-      hasLayout: false,
+      hasLayout: true,
     },
-  },
-  {
-    path: '/',
-    component: Layout,
-    meta: { hasLayout: true },
-    children: [
-      {
-        path: '',
-        redirect: 'dashboard',
-      },
-      {
-        path: 'dashboard',
-        name: 'Dashboard',
-        component: Dashboard,
-      },
-      {
-        path: 'map',
-        name: 'Map',
-        component: Map,
-      },
-      {
-        path: 'requests',
-        name: 'transportRequests',
-        component: TransportRequests,
-      },
-      {
-        path: 'requests/:id',
-        name: 'TransportRequestsDetail',
-        component: TransportRequestsDetail,
-      },
-      {
-        path: 'couriers',
-        name: 'Сouriers',
-        component: Couriers,
-      },
-      {
-        path: 'couriers/:id',
-        name: 'CourierDetail',
-        component: CourierDetail,
-      },
-      {
-        path: 'transport',
-        name: 'Transport',
-        component: Transport,
-      },
-    ],
   },
 ];
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-});
-
-router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem("isLogin") === "true";
-
-  if (!to.meta.public && !isAuthenticated) {
-    next("/auth");
-  } else if (to.path === "/auth" && isAuthenticated) {
-    next("/");
-  } else {
-    next();
-  }
-});
-
-export default router;
-Напиши код компонента для страницы 404 и условие в роутере
+// ... остальной код
