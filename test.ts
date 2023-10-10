@@ -13,3 +13,13 @@ export class DBService {
 
   // остальной ваш код...
 }
+
+
+
+
+@Sse('sse')
+sse(): Observable<MessageEvent> {
+  return this.dbService.dataChange$.pipe(
+    map(() => ({ data: { message: 'Pong' } }))
+  );
+}
