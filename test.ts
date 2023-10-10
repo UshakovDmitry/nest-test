@@ -1,51 +1,117 @@
-<template>
-  <div class="not-found">
-    <h1>404</h1>
-    <p>Страница не найдена</p>
-    <router-link to="/">Вернуться на главную</router-link>
-  </div>
-</template>
+Ты разработчик JS с 10 летним стажем
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+Я пишу фронт и бэкенд
+для передачи использую http но сейчас хочу реализовать SSE
+вот код модуля на NEST 
 
-export default defineComponent({
-  name: 'NotFound',
-});
-</script>
 
-<style scoped>
-.not-found {
-  text-align: center;
-  padding: 50px;
+TransportRequestsService
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { MessageDocument } from '../schemas/message.shema';
+import { DBService } from '../db/db.service';
+
+@Injectable()
+export class TransportRequestsService {
+  constructor(
+    @InjectModel('Message') private messageModel: Model<MessageDocument>,
+    private readonly dbService: DBService,
+  ) {}
+
+  async getAllTransportRequests(): Promise<any[]> {
+    return await this.dbService.getAllTransportRequests();
+  }
+
+  async getTransportRequestByNumber(number: string): Promise<any> {
+    return await this.dbService.getTransportRequestByNumber(number);
+  }
+
+  async getTransportRequestsByDateRange(
+    startDate: string,
+    endDate: string,
+  ): Promise<any[]> {
+    return await this.dbService.getTransportRequestsByDateRange(
+      startDate,
+      endDate,
+    );
+  }
 }
 
-h1 {
-  font-size: 80px;
-  color: #ff0000;
+
+TransportRequestsController
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { TransportRequestsService } from './transportRequests.service';
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags('getTransportRequests')
+@Controller('/api/getTransportRequests')
+export class TransportRequestsController {
+  constructor(
+    private readonly transportRequestsService: TransportRequestsService,
+  ) {}
+
+  @Get()
+  async getAllTransportRequests() {
+    return this.transportRequestsService.getAllTransportRequests();
+  }
+
+  @Post('byNumber')
+  async getTransportRequestByNumber(@Body('number') number: string) {
+    return this.transportRequestsService.getTransportRequestByNumber(number);
+  }
+
+  @Post('byDateRange')
+  async getTransportRequestsByDateRange(
+    @Body() dateRangeDto: { startDate: string; endDate: string },
+  ) {
+    return this.transportRequestsService.getTransportRequestsByDateRange(
+      dateRangeDto.startDate,
+      dateRangeDto.endDate,
+    );
+  }
 }
 
-p {
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-</style>
+TransportRequestsModule
+
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MessageSchema } from '../schemas/message.shema';
+import { TransportRequestsService } from './transportRequests.service';
+import { TransportRequestsController } from './transportRequests.controller';
+import { DBModule } from '../db/db.module';  
+
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
+    DBModule  
+  ],
+  controllers: [TransportRequestsController],
+  providers: [TransportRequestsService],
+})
+export class TransportRequestsModule {}
 
 
+реализуй передачу данных через SSE 
+я хочу чтобы обновленные данные приходили на фронтенд без перезагрузки страницы
+пусть бекенд отправляет на фронт понги и когда случится событие(изменение) фронтенд делает уже сущесвующий запрос 
+вот как выглядит запрос с фронтенда 
 
-import NotFound from '../path-to-your-component/NotFound.vue';
+  async getTransportRequests(): Promise<void> {
+    const response = await useGetApi('getTransportRequests');
+    console.log(response.length, 'кол-во заявок');
+    // console.log(response, 'response');
+    response.forEach((data: any) => {
+      const transformedData = this.transformToTransportRequest(data);
+      const city = this.setCitiesList(transformedData);
+      // Проверяем наличие города в списке и добавляем, если его нет
+      if (!this.model.cities.includes(city)) {
+        this.model.cities.push(city);
+      }
+      const transformedDataForTable =
+        this.transformToTransportForTable(transformedData);
 
-const routes: RouteRecordRaw[] = [
-  // ... ваши текущие маршруты
-  {
-    path: '/:catchAll(.*)', // Это сработает для всех неизвестных маршрутов
-    name: 'NotFound',
-    component: NotFound,
-    meta: {
-      public: true,
-      hasLayout: true,
-    },
-  },
-];
+      this.model.transportRequests.unshift(transformedDataForTable);
+    });
+  }
 
-// ... остальной код
