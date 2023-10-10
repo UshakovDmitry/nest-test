@@ -1,90 +1,183 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { MessageDocument } from '../schemas/message.shema';
-import { HttpService } from '@nestjs/axios';
-import { lastValueFrom } from 'rxjs';
-import { Subject } from 'rxjs';
+import { useGetApi } from '../../domain/services/getHTTP.service';
+import { usePostApi } from '../../domain/services/postHTTP.service';
+import router from '../../router';
+import { type TransportRequestsModel } from './transportRequests.model';
+// import { ITransportRequest } from '../../domain/interfaces/transportRequest.interface';
 
+export class TransportRequestsViewModel {
+  model: TransportRequestsModel;
+  eventSource: EventSource;
 
-@Injectable()
-export class DBService {
-  [x: string]: any;
-  private dataChangeSubject: Subject<void>;
-  public dataChange$: Observable<void>;
-  constructor(
-    @InjectModel('Message') private messageModel: Model<MessageDocument>,
-    private readonly httpService: HttpService,
-   
-  ) {
-    this.dataChangeSubject = new Subject<void>();
-    this.dataChange$ = this.dataChangeSubject.asObservable();
+  constructor(model: any) {
+    this.model = model;
+    this.eventSource = new EventSource(
+      'http://localhost:4000/api/getTransportRequests/sse',
+    );
+    this.setupEventListeners();
+    this.getTransportRequests();
   }
 
-  async getCorrectCityName(city: string) {
-    console.log(city, 'ПРИХОДИТ ГОРОД В getCorrectCityName');
-    // TODO: Переделать на нормальный запрос + добавить кэширование + .env
-    const apiKey = '06c9301e-6663-4182-b060-81da5969b5f3';
-    const url = `https://geocode-maps.yandex.ru/1.x/?format=json&apikey=${apiKey}&geocode=${city}`;
+  private setupEventListeners() {
+    this.eventSource.onmessage = (event) => {
+      console.log('New message', JSON.parse(event.data));
 
+      if (JSON.parse(event.data).message === 'Pong') {
+        this.getTransportRequests();
+      }
+    };
+  }
+
+  async getTransportRequests(): Promise<void> {
+    const response = await useGetApi('getTransportRequests');
+    console.log(response.length, 'кол-во заявок');
+    // console.log(response, 'response');
+    response.forEach((data: any) => {
+      const transformedData = this.transformToTransportRequest(data);
+      const city = this.setCitiesList(transformedData);
+      // Проверяем наличие города в списке и добавляем, если его нет
+      if (!this.model.cities.includes(city)) {
+        this.model.cities.push(city);
+      }
+      const transformedDataForTable =
+        this.transformToTransportForTable(transformedData);
+
+      this.model.transportRequests.unshift(transformedDataForTable);
+    });
+  }
+
+  setTimeRange(timeRange) {
+    this.getTransportRequestsByDateRange(timeRange[0], timeRange[1]);
+  }
+
+  async getTransportRequestsByDateRange(
+    dateStart: string,
+    dateEnd: string,
+  ): Promise<void> {
+    const body = {
+      startDate: dateStart,
+      endDate: dateEnd,
+    };
     try {
-      const response$ = this.httpService.get(url);
-      const response = await lastValueFrom(response$);
-      console.log(
-        response.data.response.GeoObjectCollection.featureMember[0].GeoObject
-          .name,
-        'яндекс возвращает:',
+      const response = usePostApi(
+        'getTransportRequestsbyDateRange',
+        body,
+        'sendFormData',
       );
-      return response.data.response.GeoObjectCollection.featureMember[0]
-        .GeoObject.name;
+
+      const data = await response;
+
+      // Очистить текущие данные перед добавлением новых
+      this.model.transportRequests = [];
+
+      data.forEach((dataItem: any) => {
+        const transformedData = this.transformToTransportRequest(dataItem);
+        const transformedDataForTable =
+          this.transformToTransportForTable(transformedData);
+        this.model.transportRequests.push(transformedDataForTable);
+      });
+      this.model.filteredTransportRequests = this.model.transportRequests;
     } catch (error) {
-      console.error('Ошибка при выполнении GET-запроса:', error);
-      throw error;
+      console.error('Ошибка при получении данных:', error);
     }
   }
 
-  async saveMessage(messageData: any) {
-    try {
-      const parsedData =
-        typeof messageData === 'string' ? JSON.parse(messageData) : messageData;
-      const currentDate = new Date();
-      parsedData.DateCreated = `${currentDate.getDate()}-${
-        currentDate.getMonth() + 1
-      }-${currentDate.getFullYear()}`;
-      if (parsedData.IdYandex !== '') {
-        parsedData.distribution = true;
-      } else {
-        parsedData.distribution = false;
-      }
-
-      const existingMessage = await this.messageModel
-        .findOne({ Number: parsedData.Number })
-        .exec();
-
-      if (existingMessage) {
-      //Слушаем изменения в бд
-        this.dataChangeSubject.next();
-        // Если сообщение с таким номером уже существует, обновляем его
-        const updatedMessage = await this.messageModel
-          .findOneAndUpdate({ Number: parsedData.Number }, parsedData, {
-            new: true,
-          })
-          .exec();
-        console.log('Обновил сообщение:', updatedMessage.Number);
-        return updatedMessage;
-      } else {
-      //Слушаем изменения в бд
-        this.dataChangeSubject.next();
-        // Если сообщения с таким номером нет, создаем новое
-        const createdMessage = new this.messageModel(parsedData);
-        console.log('Новое сообщение в бд:', createdMessage.Number);
-        return createdMessage.save();
-      }
-    } catch (error) {
-      console.error('Ошибка сохранения в бд:', error);
-      throw error;
-    }
+  search(value) {
+    this.model.filteredTransportRequests = this.model.transportRequests.filter(
+      (item) => {
+        return item.request.number.toLowerCase().includes(value.toLowerCase());
+      },
+    );
   }
-Cannot find name 'Observable'.ts(2304)
-Public property 'dataChange$' of exported class has or is using private name 'Observable'.ts(4031)
-type Observable = /*unresolved*/ any
+
+  setCitiesList(data) {
+    return data.contactInformation.City;
+  }
+
+  selectCity(city: string): void {
+    console.log(city);
+  }
+
+  downloadLoadersAsXLSX(): void {
+    alert('Функционал в разработке');
+  }
+
+  goToTransportRequestDetail(row: any) {
+    console.log('router');
+
+    router.push({
+      name: 'TransportRequestsDetail',
+      params: { id: row.request.number },
+      query: {
+        number: row.request.number,
+      },
+    });
+  }
+
+  transformToTransportRequest(data: any) {
+    return {
+      request: {
+        number: String(data.Number),
+        status: Boolean(data.distribution),
+      },
+      status: String(data.DocumentStatus),
+      ISR: {
+        number: String(data.ISR),
+        status: String(data.loanAgreementStatus),
+      },
+      document: String(data.Informal_Document),
+      carModel: String(data.CarModel),
+      carNumber: String(data.NuberCar),
+      numberPPO: String(data.NuberPPO),
+      organization: String(data.Organization),
+      typePayment: String(data.TypePayment),
+      loanAgreementStatus: String(data.loanAgreementStatus),
+      quantities: data.StructureQuantities,
+      chronologies: data.ArrayChronologies,
+      contactInformation: data.ContactInformation,
+      orders: data.ArrayStrings,
+      dataCreated: String(data.DateCreated),
+      date: String(data.Date),
+      driver: String(data.Driver),
+      fiterContractor: String(data.FilterContractor),
+    };
+  }
+
+  transformToTransportForTable(data: any) {
+    return {
+      request: data.request,
+      status: String(data.status),
+      ISR: data.ISR,
+      document: String(data.document),
+      // shippingAddress: {
+      //   address: `${data.contactInformation.City}, ${data.contactInformation.Street}, ${data.contactInformation.Home}, ${data.contactInformation.Apartment}`,
+      //   coordinates: `${data.contactInformation.Latitude}, ${data.contactInformation.Longitude}`,
+      // },
+      recipient: {
+        name: String(data.contactInformation.Contractor),
+        phone: String(data.contactInformation.Phone),
+      },
+      deliveryTime: {
+        date: String(data.date),
+        time: String(data.contactInformation.Date_Time_delivery),
+      },
+      deliveryAddress: {
+        address: `${data.contactInformation.City}, ${data.contactInformation.Street}, ${data.contactInformation.Home}, ${data.contactInformation.Apartment}`,
+        coordinates: `${data.contactInformation.Latitude}, ${data.contactInformation.Longitude}`,
+      },
+      quantitties: {
+        totalPrice: data.quantities
+          ? String(data.quantities.TotalAmount)
+          : '-/-/-',
+        totalWeight: data.quantities
+          ? String(data.quantities.TotalWeight)
+          : '---',
+      },
+    };
+  }
+}
+
+
+
+перепеши логику 
+сейчас когда приходит PONG то массив transportRequests наполняется данными новыми 
+а я хочу чтобы добавлялись только новые либо заменялись все элементы массива 
