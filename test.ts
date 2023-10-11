@@ -79,7 +79,7 @@ export class TransportService {
 
 
 
-      carVolume: (parseInt(data.MaximumLoadLength) * parseInt(data.MaximumCargoWidth) * parseInt(data.MaximumLoadHeight)) / 1000000000,
+carVolume: (parseInt(data.MaximumLoadLength.replace(/\s+/g, '')) * parseInt(data.MaximumCargoWidth.replace(/\s+/g, '')) * parseInt(data.MaximumLoadHeight.replace(/\s+/g, ''))) / 1000000000,
 
 
 
