@@ -1,3 +1,9 @@
+carType: data.LoadType.map(item => item.Type)
+
+
+
+
+
 Ты fullstack разработчик с 20 летним стажем
 У меня есть массив вот с такими элемаентами 
 
