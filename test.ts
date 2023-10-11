@@ -1,38 +1,32 @@
-sort(index: number): void {
-  const propertyToSortBy = this.getPropertyByIndex(index);
-
-  switch (this.sortState) {
-    case 'none':
-    case 'descending':
-      this.sortState = 'ascending';
-      this.model.filteredCouriers.sort((a, b) => 
-        a[propertyToSortBy].length - b[propertyToSortBy].length
-      );
-      break;
-    case 'ascending':
-      this.sortState = 'descending';
-      this.model.filteredCouriers.sort((a, b) => 
-        b[propertyToSortBy].length - a[propertyToSortBy].length
-      );
-      break;
-  }
-}
-
-getPropertyByIndex(index: number): keyof ICourier {
-  switch(index) {
-    case 0: return 'courierFullName';
-    case 1: return 'carNumber';
-    case 2: return 'hiringType';
-    case 3: return 'schedule';
-    case 4: return 'hardWindow';
-    case 5: return 'returnToWarehouse';
-    case 6: return 'city';
-    case 7: return 'goToDetail';
-    default: throw new Error(`Unknown index: ${index}`);
-  }
-}
-
-
+       {
+            "QuantityPlaces": "3",
+            "LoadingCapacity": "1 500",
+            "MaximumLoadLength": "2 970",
+            "MaximumCargoWidth": "1 900",
+            "MaximumLoadHeight": "2 160",
+            "RegistrationNumber": "M121237",
+            "City": "Актау",
+            "Brandcar": [
+                {
+                    "Brand": "ГАЗ-3302",
+                    "Imei": ""
+                }
+            ],
+            "LoadType": [
+                {
+                    "Type": "NORMAL_TRUCK"
+                },
+                {
+                    "Type": "TAIL_LIFT"
+                }
+            ],
+            "WorkingSchedule": [
+                {
+                    "TimeWindow": "09:00:00-18:00:00",
+                    "RigidTimeWindow": "Да"
+                }
+            ]
+        },
 
 
 
