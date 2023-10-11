@@ -65,3 +65,58 @@ export class TransportService {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
+
+@Injectable()
+export class TransportService {
+  constructor(private readonly httpService: HttpService) {}
+
+  transformData(data) {
+    return {
+      carBrand: data.Brandcar[0]?.Brand || "",
+      carNumber: data.RegistrationNumber,
+      carVolume: (parseInt(data.MaximumLoadLength) * parseInt(data.MaximumCargoWidth) * parseInt(data.MaximumLoadHeight)) / 1000000,
+      loadingCapacity: parseInt(data.LoadingCapacity.replace(/\s+/g, '')), // убираем пробелы и конвертируем в число
+      city: data.City,
+      timeWindow: data.WorkingSchedule[0]?.TimeWindow || ""
+    };
+  }
+
+  async getTransport() {
+    const response = await firstValueFrom(this.httpService.get('http://10.0.1.20/1CHS/hs/TMS/ParametersCars'));
+    return response.data.data.map(this.transformData);
+  }
+}
+
+
+
+
