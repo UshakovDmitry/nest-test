@@ -1,4 +1,6 @@
-       {
+У меня есть массив вот с такими элемаентами 
+
+   {
             "QuantityPlaces": "3",
             "LoadingCapacity": "1 500",
             "MaximumLoadLength": "2 970",
@@ -27,6 +29,17 @@
                 }
             ]
         },
+
+я хочу преобразовать к вот такому виду
+
+{
+       carBrand: Brandcar.Brand ,
+       carNumber: RegistrationNumber,
+       carVolume : (MaximumLoadLength * MaximumCargoWidth * MaximumLoadHeight) / 1000000,
+       loadingCapacity : LoadingCapacity,
+       city:City,
+       timeWindow: WorkingSchedule.TimeWindow
+}
 
 
 
