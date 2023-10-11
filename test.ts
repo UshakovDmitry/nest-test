@@ -1,3 +1,4 @@
+Ты fullstack разработчик с 20 летним стажем
 У меня есть массив вот с такими элемаентами 
 
    {
@@ -41,6 +42,24 @@
        timeWindow: WorkingSchedule.TimeWindow
 }
 
+
+
+
+
+
+вставь сюда это промежуточную логику 
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
+
+@Injectable()
+export class TransportService {
+  constructor(private readonly httpService: HttpService) {}
+  async getTransport() {
+    const response = await firstValueFrom(this.httpService.get('http://10.0.1.20/1CHS/hs/TMS/ParametersCars'));
+    return response.data.data;
+  }
+}
 
 
 
