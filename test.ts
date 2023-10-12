@@ -1,4 +1,110 @@
-carType: data.LoadType.map(item => item.Type)
+ async getAllDrivers() {
+    const aggregation = [
+      {
+        $sort: { Driver: 1 },
+      },
+      {
+        $group: {
+          _id: '$Driver',
+          transportRequests: {
+            $push: {
+              number: '$Number',
+              IdYandex: '$IdYandex',
+              distribution: '$distribution',
+              date: '$Date',
+              dateCreated: '$DateCreated',
+              organization: '$Organization',
+              documentStatus: '$DocumentStatus',
+              ISR: '$ISR',
+              nuberPPO: '$NumberPPO',
+              informalDocument: '$Informal_Document',
+              filterContractor: '$FilterContractor',
+              loanAgreementStatus: '$loanAgreementStatus',
+              typePayment: '$TypePayment',
+              chronologies: '$ArrayChronologies',
+              contactInformation: '$ContactInformation',
+              orders: '$ArrayStrings',
+            },
+          },
+          сarNumber: { $first: '$NumberCar' },
+          carModel: { $first: '$CarModel' },
+        },
+      },
+    ];
+
+    const driversAggregated = await this.messageModel
+      .aggregate(aggregation as any)
+      .exec();
+
+    const drivers = driversAggregated.map((driverData) => ({
+      driver: driverData._id,
+      carNumber: driverData.сarNumber,
+      carModel: driverData.carModel,
+      transportRequests: driverData.transportRequests.map((request) => ({
+        ...request,
+        orders: request.orders.flat(),
+      })),
+    }));
+    const updatedDrivers = this.setCountOrdersStatus(drivers);
+    return updatedDrivers;
+  }
+
+  setCountOrdersStatus(drivers: any[]) {
+    const updatedDrivers = drivers.map((driver) => {
+      const countCompletedOrders = driver.transportRequests.filter(
+        (order) => order.documentStatus === 'Доставлено',
+      ).length;
+      const countPendingOrders = driver.transportRequests.filter(
+        (order) => order.documentStatus === 'Доставляется',
+      ).length;
+      // const countCanceledOrders = driver.transportRequests.filter(order => order.documentStatus === "Отменено").length;
+      const countAllOrders = driver.transportRequests.length;
+      return {
+        ...driver,
+        countCompletedOrders: String(countCompletedOrders),
+        countPendingOrders: String(countPendingOrders),
+        // countCanceledOrders: String(countCanceledOrders),
+        countAllOrders: String(countAllOrders),
+      };
+    });
+    return updatedDrivers;
+  }
+
+  async getDriversByDate(date: string) {
+    const drivers = await this.getAllDrivers();
+    const filteredDrivers = drivers
+      .map((driver) => {
+        const filteredRequests = driver.transportRequests.filter(
+          (transportRequest) => {
+            return (
+              transportRequest.contactInformation.Date_Time_delivery.split(
+                ' ',
+              )[0] === date
+            );
+          },
+        );
+
+        return { ...driver, transportRequests: filteredRequests };
+      })
+      .filter((driver) => driver.transportRequests.length > 0);
+    return filteredDrivers;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
