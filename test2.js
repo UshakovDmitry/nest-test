@@ -21,10 +21,14 @@ async getDriversStatsByDate(date) {
         });
     });
 
+    // Рассчет процента отказов
+    let failure_rate = totalRequests ? (count_failure / totalRequests) * 100 : 0;
+
     return {
         totalRequests,
         couriers_online,
-        count_failure
+        count_failure,
+        failure_rate
     };
 }
 
