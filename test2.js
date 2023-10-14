@@ -1,4 +1,4 @@
-async getDriversStatsByDate(date) {
+  async getDriversStatsByDate(date) {
     const drivers = await this.getDriversByDate(date);
     let totalRequests = 0;
     let couriers_online = 0;
@@ -21,8 +21,9 @@ async getDriversStatsByDate(date) {
         });
     });
 
-    // Рассчет процента отказов
+    // Рассчет процента отказов и округление до 2 знаков после запятой
     let failure_rate = totalRequests ? (count_failure / totalRequests) * 100 : 0;
+    failure_rate =parseFloat(failure_rate.toFixed(2));
 
     return {
         totalRequests,
