@@ -1,236 +1,71 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { MessageDocument } from '../schemas/message.shema';
-import { HttpService } from '@nestjs/axios';
-import { lastValueFrom,Observable,Subject } from 'rxjs';
-
-
-@Injectable()
-export class DBService {
-  [x: string]: any;
-  private dataChangeSubject: Subject<void>;
-  public dataChange$: Observable<void>;
-  constructor(
-    @InjectModel('Message') private messageModel: Model<MessageDocument>,
-    private readonly httpService: HttpService,
-   
-  ) {
-    this.dataChangeSubject = new Subject<void>();
-    this.dataChange$ = this.dataChangeSubject.asObservable();
-  }
-
-  async getCorrectCityName(city: string) {
-    console.log(city, 'ПРИХОДИТ ГОРОД В getCorrectCityName');
-    // TODO: Переделать на нормальный запрос + добавить кэширование + .env
-    const apiKey = '06c9301e-6663-4182-b060-81da5969b5f3';
-    const url = `https://geocode-maps.yandex.ru/1.x/?format=json&apikey=${apiKey}&geocode=${city}`;
-
-    try {
-      const response$ = this.httpService.get(url);
-      const response = await lastValueFrom(response$);
-      console.log(
-        response.data.response.GeoObjectCollection.featureMember[0].GeoObject
-          .name,
-        'яндекс возвращает:',
-      );
-      return response.data.response.GeoObjectCollection.featureMember[0]
-        .GeoObject.name;
-    } catch (error) {
-      console.error('Ошибка при выполнении GET-запроса:', error);
-      throw error;
-    }
-  }
-
-  async saveMessage(messageData: any) {
-    try {
-      const parsedData =
-        typeof messageData === 'string' ? JSON.parse(messageData) : messageData;
-      const currentDate = new Date();
-      parsedData.DateCreated = `${currentDate.getDate()}-${
-        currentDate.getMonth() + 1
-      }-${currentDate.getFullYear()}`;
-      if (parsedData.IdYandex !== '') {
-        parsedData.distribution = true;
-      } else {
-        parsedData.distribution = false;
-      }
-
-      const existingMessage = await this.messageModel
-        .findOne({ Number: parsedData.Number })
-        .exec();
-
-      if (existingMessage) {
-      //Слушаем изменения в бд
-        this.dataChangeSubject.next();
-        // Если сообщение с таким номером уже существует, обновляем его
-        const updatedMessage = await this.messageModel
-          .findOneAndUpdate({ Number: parsedData.Number }, parsedData, {
-            new: true,
-          })
-          .exec();
-        console.log('Обновил сообщение:', updatedMessage.Number);
-        return updatedMessage;
-      } else {
-      //Слушаем изменения в бд
-        this.dataChangeSubject.next();
-        // Если сообщения с таким номером нет, создаем новое
-        const createdMessage = new this.messageModel(parsedData);
-        console.log('Новое сообщение в бд:', createdMessage.Number);
-        return createdMessage.save();
-      }
-    } catch (error) {
-      console.error('Ошибка сохранения в бд:', error);
-      throw error;
-    }
-  }
-
-  async getAllTransportRequests(): Promise<any[]> {
-    return await this.messageModel.find().exec();
-  }
-
-  async getAllDrivers() {
-    const aggregation = [
-      {
-        $sort: { Driver: 1 },
-      },
-      {
-        $group: {
-          _id: '$Driver',
-          transportRequests: {
-            $push: {
-              number: '$Number',
-              IdYandex: '$IdYandex',
-              distribution: '$distribution',
-              date: '$Date',
-              dateCreated: '$DateCreated',
-              organization: '$Organization',
-              documentStatus: '$DocumentStatus',
-              ISR: '$ISR',
-              nuberPPO: '$NumberPPO',
-              informalDocument: '$Informal_Document',
-              filterContractor: '$FilterContractor',
-              loanAgreementStatus: '$loanAgreementStatus',
-              typePayment: '$TypePayment',
-              chronologies: '$ArrayChronologies',
-              contactInformation: '$ContactInformation',
-              orders: '$ArrayStrings',
-            },
-          },
-          сarNumber: { $first: '$NumberCar' },
-          carModel: { $first: '$CarModel' },
-        },
-      },
-    ];
-
-    const driversAggregated = await this.messageModel
-      .aggregate(aggregation as any)
-      .exec();
-
-    const drivers = driversAggregated.map((driverData) => ({
-      driver: driverData._id,
-      carNumber: driverData.сarNumber,
-      carModel: driverData.carModel,
-      transportRequests: driverData.transportRequests.map((request) => ({
-        ...request,
-        orders: request.orders.flat(),
-      })),
-    }));
-    const updatedDrivers = this.setCountOrdersStatus(drivers);
-    return updatedDrivers;
-  }
-
-  setCountOrdersStatus(drivers: any[], date?: string) {
-    const updatedDrivers = drivers.map((driver) => {
-      const filteredRequests = date 
-        ? driver.transportRequests.filter(
-            (transportRequest) =>
-              transportRequest.contactInformation.Date_Time_delivery.split(
-                ' ',
-              )[0] === date
-          )
-        : driver.transportRequests;
-      
-      const countCompletedOrders = filteredRequests.filter(
-        (order) => order.documentStatus === 'Доставлено',
-      ).length;
-      
-      const countPendingOrders = filteredRequests.filter(
-        (order) => order.documentStatus === 'Доставляется',
-      ).length;
-      
-      const countAllOrders = filteredRequests.length;
-      
-      return {
-        ...driver,
-        countCompletedOrders: String(countCompletedOrders),
-        countPendingOrders: String(countPendingOrders),
-        countAllOrders: String(countAllOrders),
-      };
-    });
-    return updatedDrivers;
-  }
-
-  async getDriversByDate(date: string) {
-    const drivers = await this.getAllDrivers();
-    const filteredDrivers = drivers
-      .map((driver) => {
-        const filteredRequests = driver.transportRequests.filter(
-          (transportRequest) => {
-            return (
-              transportRequest.contactInformation.Date_Time_delivery.split(
-                ' ',
-              )[0] === date
-            );
-          },
-        );
-
-        return { ...driver, transportRequests: filteredRequests };
-      })
-      .filter((driver) => driver.transportRequests.length > 0);
-    
-    const updatedDrivers = this.setCountOrdersStatus(filteredDrivers, date);
-    return updatedDrivers;
-  }
-
-
-  async getTransportRequestByNumber(number: string): Promise<any> {
-    return await this.messageModel.findOne({ Number: number }).exec();
-  }
-
-  async getTransportRequestsByDateRange(
-    startDate: string,
-    endDate: string,
-  ): Promise<any[]> {
-    // Преобразование дат из строки в объект Date
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    // Поиск заявок в базе данных, где Date_Time_delivery находится в диапазоне между startDate и endDate
-    return await this.messageModel
-      .find({
-        'ContactInformation.Date_Time_delivery': {
-          $gte: start.toISOString(),
-          $lte: end.toISOString(),
-        },
-      })
-      .exec();
-  }
-
-  async getTransportRequestsByDate(date: string): Promise<any[]> {
-  }
-
-  async getDriverByDriverName(driverName: string): Promise<any> {
-    return await this.messageModel.findOne({ Driver: driverName }).sort({ DateCreated: -1 }).exec();
-  }
-
-  async getDriversByName(name: string) {
-    const drivers = await this.getAllDrivers();
-    
-    const filteredDrivers = drivers.filter(driver => driver.driver === name);
-  
-    return filteredDrivers;
-}
-}
-
-
+    {
+        "driver": "Иванов Вячеслав Сергеевич",
+        "carNumber": "",
+        "carModel": "",
+        "transportRequests": [
+            {
+                "number": "№INT005389",
+                "IdYandex": "",
+                "distribution": false,
+                "date": "05.10.2023 13:44:42",
+                "dateCreated": "6-10-2023",
+                "organization": "TOO Gulser Computers (Гулсер Компьютерс)",
+                "documentStatus": "Доставлено",
+                "ISR": "287785010",
+                "informalDocument": "Заказ покупателя ППО",
+                "filterContractor": "Alser",
+                "loanAgreementStatus": "ОПЛАЧЕН",
+                "typePayment": "Кредит",
+                "chronologies": [
+                    {
+                        "PPO": "8772539",
+                        "Chronology": [
+                            "Оформлен",
+                            "Доставляется до клиента (на складе отгрузки)",
+                            "Доставляется",
+                            "Сделка завершена"
+                        ]
+                    }
+                ],
+                "contactInformation": {
+                    "City": "Караганда",
+                    "Delivery_Condition": "Доставка",
+                    "Date_Time_delivery": "2023-10-01 До 20:00",
+                    "Time_Window": "нет данных",
+                    "Latitude": "49,800091",
+                    "Longitude": "73,090228",
+                    "Street": "Пулково",
+                    "Home": "68",
+                    "Phone": "(701)7872441",
+                    "Apartment": "Пулково",
+                    "Contractor": "Клыпина Маргарита",
+                    "_id": "651f93c24c95deb2a15eb776"
+                },
+                "orders": [
+                    {
+                        "NuberPPO": "8772539",
+                        "PPOStatus": "Сделка завершена",
+                        "SKU": "1254467",
+                        "Goods": "Мультиварка Redmond RMC-M252. 5 л. Мощность 860 Вт. 16 авто.прог.+«МУЛЬТИПОВАР», чаша с антипригарным покрытием.Отсрочка старта 24ч.(фондю,сыр,творог)",
+                        "Count": "1",
+                        "ShippingAddress": "",
+                        "Brand": "REDMOND",
+                        "Weight": "3,6",
+                        "Price": "41 990",
+                        "Item_Status": "Забран",
+                        "Pickup_Point": "0",
+                        "Delivery_Point": "0",
+                        "Pickup_Latitude": "49,789054",
+                        "Pickup_Longitude": "73,082916",
+                        "Delivery_Latitude": "0",
+                        "Delivery_Longitude": "0",
+                        "Pickup_Time": "01.01.0001 0:00:00",
+                        "Delivery_Time": "01.01.0001 0:00:00"
+                    }
+                ]
+            }
+        ],
+        "countCompletedOrders": "1",
+        "countPendingOrders": "0",
+        "countAllOrders": "1"
+    },
