@@ -1,131 +1,28 @@
-{
-  driver: 'Сақыпжанұлы Асхат',
-  carNumber: '',
-  carModel: '',
-  transportRequests: [
-    {
-      number: '№№00152419',
-      IdYandex: '55570424-658223a0-5ecee409-4e7050b9',
-      distribution: true,
-      date: '11.10.2023 14:15:00',
-      dateCreated: '12-10-2023',
-      organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-      documentStatus: 'Забран',
-      ISR: '290305457',
-      informalDocument: 'Заказ покупателя ППО',
-      filterContractor: 'Alser',
-      loanAgreementStatus: 'ПРИНЯТ НАМИ',
-      typePayment: 'Кредит',
-      chronologies: [
-        {
-          PPO: '8801677',
-          Chronology: [
-            'Оформлен',
-            'Доставляется до клиента (на складе отгрузки)',
-            'Доставляется',
-          ],
-        },
-      ],
-      contactInformation: {
-        City: 'Алматы',
-        Delivery_Condition: 'Доставка',
-        Date_Time_delivery: '2023-10-13 До 20:00',
-        Time_Window: 'нет данных',
-        Latitude: '43.255038',
-        Longitude: '76.919989',
-        Street: '27',
-        Home: '139',
-        Phone: '(777)1448190',
-        Apartment: '27',
-        Contractor: 'Ugur',
-        _id: '6527adae141721b7d9102dfc',
-      },
-      orders: [
-        {
-          NuberPPO: '8801677',
-          PPOStatus: 'Доставляется',
-          SKU: '1259121',
-          Goods: 'Мышка беспроводная Logitech M310 - Silver (910-003986)',
-          Count: '1',
-          ShippingAddress: '',
-          Brand: 'logitech',
-          Weight: '0,15',
-          Price: '8 990',
-          Item_Status: 'Забран',
-          Pickup_Point: '0',
-          Delivery_Point: '16',
-          Pickup_Latitude: '43,366674',
-          Pickup_Longitude: '76,970839',
-          Delivery_Latitude: '43,255038',
-          Delivery_Longitude: '76,919962',
-          Pickup_Time: '01.01.0001 9:00:00',
-          Delivery_Time: '01.01.0001 15:36:14',
-        },
-      ],
-    },
-    {
-      number: '№№00152871',
-      IdYandex: '553078dd-cc329029-91aa8275-dae8353c',
-      distribution: true,
-      date: '12.10.2023 14:28:57',
-      dateCreated: '13-10-2023',
-      organization: 'TOO Gulser Computers (Гулсер Компьютерс)',
-      documentStatus: 'Доставлено',
-      ISR: '(747)3177771',
-      informalDocument: 'Заказ покупателя ППО',
-      filterContractor: '',
-      loanAgreementStatus: '',
-      typePayment: 'Безналичный расчет',
-      chronologies: [
-        {
-          PPO: '8798903',
-          Chronology: [
-            'Ожидает клиента',
-            'Доставляется до клиента (на складе отгрузки)',
-            'Доставляется',
-          ],
-        },
-      ],
-      contactInformation: {
-        City: 'Алматы',
-        Delivery_Condition: 'Доставка',
-        Date_Time_delivery: '2023-10-13 До 15:00',
-        Time_Window: 'нет данных',
-        Latitude: '43.238372',
-        Longitude: '76.970681',
-        Street: 'БЦ "Салем"',
-        Home: '65',
-        Phone: '(747)3177771',
-        Apartment: 'БЦ "Салем"',
-        Contractor: 'Георгий Георгий',
-        _id: '65293164be6fc2b05f39055e',
-      },
-      orders: [
-        {
-          NuberPPO: '8798903',
-          PPOStatus: 'Доставляется',
-          SKU: '1148457',
-          Goods:
-            'Веб-Камера Logitech HD C270 720P/3MP/PHOTO/USB 2.0/1.1 (960-001063) ',
-          Count: '3',
-          ShippingAddress: '',
-          Brand: 'logitech',
-          Weight: '0,3',
-          Price: '28 830',
-          Item_Status: 'Доставлено',
-          Pickup_Point: '0',
-          Delivery_Point: '18',
-          Pickup_Latitude: '43,366674',
-          Pickup_Longitude: '76,970839',
-          Delivery_Latitude: '43,238372',
-          Delivery_Longitude: '76,970681',
-          Pickup_Time: '01.01.0001 9:00:00',
-          Delivery_Time: '01.01.0001 15:44:12',
-        },
-      ],
-    },
-  ],
-  countCompletedOrders: '18',
-  countPendingOrders: '0',
-  countAllOrders: '19',
-};
+function updateDeliveryStatus(drivers) {
+    const currentTime = new Date(); // Получение текущего времени
+
+    drivers.forEach(driver => { // Проход по каждому водителю в массиве drivers
+        driver.transportRequests.forEach(request => { // Проход по каждому транспортному запросу в массиве transportRequests
+            if (request.distribution && request.documentStatus === "Доставляется") { // Проверка, удовлетворяет ли заявка условиям
+                request.orders.forEach(order => { // Проход по каждому заказу в массиве orders
+                    const [_, deliveryTime] = order.Delivery_Time.split(' '); // Извлечение времени доставки из строки Delivery_Time
+                    const [deliveryHours, deliveryMinutes, deliverySeconds] = deliveryTime.split(':').map(Number); // Разделение времени доставки на часы, минуты и секунды
+                    const deliveryDateTime = new Date(); // Создание объекта даты для времени доставки
+                    deliveryDateTime.setHours(deliveryHours, deliveryMinutes, deliverySeconds); // Установка времени доставки в объект даты
+
+                    if (currentTime > deliveryDateTime) { // Сравнение текущего времени с временем доставки
+                        request.documentStatus = "Доставляется с опазданием"; // Обновление статуса, если текущее время больше времени доставки
+                    } else {
+                        request.documentStatus = "Доставляется вовремя"; // Обновление статуса, если текущее время меньше или равно времени доставки
+                    }
+                });
+            }
+        });
+    });
+
+    return drivers; // Возвращение обновленного массива drivers
+}
+
+// Пример использования функции
+const updatedDrivers = updateDeliveryStatus(driversArray); // Обновление статусов и сохранение результатов в переменной
+console.log(updatedDrivers); // Вывод обновленного массива drivers в консоль
