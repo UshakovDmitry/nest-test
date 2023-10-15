@@ -1,40 +1,151 @@
-[
-    {
-        "_id": "65275a777bf6034385cbdbd9",
-        "Number": "№№00152297",
-        "Date": "11.10.2023 10:43:51",
-        "DateCreated": "15-10-2023",
-        "Organization": "TOO Gulser Computers (Гулсер Компьютерс)",
-        "DocumentStatus": "Оформлена",
-        "CarModel": "",
-        "NumberCar": "",
-        "Driver": "",
-        "ISR": "290246865",
-        "TypePayment": "Кредит",
-        "loanAgreementStatus": "ПРИНЯТ НАМИ",
-        "IdYandex": "7a2d2dae-9b8e2605-8686324f-e6316d44",
-        "distribution": true,
-        "Informal_Document": "Заказ покупателя ППО",
-        "FilterContractor": "Kaspi",
-        "ArrayStrings": [
-            {
-                "NuberPPO": "8800877",
-                "PPOStatus": "Доставляется",
-                "SKU": "1375153",
-                "Goods": "WMD-1280NDV-BJ/Стиральная машина Dauscher",
-                "Count": "1",
-                "ShippingAddress": "SHymkent, mkr. Kyzylzhar, ul. ZHidelibaysyn (virt.sklad), 92",
-                "Brand": "DAUSCHER",
-                "Weight": "50",
-                "Price": "179 990",
-                "Item_Status": "Забран",
-                "Pickup_Point": "0",
-                "Delivery_Point": "4",
-                "Pickup_Latitude": "42,348907",
-                "Pickup_Longitude": "69,530052",
-                "Delivery_Latitude": "42,340244",
-                "Delivery_Longitude": "69,674025",
-                "Pickup_Time": "01.01.0001 9:00:00",
-                "Delivery_Time": "01.01.0001 10:19:21"
-            }
-        ],
+// import { ITransportRequest } from '../../domain/interfaces/transportRequest.interface';
+
+export interface TransportRequestsModel {
+  //   transportRequests: ITransportRequest[];
+  dateSelection: string;
+  transportRequests: any[];
+  headersTransportRequests: string[];
+  configTransportRequests: any;
+  cities: string[];
+  currentCity: string;
+  isToday: boolean;
+  isYesterday: boolean;
+  isTomorrow: boolean;
+  // searchInput: string;
+  // filteredRequests: any[];
+}
+
+export class TransportRequestsModel implements TransportRequestsModel {
+  dateSelection: string;
+  transportRequests: any[];
+  headersTransportRequests: string[];
+  configTransportRequests: any;
+  cities: string[];
+  currentCity: string;
+  // searchInput: string;
+  filteredTransportRequests: any[];
+  isToday: boolean;
+  isYesterday: boolean;
+  isTomorrow: boolean;
+
+  constructor() {
+    this.isToday = true;
+    this.isYesterday = false;
+    this.isTomorrow = false;
+    this.dateSelection = '';
+    // this.searchInput = '';
+    this.cities = [];
+    this.currentCity = '';
+    this.transportRequests = [];
+    this.filteredTransportRequests = this.transportRequests;
+
+    this.headersTransportRequests = [
+      '№ заявки',
+      'Статус',
+      'ISR',
+      'Документ основания',
+      // 'Адрес отгрузки',
+      'Получатель',
+      'Время доставки',
+      'Адрес получателя',
+      'Вес SKU',
+    ];
+
+
+
+
+
+
+
+
+
+
+
+
+
+      import { useGetApi } from '../../domain/services/getHTTP.service';
+import { usePostApi } from '../../domain/services/postHTTP.service';
+import router from '../../router';
+import { type TransportRequestsModel } from './transportRequests.model';
+// import { ITransportRequest } from '../../domain/interfaces/transportRequest.interface';
+
+export class TransportRequestsViewModel {
+  model: TransportRequestsModel;
+  eventSource: EventSource;
+
+  constructor(model: any) {
+    this.model = model;
+    this.eventSource = new EventSource(
+      'http://tms.next.local/api/getTransportRequests/sse',
+      // 'http://localhost:4000/api/getTransportRequests/sse',
+    );
+    this.setupEventListeners();
+    this.getTransportRequests('today');
+  }
+
+  setupEventListeners() {
+    this.eventSource.onmessage = (event) => {
+      console.log('Прилетает Pong', JSON.parse(event.data));
+
+      if (JSON.parse(event.data).message === 'Pong') {
+        this.model.transportRequests = [];
+        this.getTransportRequests("today");
+      }
+    };
+  }
+
+
+
+  // async getTransportRequestByDate(): Promise<void> {
+  //   const today = new Date();
+  //   const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  //   const body = {
+  //     date: formattedDate,
+  //   };
+  //   const response = await usePostApi('getTransportRequestsByDate', body);
+  //   console.log(response, 'заявки');
+    
+  // }
+  async getTransportRequests(day: string): Promise<void> {
+    console.log('day', day);
+  
+    const today = new Date();
+  
+    if (day === "tomorrow") {
+        today.setDate(today.getDate() + 1);
+        this.model.isTomorrow = true;
+        this.model.isToday = false;
+        this.model.isYesterday = false;
+    } else if (day === "yesterday") {
+        today.setDate(today.getDate() - 1);
+        this.model.isTomorrow = false;
+        this.model.isToday = false;
+        this.model.isYesterday = true;
+    } else if (day === "today") {
+        this.model.isTomorrow = false;
+        this.model.isToday = true;
+        this.model.isYesterday = false;
+    }
+  
+    const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const body = {
+        date: formattedDate,
+    };
+    const response = await usePostApi('getTransportRequestsByDate', body);
+    console.log(response.length, 'кол-во заявок');
+    // console.log(response, 'response');
+    this.model.transportRequests = [];
+    response.forEach((data: any) => {
+        const transformedData = this.transformToTransportRequest(data);
+        const city = this.setCitiesList(transformedData);
+        // Проверяем наличие города в списке и добавляем, если его нет
+        if (!this.model.cities.includes(city)) {
+            this.model.cities.push(city);
+        }
+        const transformedDataForTable = this.transformToTransportForTable(transformedData);
+
+        this.model.transportRequests.unshift(transformedDataForTable);
+        this.model.filteredTransportRequests = this.model.transportRequests;
+    });
+}
+
