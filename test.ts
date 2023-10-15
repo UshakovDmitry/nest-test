@@ -1,27 +1,25 @@
-async getTransportRequests(day: string): Promise<void> {
-    // ... (ваш текущий код)
+<template>
+  <div>
+    <button 
+      v-for="(count, contractor) in filterContractors" 
+      :key="contractor" 
+      @click="filterRequests(contractor)"
+    >
+      {{ contractor }} ({{ count }})
+    </button>
+  </div>
+</template>
 
-    const response = await usePostApi('getTransportRequestsByDate', body);
-    console.log(response.length, 'кол-во заявок');
+<script setup>
+import { defineProps, defineEmits } from 'vue';
 
-    this.model.transportRequests = [];
-    this.model.filterContractors = {}; // Обнуляем предыдущие данные
+const props = defineProps({
+  filterContractors: Object,
+});
 
-    response.forEach((data: any) => {
-        const transformedData = this.transformToTransportRequest(data);
-        
-        // Получаем значение FilterContractor или присваиваем "Прочее", если значение отсутствует или пустое
-        const contractor = data.FilterContractor ? data.FilterContractor : "Прочее";
-        
-        // Увеличиваем счетчик для каждого уникального FilterContractor
-        if (this.model.filterContractors[contractor]) {
-            this.model.filterContractors[contractor] += 1;
-        } else {
-            this.model.filterContractors[contractor] = 1;
-        }
+const emits = defineEmits(['filter-requests']);
 
-        // ... (остальной ваш код, связанный с обработкой и трансформацией данных)
-    });
-
-    // ... (ваш текущий код)
-}
+const filterRequests = (contractor) => {
+  emits('filter-requests', contractor);
+};
+</script>
