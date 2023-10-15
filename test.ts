@@ -1,4 +1,65 @@
-import { useGetApi } from '../../domain/services/getHTTP.service';
+
+export interface TransportRequestsModel {
+  //   transportRequests: ITransportRequest[];
+  dateSelection: string;
+  transportRequests: any[];
+  headersTransportRequests: string[];
+  configTransportRequests: any;
+  cities: string[];
+  filterContractors: object;
+  currentCity: string;
+  isToday: boolean;
+  isYesterday: boolean;
+  isTomorrow: boolean;
+  // searchInput: string;
+  // filteredRequests: any[];
+}
+
+export class TransportRequestsModel implements TransportRequestsModel {
+  dateSelection: string;
+  transportRequests: any[];
+  headersTransportRequests: string[];
+  configTransportRequests: any;
+  cities: string[];
+  currentCity: string;
+  filterContractors: object;
+  // searchInput: string;
+  filteredTransportRequests: any[];
+  isToday: boolean;
+  isYesterday: boolean;
+  isTomorrow: boolean;
+
+  constructor() {
+    this.isToday = true;
+    this.isYesterday = false;
+    this.isTomorrow = false;
+    this.dateSelection = '';
+    // this.searchInput = '';
+    this.cities = [];
+    this.currentCity = '';
+    this.transportRequests = [];
+    this.filteredTransportRequests = this.transportRequests;
+    this.filterContractors = {};
+
+
+    this.headersTransportRequests = [
+      '№ заявки',
+      'Статус',
+      'ISR',
+      'Документ основания',
+      // 'Адрес отгрузки',
+      'Получатель',
+      'Время доставки',
+      'Адрес получателя',
+      'Вес SKU',
+    ];
+
+
+  }
+
+
+А вот viewmodel
+// import { useGetApi } from '../../domain/services/getHTTP.service';
 import { usePostApi } from '../../domain/services/postHTTP.service';
 import router from '../../router';
 import { type TransportRequestsModel } from './transportRequests.model';
@@ -95,6 +156,7 @@ export class TransportRequestsViewModel {
     console.log(this.model.filterContractors, 'filterContractors');
   }
 
+  
   filterRequestsByContractor(contractor: string): void {
     console.log(contractor, 'contractor');
     
@@ -106,5 +168,8 @@ export class TransportRequestsViewModel {
         this.model.filteredTransportRequests = this.model.transportRequests.filter(
             request => request.FilterContractor === contractor
         );
-    }    
+    }  
+    
+    console.log(this.model.filteredTransportRequests, 'filteredTransportRequests');
+    
 }
