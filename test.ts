@@ -1,25 +1,13 @@
-<template>
-  <div>
-    <button 
-      v-for="(count, contractor) in filterContractors" 
-      :key="contractor" 
-      @click="filterRequests(contractor)"
-    >
-      {{ contractor }} ({{ count }})
-    </button>
-  </div>
-</template>
+// В вашем TransportRequestsViewModel
 
-<script setup>
-import { defineProps, defineEmits } from 'vue';
-
-const props = defineProps({
-  filterContractors: Object,
-});
-
-const emits = defineEmits(['filter-requests']);
-
-const filterRequests = (contractor) => {
-  emits('filter-requests', contractor);
-};
-</script>
+filterRequestsByContractor(contractor: string): void {
+    if (contractor === "Прочее") {
+        this.model.filteredTransportRequests = this.model.transportRequests.filter(
+            request => !request.FilterContractor || request.FilterContractor.trim() === ""
+        );
+    } else {
+        this.model.filteredTransportRequests = this.model.transportRequests.filter(
+            request => request.FilterContractor === contractor
+        );
+    }
+}
