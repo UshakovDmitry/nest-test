@@ -1,42 +1,40 @@
- async getTransportRequests(day: string): Promise<void> {
-    console.log('day', day);
-  
-    const today = new Date();
-  
-    if (day === "tomorrow") {
-        today.setDate(today.getDate() + 1);
-        this.model.isTomorrow = true;
-        this.model.isToday = false;
-        this.model.isYesterday = false;
-    } else if (day === "yesterday") {
-        today.setDate(today.getDate() - 1);
-        this.model.isTomorrow = false;
-        this.model.isToday = false;
-        this.model.isYesterday = true;
-    } else if (day === "today") {
-        this.model.isTomorrow = false;
-        this.model.isToday = true;
-        this.model.isYesterday = false;
-    }
-  
-    const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    const body = {
-        date: formattedDate,
-    };
-    const response = await usePostApi('getTransportRequestsByDate', body);
-    console.log(response.length, 'кол-во заявок');
-    // console.log(response, 'response');
-    this.model.transportRequests = [];
-    response.forEach((data: any) => {
-        const transformedData = this.transformToTransportRequest(data);
-        const city = this.setCitiesList(transformedData);
-        // Проверяем наличие города в списке и добавляем, если его нет
-        if (!this.model.cities.includes(city)) {
-            this.model.cities.push(city);
-        }
-        const transformedDataForTable = this.transformToTransportForTable(transformedData);
-
-        this.model.transportRequests.unshift(transformedDataForTable);
-        this.model.filteredTransportRequests = this.model.transportRequests;
-    });
-}
+[
+    {
+        "_id": "65275a777bf6034385cbdbd9",
+        "Number": "№№00152297",
+        "Date": "11.10.2023 10:43:51",
+        "DateCreated": "15-10-2023",
+        "Organization": "TOO Gulser Computers (Гулсер Компьютерс)",
+        "DocumentStatus": "Оформлена",
+        "CarModel": "",
+        "NumberCar": "",
+        "Driver": "",
+        "ISR": "290246865",
+        "TypePayment": "Кредит",
+        "loanAgreementStatus": "ПРИНЯТ НАМИ",
+        "IdYandex": "7a2d2dae-9b8e2605-8686324f-e6316d44",
+        "distribution": true,
+        "Informal_Document": "Заказ покупателя ППО",
+        "FilterContractor": "Kaspi",
+        "ArrayStrings": [
+            {
+                "NuberPPO": "8800877",
+                "PPOStatus": "Доставляется",
+                "SKU": "1375153",
+                "Goods": "WMD-1280NDV-BJ/Стиральная машина Dauscher",
+                "Count": "1",
+                "ShippingAddress": "SHymkent, mkr. Kyzylzhar, ul. ZHidelibaysyn (virt.sklad), 92",
+                "Brand": "DAUSCHER",
+                "Weight": "50",
+                "Price": "179 990",
+                "Item_Status": "Забран",
+                "Pickup_Point": "0",
+                "Delivery_Point": "4",
+                "Pickup_Latitude": "42,348907",
+                "Pickup_Longitude": "69,530052",
+                "Delivery_Latitude": "42,340244",
+                "Delivery_Longitude": "69,674025",
+                "Pickup_Time": "01.01.0001 9:00:00",
+                "Delivery_Time": "01.01.0001 10:19:21"
+            }
+        ],
