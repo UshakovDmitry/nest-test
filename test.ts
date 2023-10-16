@@ -1,37 +1,25 @@
-<script setup lang="ts">
-import { ref } from 'vue';
+  transformTransport(data) {
+    return {
+      carBrand: data.Brandcar[0]?.Brand || '',
+      carNumber: data.RegistrationNumber,
+      carVolume:
+        (parseInt(data.MaximumLoadLength.replace(/\s+/g, '')) *
+          parseInt(data.MaximumCargoWidth.replace(/\s+/g, '')) *
+          parseInt(data.MaximumLoadHeight.replace(/\s+/g, ''))) /
+        1000000000,
+      carType: data.LoadType.map((item) => item.Type),
 
-// ... (остальной код)
-
-const buttonClicked = (contractor: string) => {
-  if (activeButton.value === contractor) {
-    activeButton.value = '';
-    emits('filterRequestsByContractor', ''); // Эмитируется событие с пустой строкой, чтобы снять фильтр
-  } else {
-    activeButton.value = contractor;
-    emits('filterRequestsByContractor', contractor);
+      loadingCapacity: parseInt(data.LoadingCapacity.replace(/\s+/g, '')), // убираем пробелы и конвертируем в число
+      city: data.City,
+      timeWindow: data.WorkingSchedule[0]?.TimeWindow || '',
+    };
   }
-};
-</script>
 
-
-
-
-
-
-filterRequestsByContractor(contractor: string): void {
-  if (!contractor) { // Если contractor пустая строка, снимаем фильтр
-    this.model.filteredTransportRequests = this.model.transportRequests;
-  } else if (contractor === "Прочее") {
-    this.model.filteredTransportRequests = this.model.transportRequests.filter(
-        request => !request.filterContractor || request.filterContractor.trim() === ""
+  async getTransport() {
+    const response = await firstValueFrom(
+      this.httpService.get('http://10.0.1.20/1CHS/hs/TMS/ParametersCars'),
     );
-  } else {
-    this.model.filteredTransportRequests = this.model.transportRequests.filter(
-        request => request.filterContractor === contractor
-    );
-  }  
+    return response.data.data.map(this.transformTransport);
+  }
 }
-
-
 
