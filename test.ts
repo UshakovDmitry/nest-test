@@ -1,103 +1,33 @@
-// src/drivers/driver-location.model.ts
-
-export class DriverLocation {
-  constructor(
-    public id: number,
-    public latitude: number,
-    public longitude: number,
-    // Другие поля, если необходимо
-  ) {}
-}
-
-
-// src/drivers/drivers.service.ts
-import { Injectable } from '@nestjs/common';
-import axios from 'axios'; // Установите axios, если он не установлен
-
-@Injectable()
-export class DriversService {
-  async getDriverLocations(login: string, pass: string) {
-    try {
-      // Выполните запрос к API GeliosPro для получения данных о координатах водителей
-      const response = await axios.get(
-        `https://admin.geliospro.com/sdk/?login=${login}&pass=${pass}&svc=get_units&params={}`
-      );
-
-      // Обработайте ответ и верните данные о координатах водителей в нужном формате
-      // Возможно, вам придется парсить JSON-ответ и извлекать нужные данные
-
-      return response.data; // Верните данные о координатах водителей
-    } catch (error) {
-      throw new Error('Не удалось получить данные о водителях');
-    }
-  }
-}
-
-
-
-
-
-
-
-
-// src/drivers/drivers.controller.ts
-import { Controller, Get } from '@nestjs/common';
-import { DriversService } from './drivers.service';
-import { GELIOS_PRO_LOGIN, GELIOS_PRO_PASSWORD } from '../config';
-
-@Controller('drivers')
-export class DriversController {
-  constructor(private readonly driversService: DriversService) {}
-
-  @Get('locations')
-  async getDriverLocations() {
-    const driverLocations = await this.driversService.getDriverLocations(
-      GELIOS_PRO_LOGIN,
-      GELIOS_PRO_PASSWORD
-    );
-    return driverLocations;
-  }
-}
-
-
-
-
-
-
-
-
-// src/app.module.ts
-import { Module } from '@nestjs/common';
-import { DriversController } from './drivers/drivers.controller';
-import { DriversService } from './drivers/drivers.service';
-
-@Module({
-  imports: [],
-  controllers: [DriversController],
-  providers: [DriversService],
-})
-export class AppModule {}
-
-
-
-
-
-/////////
-
-
-
-
-// src/config.ts
-
-export const GELIOS_PRO_LOGIN = 'Ваш_логин';
-export const GELIOS_PRO_PASSWORD = 'Ваш_пароль';
-
-
-
-
-
-
-
+{
+        "id": 154364,
+        "creator": 42539,
+        "name": "Актау M 121 237 (ГАЗ-3302)",
+        "hw_type": "ruptella",
+        "hw_id": "860906043285615",
+        "phone": "7013050186",
+        "is_free": 0,
+        "type": "auto",
+        "fuel_norm": "",
+        "phone2": null,
+        "max_permissible_speed": 0,
+        "unit_icon": "http://geliospro.com/img/libauto/trucks/042.png",
+        "options": "0,",
+        "info": "{\"year\": \"\", \"brand\": \"Gazel\", \"travels\": {\"fe\": 0, \"la\": 0, \"mm\": 1, \"mt\": 60, \"mtd\": 100, \"mts\": 300, \"omr\": 0, \"fign\": 1, \"mign\": 1}, \"conLossTm\": {\"isOn\": \"1\", \"value\": 300}, \"numberPlate\": \"M 121 237\", \"isGlobalView\": 0, \"organization\": \"\"}",
+        "removed": 0,
+        "filter_by_sats_count_is_on": false,
+        "filter_by_sats_count_value": 0,
+        "created_at": 1602754471,
+        "activated_at": 1604599200,
+        "decrypt_key": null,
+        "tacho_lmsg_time": null,
+        "tacho_connected": 0,
+        "filling_theft_search__only_on_stops": null,
+        "filling_theft_search__check_ignition_sensor_on_stops": null,
+        "filling_theft_search__seconds_to_ignore_after_movement_start": null,
+        "device_type_id": null,
+        "motohours_correction_coefficient": "1",
+        "pre_set_command_group_id": 8,
+        "lmsg": {
 
 
 
