@@ -41,21 +41,19 @@ export class DriversService {
 
 
 // src/drivers/drivers.controller.ts
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { DriversService } from './drivers.service';
+import { GELIOS_PRO_LOGIN, GELIOS_PRO_PASSWORD } from '../config';
 
 @Controller('drivers')
 export class DriversController {
   constructor(private readonly driversService: DriversService) {}
 
   @Get('locations')
-  async getDriverLocations(
-    @Query('login') login: string,
-    @Query('pass') pass: string,
-  ) {
+  async getDriverLocations() {
     const driverLocations = await this.driversService.getDriverLocations(
-      login,
-      pass
+      GELIOS_PRO_LOGIN,
+      GELIOS_PRO_PASSWORD
     );
     return driverLocations;
   }
@@ -82,6 +80,17 @@ export class AppModule {}
 
 
 
+
+
+/////////
+
+
+
+
+// src/config.ts
+
+export const GELIOS_PRO_LOGIN = 'Ваш_логин';
+export const GELIOS_PRO_PASSWORD = 'Ваш_пароль';
 
 
 
