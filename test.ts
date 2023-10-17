@@ -66,3 +66,8 @@ async updateDeliveryStatus(drivers) {
 
     return drivers;
   }
+
+
+
+
+Cannot redeclare block-scoped variable '_'.ts(2451)
