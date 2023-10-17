@@ -1,54 +1,30 @@
-  async getDriversStatsByDate(date: string) {
-    const drivers =  await this.dbService.getDriversStatsByDate(date);
-    const geliosCars = await this.geliosService.getCarLocations(
-      GELIOS_PRO_LOGIN,
-      GELIOS_PRO_PASSWORD
-    );
-  }
+async getDriversStatsByDate(date: string) {
+  const drivers = await this.dbService.getDriversStatsByDate(date);
+  const geliosCars = await this.geliosService.getCarLocations(
+    GELIOS_PRO_LOGIN,
+    GELIOS_PRO_PASSWORD
+  );
 
-мой метод получает два массива 
-Задача следующаяя:
-пройтись по всем элементам geliosCars и взять поле numberPlate,убрать пробелы в строке и сравнить с полем carNumber
-если оно совпадает то для этого элемента миссива drivers который выглядит вот так 
+  // Пройдемся по каждому элементу в geliosCars
+  geliosCars.forEach((geliosCar) => {
+    const { name, latitude, longitude } = geliosCar;
 
- {
-        "driver": "Энсепов Берк Сарсенбаевич",
-        "carNumber": "",
-        "carModel": "",
-        "transportRequests"
- }
+    // Уберем пробелы из номера и сравним с полем carNumber
+    const carNumberWithoutSpaces = geliosCar.info.numberPlate.replace(/\s+/g, '');
+    
+    drivers.forEach((driver) => {
+      if (driver.carNumber === carNumberWithoutSpaces) {
+        // Если номера совпадают, добавим координаты к объекту в массиве drivers
+        driver.coordinates = {
+          latitude,
+          longitude,
+        };
+      }
+    });
+  });
 
-добавить поле coordinates(это будет обьект с ключами latitude и longitude) которые нужно будет взять и элемента массива geliosCars
-который выглядит вот так 
-
-
-   {
-        "name": "Актау M 121 237 (ГАЗ-3302)",
-        "unit_icon": "http://geliospro.com/img/libauto/trucks/042.png",
-        "latitude": "43.65339",
-        "longitude": "51.1624916",
-        "info": {
-            "year": "",
-            "brand": "Gazel",
-            "travels": {
-                "fe": 0,
-                "la": 0,
-                "mm": 1,
-                "mt": 60,
-                "mtd": 100,
-                "mts": 300,
-                "omr": 0,
-                "fign": 1,
-                "mign": 1
-            },
-            "conLossTm": {
-                "isOn": "1",
-                "value": 300
-            },
-            "numberPlate": "M 121 237",
-            "isGlobalView": 0,
-            "organization": ""
-        }
-    },
+  // В итоге у вас будет массив drivers с добавленными координатами для совпавших номеров машин
+  console.log(drivers);
+}
 
 
