@@ -8,46 +8,47 @@
 
 мой метод получает два массива 
 Задача следующаяя:
-пройтись по всем элементам geliosCars и взять поле 
+пройтись по всем элементам geliosCars и взять поле numberPlate,убрать пробелы в строке и сравнить с полем carNumber
+если оно совпадает то для этого элемента миссива drivers который выглядит вот так 
+
+ {
+        "driver": "Энсепов Берк Сарсенбаевич",
+        "carNumber": "",
+        "carModel": "",
+        "transportRequests"
+ }
+
+добавить поле coordinates(это будет обьект с ключами latitude и longitude) которые нужно будет взять и элемента массива geliosCars
+который выглядит вот так 
 
 
+   {
+        "name": "Актау M 121 237 (ГАЗ-3302)",
+        "unit_icon": "http://geliospro.com/img/libauto/trucks/042.png",
+        "latitude": "43.65339",
+        "longitude": "51.1624916",
+        "info": {
+            "year": "",
+            "brand": "Gazel",
+            "travels": {
+                "fe": 0,
+                "la": 0,
+                "mm": 1,
+                "mt": 60,
+                "mtd": 100,
+                "mts": 300,
+                "omr": 0,
+                "fign": 1,
+                "mign": 1
+            },
+            "conLossTm": {
+                "isOn": "1",
+                "value": 300
+            },
+            "numberPlate": "M 121 237",
+            "isGlobalView": 0,
+            "organization": ""
+        }
+    },
 
 
-
-PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
-
-> tms-api@0.0.1 start
-> nest start
-
-[Nest] 15120  - 17.10.2023, 12:53:49     LOG [NestFactory] Starting Nest application...
-[Nest] 15120  - 17.10.2023, 12:53:49   ERROR [ExceptionHandler] Classes annotated with @Injectable(), @Catch(), and @Controller() decorato
-rs must not appear in the "imports" array of a module.
-Please remove "GeliosService" (including forwarded occurrences, if any) from all of the "imports" arrays.
-
-Scope [AppModule -> DriversModule]
-
-Error: Classes annotated with @Injectable(), @Catch(), and @Controller() decorators must not appear in the "imports" array of a module.
-Please remove "GeliosService" (including forwarded occurrences, if any) from all of the "imports" arrays.
-
-Scope [AppModule -> DriversModule]
-
-    at DependenciesScanner.insertModule (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\sc
-anner.js:92:19)
-    at DependenciesScanner.insertOrOverrideModule (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nest
-js\core\scanner.js:301:21)
-    at DependenciesScanner.scanForModules (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\
-scanner.js:37:85)
-    at DependenciesScanner.scanForModules (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\
-scanner.js:68:43)
-    at DependenciesScanner.scanForModules (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\
-scanner.js:68:32)
-    at DependenciesScanner.scan (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\scanner.js
-:27:9)
-    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\nest-factory.js:107:17
-    at Function.asyncRun (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\errors\exceptions
--zone.js:22:13)
-    at NestFactoryStatic.initialize (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\nest-f
-actory.js:106:13)
-    at NestFactoryStatic.create (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\nest-facto
-ry.js:42:9)
-PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend>
