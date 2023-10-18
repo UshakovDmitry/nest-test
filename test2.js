@@ -1,8 +1,29 @@
-https://auth3.next.local/connect/checktoken
-GET 
-в заголовках нужно передавать Authorization а значение брать из локального хранилища (token)
-если запрос вернет 200 то перенаправлять на корневой роут 
-если нет то направлять на /auth
+router.beforeEach(async (to, from, next) => {
+  const token = localStorage.getItem("access_token");
 
-этот запрос проверяет валидность токена(он живет 8 часов)
-реализуй
+  if (token) {
+    try {
+      const response = await fetch('https://auth3.next.local/connect/checktoken', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        next(); // Переход к следующему роуту, если токен действителен
+      } else {
+        localStorage.removeItem("access_token"); // Удалить токен, если он недействителен
+        next('/auth'); // Перенаправление на страницу аутентификации
+      }
+    } catch (error) {
+      console.error(error);
+      next('/auth'); // Перенаправление на страницу аутентификации в случае ошибки
+    }
+  } else if (to.meta.public) {
+    next(); // Разрешить доступ к публичным роутам
+  } else {
+    next('/auth'); // Перенаправление на страницу аутентификации, если токен отсутствует
+  }
+});
+
