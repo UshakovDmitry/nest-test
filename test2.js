@@ -1,79 +1,107 @@
-import {  AuthModel } from './auth.model';
-import { IUser } from '../../domain/interfaces/user.interface';
-import { User } from '../../domain/entities/user';
-import { tokenCRUDService } from '../../domain/services/tokenCRUD.service';
-import { userCRUDService } from '../../domain/services/userCRUD.service';
-import { useGetApi } from '../../domain/services/getHTTP.service';
-import { usePostApi } from '../../domain/services/postHTTP.service';
 
-import router from '../../router';
-export class AuthViewModel {
-  model: AuthModel;
+import {
+  createRouter,
+  createWebHistory,
+  type RouteRecordRaw,
+} from 'vue-router';
+import Auth from '../pages/auth/auth.component.vue';
+import Layout from '../layout/dafault.vue';
+import Dashboard from '../pages/dashboard/dashboard.component.vue';
+import Map from '../pages/map/map.component.vue';
+import TransportRequests from '../pages/transport-requests/transportRequests.component.vue';
+import Transport from '../pages/transport/transport.component.vue';
+import Couriers from '../pages/couriers/couriers.component.vue';
+import CourierDetail from '../pages/courier-detail/courier-detail.component.vue';
+import TransportRequestsDetail from '../pages/transport-requests-detail/transport-requests-detail.component.vue';
+import NotFound from '../pages/not-found/not-found.component.vue';
 
-  constructor(model: AuthModel) {
-    this.model = model;
-  }
-  async authorize(): Promise<boolean> {
-    try {
-      const formData = new FormData();
-      formData.append('client_id', 'DispatcherWorkplace');
-      formData.append('client_secret', 'secret');
-      formData.append('grant_type', 'password');
-      formData.append('username', this.model.email);
-      formData.append('password', this.model.password);
-      formData.append('scope', 'myAPIs');
-
-      const response = await fetch('https://auth3.next.local/connect/token', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        this.saveToken(data.access_token);
-        return true;
-      } else {
-        console.error('Authorization failed:', await response.text());
-        return false;
-      }
-    } catch (error: Error | any) {
-      console.error(error.message);
-      return false;
-    }
-  }
-
-  saveToken(token: string) {
-    tokenCRUDService.createToken(token);
-  }
-
-  saveUser(user: IUser) {
-    userCRUDService.createUser(user);
-  }
-
-  setEmail(value: string) {
-    this.model.email = value;
-  }
-  setPassword(value: string) {
-    this.model.password = value;
-  }
-
-  handleLogin = () => {
-    // Проверка полей на правильность заполнения
-    let allFieldsValid = true;
-    this.model.fields.forEach((field) => {
-      if (field.isEmpty()) {
-        allFieldsValid = false;
-      }
-    });
-
-    // Если все поля заполнены верно, продолжаем вход
-    if (allFieldsValid) {
-     this.authorize();
-      
-    }
-  };
+// Инициализация статуса авторизации, если он еще не установлен
+if (localStorage.getItem("isLogin") === null) {
+  localStorage.setItem("isLogin", "false");
 }
 
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/auth',
+    name: 'Auth',
+    component: Auth,
+    meta: {
+      public: true,
+      hasLayout: false,
+    },
+  },
+  {
+    path: '/',
+    component: Layout,
+    meta: { hasLayout: true },
+    children: [
+      {
+        path: '',
+        redirect: 'dashboard',
+      },
+      {
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: Dashboard,
+      },
+      {
+        path: 'map',
+        name: 'Map',
+        component: Map,
+      },
+      {
+        path: 'requests',
+        name: 'transportRequests',
+        component: TransportRequests,
+      },
+      {
+        path: 'requests/:id',
+        name: 'TransportRequestsDetail',
+        component: TransportRequestsDetail,
+      },
+      {
+        path: 'couriers',
+        name: 'Сouriers',
+        component: Couriers,
+      },
+      {
+        path: 'couriers/:id',
+        name: 'CourierDetail',
+        component: CourierDetail,
+      },
+      {
+        path: 'transport',
+        name: 'Transport',
+        component: Transport,
+      },
+      {
+        path: '/:catchAll(.*)', 
+        name: 'NotFound',
+        component: NotFound,
+        meta: {
+          public: true,
+          hasLayout: true,
+        },
+      },
+    ],
+  },
+];
 
-Отлично
-теперь если ответ 200 то я сохраняю токен в локальном хранилище верно?
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = localStorage.getItem("isLogin") === "true";
+
+  if (!to.meta.public && !isAuthenticated) {
+    next("/auth");
+  } else if (to.path === "/auth" && isAuthenticated) {
+    next("/");
+  } else {
+    next();
+  }
+});
+
+export default router;
