@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { lastValueFrom,firstValueFrom } from 'rxjs'; // Импортируйте нужный метод
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly httpService: HttpService) {}
-
   async login(username: string, password: string): Promise<any> {
     const formData = new URLSearchParams();
     formData.append('client_id', 'DispatcherWorkplace');
@@ -15,30 +11,25 @@ export class AuthService {
     formData.append('password', password);
     formData.append('scope', 'myAPIs');
 
-    const response$ = this.httpService.post(
-      'https://auth3.next.local/connect/token', 
-      formData.toString(), 
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      }
-    );
-    
-    return lastValueFrom(response$); //  lastValueFrom или firstValueFrom
+    const response = await fetch('https://auth3.next.local/connect/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
+    });
+
+    return response.json();
   }
 
   async checkToken(token: string): Promise<any> {
-    const response$ = this.httpService.get(
-      'https://auth3.next.local/connect/checktoken', 
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    
-    return lastValueFrom(response$); //  lastValueFrom или firstValueFrom
+    const response = await fetch('https://auth3.next.local/connect/checktoken', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.json();
   }
 }
-
