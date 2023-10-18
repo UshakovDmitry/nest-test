@@ -13,22 +13,15 @@ export class AuthModule {}
 
 
 
-
-import { Controller, Post, Body, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('login')
-  async login(@Body() body): Promise<any> {
-    const { username, password } = body;
-    return this.authService.login(username, password);
-  }
-
-  @Get('checktoken')
-  async checkToken(@Query('token') token: string): Promise<any> {
+  @Post('checktoken')
+  async checkToken(@Body('token') token: string): Promise<any> {
     return this.authService.checkToken(token);
   }
 }
