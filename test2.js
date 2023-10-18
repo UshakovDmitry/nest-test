@@ -1,13 +1,40 @@
-POST    https://auth3.next.local/connect/token
+import { AuthModel } from './auth.model'; // Поправьте путь импорта, если это необходимо
 
-Content-Type multipart/form-data; boundary=<calculated when request is sent>
-я должен передать body в формате formdata
+export class AuthViewModel {
+  model: AuthModel;
 
-client_id DispatcherWorkplace
-client_secret secret
-grant_type password
-username (тут this.model.email)
-password (тут this.model.password)
-scope myAPIs
+  constructor(model: AuthModel) {
+    this.model = model;
+  }
 
-реализуй это
+  async authorize(): Promise<boolean> {
+    try {
+      const formData = new FormData();
+      formData.append('client_id', 'DispatcherWorkplace');
+      formData.append('client_secret', 'secret');
+      formData.append('grant_type', 'password');
+      formData.append('username', this.model.email);
+      formData.append('password', this.model.password);
+      formData.append('scope', 'myAPIs');
+
+      const response = await fetch('https://auth3.next.local/connect/token', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        this.saveToken(data.access_token);
+        return true;
+      } else {
+        console.error('Authorization failed:', await response.text());
+        return false;
+      }
+    } catch (error: Error | any) {
+      console.error(error.message);
+      return false;
+    }
+  }
+
+  // ... (остальные методы)
+}
