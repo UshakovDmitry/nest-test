@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import fetch from 'node-fetch';
 
 @Injectable()
 export class AuthService {
@@ -35,12 +36,15 @@ export class AuthService {
 }
 
 
-[Nest] 18424  - 18.10.2023, 12:44:11   ERROR [ExceptionsHandler] fetch is not defined
-ReferenceError: fetch is not defined
-    at AuthService.login (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\src\auth\auth.service.ts:14:22)
-    at AuthController.login (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\src\auth\auth.controller.ts:16:29)
-    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\router\router-execution-context.js:3
-8:29
-    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\router\router-execution-context.js:4
-6:28
-    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\router\router-proxy.js:9:17
+
+[Nest] 19464  - 18.10.2023, 13:58:11   ERROR [ExceptionsHandler] request to https://auth3.next.local/connect/token failed, reason: self s
+igned certificate in certificate chain
+FetchError: request to https://auth3.next.local/connect/token failed, reason: self signed certificate in certificate chain
+    at ClientRequest.<anonymous> (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\node-fetch\lib\index.
+js:1501:11)
+    at ClientRequest.emit (node:events:526:28)
+    at TLSSocket.socketErrorListener (node:_http_client:442:9)
+    at TLSSocket.emit (node:events:526:28)
+    at emitErrorNT (node:internal/streams/destroy:157:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:122:3)
+    at processTicksAndRejections (node:internal/process/task_queues:83:21)
