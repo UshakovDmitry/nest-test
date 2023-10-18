@@ -16,25 +16,7 @@ export class AuthViewModel {
 
   async authorize(formData: FormData): Promise<boolean> {
     try {
-      const response: {
-        access_token: string;
-      } = await usePostApi('getToken', formData, 'sendFormData');
-      if (
-        !response ||
-        !response.hasOwnProperty('access_token') ||
-        !response.access_token.length
-      ) {
-        throw new Error(
-          'Не удалось получить токен. Поле access_token отсутсвует',
-        );
-      }
-      console.log(response, 'response =)');
-      
-      // this.saveToken(response.access_token);
-      // const responseUser: { code: number; message: string; data: IUser } =
-      //   await useGetApi('getUser');
-      // this.saveUser(new User(responseUser.data));
-      // return true;
+тут через fetch
     } catch (error: Error | any) {
       console.error(error.message);
       return false;
@@ -67,9 +49,11 @@ export class AuthViewModel {
 
     // Если все поля заполнены верно, продолжаем вход
     if (allFieldsValid) {
-      console.log(this.model.email, 'this.model.email');
-      console.log(this.model.password, 'this.model.password');
+  тут вызов authorize
       
     }
   };
 }
+
+
+
