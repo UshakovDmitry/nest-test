@@ -1,39 +1,13 @@
-async getDriversStatsByDate(date) {
-    const drivers = await this.getDriversByDate(date);
-    let totalRequests = 0;
-    let couriers_online = 0;
-    let count_failure = 0;
-    let rescheduling_delivery = 0;
+POST    https://auth3.next.local/connect/token
 
-    drivers.forEach((driver) => {
-        // Количество всех заявок
-        totalRequests += driver.transportRequests.length;
-        
-        // Количество курьеров у которых заполнены поля carNumber и carModel
-        if (driver.carNumber.trim() !== '' && driver.carModel.trim() !== '') {
-            couriers_online++;
-        }
-        
-        // Количество заявок со статусом "Отказ клиента от заказа" и "Перенос доставки"
-        driver.transportRequests.forEach((request) => {
-            if (request.documentStatus === "Отказ клиента от заказа") {
-                count_failure++;
-            }
-            if (request.documentStatus === "Перенос доставки") {
-                rescheduling_delivery++;
-            }
-        });
-    });
+Content-Type multipart/form-data; boundary=<calculated when request is sent>
+я должен передать body в формате formdata
 
-    // Рассчет процента отказов и округление до 2 знаков после запятой
-    let failure_rate = totalRequests ? (count_failure / totalRequests) * 100 : 0;
-    failure_rate = parseFloat(failure_rate.toFixed(2));
+client_id DispatcherWorkplace
+client_secret secret
+grant_type password
+username (тут this.model.email)
+password (тут this.model.password)
+scope myAPIs
 
-    return {
-        totalRequests,
-        couriers_online,
-        count_failure,
-        failure_rate,
-        rescheduling_delivery
-    };
-}
+реализуй это
