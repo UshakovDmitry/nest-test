@@ -1,12 +1,14 @@
-http://10.0.1.32:8080/1CHS/hs/TMS//ReplaceDriver
+GET https://auth3.next.local/connect/checktoken
+
+Authorization
 
 
-{
-    "DocNumber": "№MER000718",
-    "DateDoc": "20230926",
-    "TimeDelivery": "20231017180000",
-    "Driver": "Муравейников Сергей Николаевич",
-    "СarNumber": "A589",
-    "User": "660903402365"
-    "Сomment": "Корретировка диспетчером."
-}
+
+POST  https://auth3.next.local/connect/token
+
+client_id   DispatcherWorkplace
+client_secret secret
+grant_type password
+username ushakov.dmitriy
+password 111111111
+scope myAPIs
