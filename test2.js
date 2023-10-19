@@ -1,6 +1,32 @@
+import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
+
+// DTO для получения водителей по дате
+export class GetDriversByDateDto {
+  @IsNotEmpty()
+  @IsString()
+  date: string;
+}
+
+// DTO для получения водителей по имени
+export class GetDriversByNameDto {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+}
+
+// DTO для получения статистики водителей по дате
+export class GetDriversStatsDto {
+  @IsNotEmpty()
+  @IsString()
+  date: string;
+}
+
+
+
 import { Controller, Get, Post, Body } from '@nestjs/common';
 import { DriversService } from './drivers.service';
 import { ApiTags } from '@nestjs/swagger';
+import { GetDriversByDateDto, GetDriversByNameDto, GetDriversStatsDto } from './drivers.dto';
 
 @ApiTags('drivers')
 @Controller('/api/getDrivers')
@@ -13,20 +39,18 @@ export class DriversController {
   }
 
   @Post('/by-date')
-  async getDriversByDate(@Body('date') date: string) {
-    console.log('date', date);
-    return await this.driversService.getDriversByDate(date);
+  async getDriversByDate(@Body() dto: GetDriversByDateDto) {
+    return await this.driversService.getDriversByDate(dto.date);
   }
 
   @Post('/by-name')
-  async getDriversByName(@Body('name') name: string) {
-    console.log('name', name);
-    return await this.driversService.getDriversByName(name);
+  async getDriversByName(@Body() dto: GetDriversByNameDto) {
+    return await this.driversService.getDriversByName(dto.name);
   }
   
   @Post('/stats')
-  async getDriversStats(@Body('date') date: string) {
-    return this.driversService.getDriversStatsByDate( date);
+  async getDriversStats(@Body() dto: GetDriversStatsDto) {
+    return this.driversService.getDriversStatsByDate(dto.date);
   }
 }
 
