@@ -1,56 +1,55 @@
-import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
-
-// DTO для получения водителей по дате
-export class GetDriversByDateDto {
-  @IsNotEmpty()
-  @IsString()
-  date: string;
-}
-
-// DTO для получения водителей по имени
-export class GetDriversByNameDto {
-  @IsNotEmpty()
-  @IsString()
-  name: string;
-}
-
-// DTO для получения статистики водителей по дате
-export class GetDriversStatsDto {
-  @IsNotEmpty()
-  @IsString()
-  date: string;
-}
-
-
-
 import { Controller, Get, Post, Body } from '@nestjs/common';
-import { DriversService } from './drivers.service';
+import { TransportRequestsService } from './transportRequests.service';
 import { ApiTags } from '@nestjs/swagger';
-import { GetDriversByDateDto, GetDriversByNameDto, GetDriversStatsDto } from './drivers.dto';
+import { Sse } from '@nestjs/common';
+import { Observable, interval } from 'rxjs';
 
-@ApiTags('drivers')
-@Controller('/api/getDrivers')
-export class DriversController {
-  constructor(private readonly driversService: DriversService) {}
+@ApiTags('getTransportRequests')
+@Controller('/api/getTransportRequests')
+export class TransportRequestsController {
+  constructor(
+    private readonly transportRequestsService: TransportRequestsService,
+
+  ) {}
 
   @Get()
-  async getDrivers() {
-    return await this.driversService.getDrivers();
+  async getAllTransportRequests() {
+    return this.transportRequestsService.getAllTransportRequests();
   }
 
-  @Post('/by-date')
-  async getDriversByDate(@Body() dto: GetDriversByDateDto) {
-    return await this.driversService.getDriversByDate(dto.date);
-  }
 
-  @Post('/by-name')
-  async getDriversByName(@Body() dto: GetDriversByNameDto) {
-    return await this.driversService.getDriversByName(dto.name);
+  @Post('/not-predicted')
+  async getNotPredictedTransportRequestsByDate(@Body('date') date: string) {
+    return this.transportRequestsService.getNotPredictedTransportRequestsByDate(date);
   }
+    
   
-  @Post('/stats')
-  async getDriversStats(@Body() dto: GetDriversStatsDto) {
-    return this.driversService.getDriversStatsByDate(dto.date);
-  }
-}
 
+  @Post('byNumber')
+  async getTransportRequestByNumber(@Body('number') number: string) {
+    return this.transportRequestsService.getTransportRequestByNumber(number);
+  }
+
+  @Post('byDateRange')
+  async getTransportRequestsByDateRange(
+    @Body() dateRangeDto: { startDate: string; endDate: string },
+  ) {
+    return this.transportRequestsService.getTransportRequestsByDateRange(
+      dateRangeDto.startDate,
+      dateRangeDto.endDate,
+    );
+  }
+
+
+  @Post('by-date')
+  async getTransportRequestsByDate(@Body('date') date: string) {
+    return this.transportRequestsService.getTransportRequestsByDate(date);
+  }
+
+
+  @Sse('sse')
+  sse(): Observable<MessageEvent> {
+    return this.transportRequestsService.serverSentEvents();
+  }
+
+}
