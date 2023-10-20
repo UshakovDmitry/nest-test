@@ -1,19 +1,45 @@
-saveUserToLocalStorage(dataToken: any) {
-  // Проверяем, является ли website массивом и есть ли в нем элементы
-  let position = '';
-  if (Array.isArray(dataToken.website) && dataToken.website.length > 0) {
-    // Присоединяем элементы массива, разделяя их запятыми и пробелами
-    position = dataToken.website.join(', ');
+<template>
+  <div>
+    <AppHeaderComponent :user="user" v-if="!isAuthPage" />
+    <div class="main-layout">
+      <AppNavbarComponent v-if="!isAuthPage" />
+      <div class="content">
+        <router-view></router-view>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import AppHeaderComponent from '../components/AppHeaderComponent.vue';
+import AppNavbarComponent from '../components/AppNavbarComponent.vue';
+import { IUser } from '../domain/interfaces/user.interface';
+
+const route = useRoute();
+const isAuthPage = ref(route.path === '/auth');
+
+// Реактивное свойство для хранения данных пользователя
+const user = ref<IUser | null>(null);
+
+onMounted(() => {
+  // Считывание данных пользователя из локального хранилища при монтировании компонента
+  const userData = localStorage.getItem('user');
+  if (userData) {
+    user.value = JSON.parse(userData);
   }
+});
 
-  const user: IUser = {
-    fullName: `${dataToken.family_name} ${dataToken.given_name}`,
-    position: position, // используем объединенную строку
-    iin: dataToken.profile, // возможно, вы хотите использовать profile для iin
-  };
+</script>
 
-  // Сохраняем каждое поле пользователя в локальном хранилище под своим уникальным ключом
-  localStorage.setItem('userFullName', user.fullName);
-  localStorage.setItem('userPosition', user.position);
-  localStorage.setItem('userIin', user.iin);
+<style>
+.main-layout {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
 }
+.content {
+  flex: 1;
+}
+</style>
