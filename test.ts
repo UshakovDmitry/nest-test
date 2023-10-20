@@ -1,50 +1,20 @@
+import { AuthModel } from './auth.model';
+import { IUser } from '../../domain/interfaces/user.interface';
+import { User } from '../../domain/entities/user';
+import { tokenCRUDService } from '../../domain/services/tokenCRUD.service';
+import { userCRUDService } from '../../domain/services/userCRUD.service';
+import { useGetApi } from '../../domain/services/getHTTP.service';
+import { usePostApi } from '../../domain/services/postHTTP.service';
+import { storeProviderSetValue } from '../../domain/providers/store.provider';
 
-  после преобразования я хочу обрабатывать эти данные и присваивать значения в сущность User которая есть в моем проекте 
-вот что я имею после парсинга токена
-{
-    "client_id": "DispatcherWorkplace",
-    "idp": "local",
-    "locale": "Алматы",
-    "nickname": "",
-    "auth_time": 1697794888,
-    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "C8994BAA-BD79-4DA5-AE03-794F5F11C984",
-    "family_name": "Ушаков",
-    "given_name": "Дмитрий",
-    "website": [
-        "Отдел разработки ПО",
-        "Разработчик ПО"
-    ],
-    "profile": "950408050374",
-    "nbf": 1697773287,
-    "exp": 1697816487,
-    "iss": "http://auth3.next.local",
-    "scope": [
-        "myAPIs"
-    ],
-    "aud": [
-        "myAPIs",
-        "http://auth3.next.local/resources"
-    ],
-    "amr": [
-        "pwd"
-    ]
-}
+import router from '../../router';
+export class AuthViewModel {
+  model: AuthModel;
 
-вот моя сущность User 
-import { IUser } from '../interfaces/user.interface';
-
-export class User implements IUser {
-  fullName: string;
-  iin: string;
-
-  constructor(userModelData?: IUser) {
-    this.fullName = userModelData?.fullName ? userModelData.fullName : '',
-    this.iin = userModelData?.iin ? userModelData.iin : '';
+  constructor(model: AuthModel) {
+    this.model = model;
   }
-}
 
-
-вот метод авторизации 
   async authorize(): Promise<boolean> {
     try {
       const formData = new FormData();
@@ -64,9 +34,9 @@ export class User implements IUser {
         const data = await response.json();
         // this.saveToken(data.access_token);
         storeProviderSetValue('token', data.access_token);
-        const dataToken = this.parseJwt(data.access_token); 
+        const dataToken = this.parseJwt(data.access_token);
         console.log(dataToken, 'dataToken');
-        
+
         // router.push('/dashboard');
         return true;
       } else {
@@ -79,18 +49,50 @@ export class User implements IUser {
     }
   }
 
+  parseJwt(token) {
+    try {
+      // Получить payload токена
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
 
-после парсинга я хочу заполнить User
-  saveUser(user: IUser) {
-   тут нужно заполнить данные в соответсвии с интерфейсом
-export interface IUser {
-  fullName: string;
-  iin: string;
-}
+      // Декодировать payload
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join(''),
+      );
 
-
-  fullName: `"family_name" "given_name"`
-  iin:  "profile"
-
-
+      return JSON.parse(jsonPayload);
+    } catch (error) {
+      console.error('Ошибка при разборе токена:', error);
+      return null;
+    }
   }
+
+  saveUser(user: IUser) {}
+
+  setEmail(value: string) {
+    this.model.email = value;
+  }
+  setPassword(value: string) {
+    this.model.password = value;
+  }
+
+  handleLogin = () => {
+    // Проверка полей на правильность заполнения
+    let allFieldsValid = true;
+    this.model.fields.forEach((field) => {
+      if (field.isEmpty()) {
+        allFieldsValid = false;
+      }
+    });
+
+    // Если все поля заполнены верно, продолжаем вход
+    if (allFieldsValid) {
+      this.authorize();
+    }
+  };
+}
