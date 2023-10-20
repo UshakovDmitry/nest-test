@@ -1,6 +1,5 @@
 d69d6c2d8e494d47aac84ef650f2cd23
-
-
+ixiMAWaXXOQ4-ZCx-F4zmlTjLil2-iFqeL76NRK3
 
 
 wrangler kv:namespace list | jq "."
@@ -27,3 +26,7 @@ SECRET_TOKEN = "secret"
 [[kv_namespaces]]
 binding = "USER_DATA" 
 id = "your_copied_namespace_id" # Сюда вставьте скопированный Namespace ID
+
+
+
+https://confirm-kaspi-order.alser-kz-s.workers.dev/
