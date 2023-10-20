@@ -1,34 +1,35 @@
-async authorize(): Promise<boolean> {
-    try {
-      const formData = new FormData();
-      formData.append('client_id', 'DispatcherWorkplace');
-      formData.append('client_secret', 'secret');
-      formData.append('grant_type', 'password');
-      formData.append('username', this.model.email);
-      formData.append('password', this.model.password);
-      formData.append('scope', 'myAPIs');
+npm i jsonwebtoken
 
-      const response = await fetch('https://auth3.next.local/connect/token', {
-        method: 'POST',
-        body: formData,
-      });
 
-      if (response.ok) {
-        const data = await response.json();
-        this.saveToken(data.access_token);
-        router.push('/dashboard');
-        return true;
-      } else {
-        console.error('Авторизация не удалась:', await response.text());
-        return false;
-      }
-    } catch (error: Error | any) {
-      console.error(error.message);
-      return false;
-    }
+function parseJwt(token) {
+  try {
+    // Получить payload токена
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace('-', '+').replace('_', '/');
+    
+    // Декодировать payload
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    
+    console.log(JSON.parse(jsonPayload));
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error("Ошибка при разборе токена:", error);
+    return null;
   }
+}
 
+// Ваш код
+async function authorize() {
+  // ...
+  if (response.ok) {
+    const data = await response.json();
+    parseJwt(data.access_token); // Декодирование и вывод содержимого токена
+    // ...
+  }
+  // ...
+}
 
-в этом методе мне возвращается токен, я хочу его расшифровать и вывести содержимое в консоль
 
 
