@@ -1,30 +1,26 @@
-import {
-  createRouter,
-  createWebHistory,
-} from 'vue-router';
-// ... (остальные импорты)
+хочу добавить новое поле в User 
 
-const routes = [ /* ваш массив маршрутов */ ];
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-});
 
-router.beforeEach((to, from, next) => {
-  // Проверяем, есть ли токен в localStorage
-  const token = localStorage.getItem('token');
-  
-  // Проверяем, есть ли мета-тег "public" в маршруте, куда мы переходим
-  const isPublicRoute = to.matched.some(record => record.meta.public);
-  
-  // Если токен есть, или это публичный маршрут, то разрешаем переход
-  if (token || isPublicRoute) {
-    next();
-  } else {
-    // Иначе, перенаправляем пользователя на страницу авторизации
-    next({ name: 'Auth' });
-  }
-});
+  saveUserToLocalStorage(dataToken: any) {
+    const user: IUser = {
+      fullName: `${dataToken.family_name} ${dataToken.given_name}`,
+      position: dataToken.role,
+      iin: dataToken.website,
+    };
 
-export default router;
+
+export interface IUser {
+  fullName: string;
+  position: string;
+  iin: string;
+}
+
+но проблема в том что website выглядит вот так 
+[
+    "Отдел разработки ПО",
+    "Разработчик ПО"
+]
+
+я хочу из этого массива получить одну строку "Отдел разработки ПО, Разработчик ПО"
+тем самы пройтись по всем  элементам массива и сдедлать их одной строкой рзделяя их запятой и пробелом
