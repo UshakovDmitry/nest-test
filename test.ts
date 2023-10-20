@@ -3,7 +3,17 @@ d69d6c2d8e494d47aac84ef650f2cd23
 
 
 
-
+wrangler kv:namespace list | jq "."
+[
+  {
+    "id": "06779da6940b431db6e566b4846d64db",
+    "title": "TEST_NAMESPACE"
+  },
+  {
+    "id": "32ac1b3c2ed34ed3b397268817dea9ea",
+    "title": "STATIC_CONTENT"
+  }
+]
 
 
 name = "confirm-kaspi-order"
