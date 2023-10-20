@@ -1,13 +1,3 @@
-import { AuthModel } from './auth.model';
-import { IUser } from '../../domain/interfaces/user.interface';
-import { User } from '../../domain/entities/user';
-import { tokenCRUDService } from '../../domain/services/tokenCRUD.service';
-import { userCRUDService } from '../../domain/services/userCRUD.service';
-import { useGetApi } from '../../domain/services/getHTTP.service';
-import { usePostApi } from '../../domain/services/postHTTP.service';
-import { storeProviderSetValue } from '../../domain/providers/store.provider';
-
-import router from '../../router';
 export class AuthViewModel {
   model: AuthModel;
 
@@ -32,11 +22,11 @@ export class AuthViewModel {
 
       if (response.ok) {
         const data = await response.json();
-        // this.saveToken(data.access_token);
         storeProviderSetValue('token', data.access_token);
         const dataToken = this.parseJwt(data.access_token);
         console.log(dataToken, 'dataToken');
-
+        this.saveUserToLocalStorage(dataToken); // Сохраняем данные пользователя
+        
         // router.push('/dashboard');
         return true;
       } else {
@@ -49,50 +39,16 @@ export class AuthViewModel {
     }
   }
 
-  parseJwt(token) {
-    try {
-      // Получить payload токена
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  // ... (остальной код)
 
-      // Декодировать payload
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split('')
-          .map(function (c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join(''),
-      );
-
-      return JSON.parse(jsonPayload);
-    } catch (error) {
-      console.error('Ошибка при разборе токена:', error);
-      return null;
-    }
+  saveUserToLocalStorage(dataToken: any) {
+    const user: IUser = {
+      fullName: `${dataToken.family_name} ${dataToken.given_name}`,
+      iin: dataToken.profile,
+    };
+    
+    localStorage.setItem('user', JSON.stringify(user));
   }
 
-  saveUser(user: IUser) {}
-
-  setEmail(value: string) {
-    this.model.email = value;
-  }
-  setPassword(value: string) {
-    this.model.password = value;
-  }
-
-  handleLogin = () => {
-    // Проверка полей на правильность заполнения
-    let allFieldsValid = true;
-    this.model.fields.forEach((field) => {
-      if (field.isEmpty()) {
-        allFieldsValid = false;
-      }
-    });
-
-    // Если все поля заполнены верно, продолжаем вход
-    if (allFieldsValid) {
-      this.authorize();
-    }
-  };
+  // ... (остальной код)
 }
