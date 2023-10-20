@@ -1,130 +1,96 @@
-<template>
-  <div class="auth">
-    <div class="auth__content">
-      <img :src="logo" alt="logo" />
-      <Field
-        :config="model.fields[0]"
-        @input="viewModel.setEmail($event)"
-      ></Field>
-      <Field
-        :config="model.fields[1]"
-        @input="viewModel.setPassword($event)"
-      ></Field>
-      <div>
-        <ButtonComponent
-          :config="{
-            type: 'filled',
-            color: 'green',
-            value: 'Войти',
-            border: 'large',
-            width: '350px',
-            disabled: false,
-          }"
-          @on-click="viewModel.handleLogin()"
-        ></ButtonComponent>
-      </div>
-    </div>
-  </div>
-</template>
-<script setup lang="ts">
-import logo from '../../public/icons/logo.svg';
-import ButtonComponent from '../../components/global/button/button.vue';
-import { AuthModel } from './auth.model';
-import { AuthViewModel } from './auth.viewmodel';
-import Field from '../../components/global/fields/fieild/field.vue';
-import { FieldModel } from '../../components/global/fields/fieild/field.model';
-import { ref, Ref } from 'vue';
 
-const model: Ref<AuthModel> = ref(
-  new AuthModel({
-    fields: [
-      new FieldModel({
-        label: 'Email',
-        input: {
-          type: 'email',
-          value: '',
-          placeholder: 'Введите Email',
-          isError: false,
-          isDisabled: false,
-          isTextarea: false,
-          required: true,
-          maxLength: 20,
-        },
-        helper: {
-          isActive: true,
-          value: 'test',
-        },
-      }),
-      new FieldModel({
-        label: 'Пароль',
-        input: {
-          type: 'password',
-          value: '',
-          placeholder: 'Введите пароль',
-          isDisabled: false,
-          isTextarea: false,
-          required: true,
-          maxLength: 20,
-          isError: false,
-        },
-        helper: {
-          isActive: true,
-          value: 'test',
-        },
-      }),
+  после преобразования я хочу обрабатывать эти данные и присваивать значения в сущность User которая есть в моем проекте 
+вот что я имею после парсинга токена
+{
+    "client_id": "DispatcherWorkplace",
+    "idp": "local",
+    "locale": "Алматы",
+    "nickname": "",
+    "auth_time": 1697794888,
+    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "C8994BAA-BD79-4DA5-AE03-794F5F11C984",
+    "family_name": "Ушаков",
+    "given_name": "Дмитрий",
+    "website": [
+        "Отдел разработки ПО",
+        "Разработчик ПО"
     ],
-  }),
-);
-const viewModel: Ref<AuthViewModel> = ref(new AuthViewModel(model.value));
-</script>
-<style scoped>
-.auth {
-  background: linear-gradient(108deg, #01a254 0%, #50d17f 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100vh;
-  /* margin-left: -72px;
-  margin-top: -107px; */
-  box-sizing: border-box;
+    "profile": "950408050374",
+    "nbf": 1697773287,
+    "exp": 1697816487,
+    "iss": "http://auth3.next.local",
+    "scope": [
+        "myAPIs"
+    ],
+    "aud": [
+        "myAPIs",
+        "http://auth3.next.local/resources"
+    ],
+    "amr": [
+        "pwd"
+    ]
 }
-.auth__content {
-  display: flex;
-  width: 420px;
-  padding: 36px;
-  flex-direction: column;
-  align-items: center;
-  gap: 11px;
-  flex-shrink: 0;
-  border-radius: 16px;
-  box-sizing: border-box;
-  background: #fff;
-}
-</style>
 
-model
+вот моя сущность User 
+import { IUser } from '../interfaces/user.interface';
 
-export interface IAuthModel {
-    email: string;
-    password: string;
-    isShowedPassword?: boolean;
-    fields?: any[];
+export class User implements IUser {
+  fullName: string;
+  iin: string;
 
+  constructor(userModelData?: IUser) {
+    this.fullName = userModelData?.fullName ? userModelData.fullName : '',
+    this.iin = userModelData?.iin ? userModelData.iin : '';
   }
-  
-  export class AuthModel implements IAuthModel {
-    email: string;
-    password: string; 
-    isShowedPassword?: boolean;
-    fields?: any[];
-  
-    constructor(obj:any) {
-        this.email = '';
-        this.password = '';
-        this.isShowedPassword = false;
-        this.fields = obj.fields;
+}
 
+
+вот метод авторизации 
+  async authorize(): Promise<boolean> {
+    try {
+      const formData = new FormData();
+      formData.append('client_id', 'DispatcherWorkplace');
+      formData.append('client_secret', 'secret');
+      formData.append('grant_type', 'password');
+      formData.append('username', this.model.email);
+      formData.append('password', this.model.password);
+      formData.append('scope', 'myAPIs');
+
+      const response = await fetch('https://auth3.next.local/connect/token', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // this.saveToken(data.access_token);
+        storeProviderSetValue('token', data.access_token);
+        const dataToken = this.parseJwt(data.access_token); 
+        console.log(dataToken, 'dataToken');
+        
+        // router.push('/dashboard');
+        return true;
+      } else {
+        console.error('Авторизация не удалась:', await response.text());
+        return false;
+      }
+    } catch (error: Error | any) {
+      console.error(error.message);
+      return false;
     }
   }
-  
+
+
+после парсинга я хочу заполнить User
+  saveUser(user: IUser) {
+   тут нужно заполнить данные в соответсвии с интерфейсом
+export interface IUser {
+  fullName: string;
+  iin: string;
+}
+
+
+  fullName: `"family_name" "given_name"`
+  iin:  "profile"
+
+
+  }
