@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import AppHeaderComponent from '../components/AppHeaderComponent.vue';
 import AppNavbarComponent from '../components/AppNavbarComponent.vue';
@@ -23,12 +23,26 @@ const isAuthPage = ref(route.path === '/auth');
 // Реактивное свойство для хранения данных пользователя
 const user = ref<IUser | null>(null);
 
-onMounted(() => {
-  // Считывание данных пользователя из локального хранилища при монтировании компонента
-  const userData = localStorage.getItem('user');
-  if (userData) {
-    user.value = JSON.parse(userData);
+// Функция для загрузки данных пользователя из локального хранилища
+function loadUserData() {
+  const fullName = localStorage.getItem('userFullName');
+  const position = localStorage.getItem('userPosition');
+  const iin = localStorage.getItem('userIin');
+
+  if (fullName && position && iin) {
+    user.value = {
+      fullName: fullName,
+      position: position,
+      iin: iin,
+    };
   }
+}
+
+onMounted(loadUserData);
+
+// Наблюдение за изменением маршрута и обновление признака isAuthPage
+watch(route, () => {
+  isAuthPage.value = route.path === '/auth';
 });
 
 </script>
@@ -43,3 +57,4 @@ onMounted(() => {
   flex: 1;
 }
 </style>
+
