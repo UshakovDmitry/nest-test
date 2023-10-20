@@ -1,54 +1,43 @@
-export class AuthViewModel {
-  model: AuthModel;
+вот тут я передаю моковые данные 
+<template>
+  <div>
+    <AppHeaderComponent
+      :user="{
+        fullName: 'Иванов Иван Иванович',
+        iin: '123456789012',
+      }"
+      v-if="!isAuthPage"
+    />
+    <div class="main-layout">
+      <AppNavbarComponent v-if="!isAuthPage" />
+      <div class="content">
+        <router-view></router-view>
+      </div>
+    </div>
+  </div>
+</template>
 
-  constructor(model: AuthModel) {
-    this.model = model;
-  }
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRoute } from 'vue-router';
+import AppHeaderComponent from '../components/AppHeaderComponent.vue';
+import AppNavbarComponent from '../components/AppNavbarComponent.vue';
 
-  async authorize(): Promise<boolean> {
-    try {
-      const formData = new FormData();
-      formData.append('client_id', 'DispatcherWorkplace');
-      formData.append('client_secret', 'secret');
-      formData.append('grant_type', 'password');
-      formData.append('username', this.model.email);
-      formData.append('password', this.model.password);
-      formData.append('scope', 'myAPIs');
+const route = useRoute();
+const isAuthPage = ref(route.path === '/auth');
+</script>
 
-      const response = await fetch('https://auth3.next.local/connect/token', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        storeProviderSetValue('token', data.access_token);
-        const dataToken = this.parseJwt(data.access_token);
-        console.log(dataToken, 'dataToken');
-        this.saveUserToLocalStorage(dataToken); // Сохраняем данные пользователя
-        
-        // router.push('/dashboard');
-        return true;
-      } else {
-        console.error('Авторизация не удалась:', await response.text());
-        return false;
-      }
-    } catch (error: Error | any) {
-      console.error(error.message);
-      return false;
-    }
-  }
-
-  // ... (остальной код)
-
-  saveUserToLocalStorage(dataToken: any) {
-    const user: IUser = {
-      fullName: `${dataToken.family_name} ${dataToken.given_name}`,
-      iin: dataToken.profile,
-    };
-    
-    localStorage.setItem('user', JSON.stringify(user));
-  }
-
-  // ... (остальной код)
+<style>
+.main-layout {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
 }
+.content {
+  flex: 1;
+}
+</style>
+
+
+
+как мне теперь передать данные из локального хранилища
