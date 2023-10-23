@@ -1,34 +1,4 @@
-  checkIINValidity(iinValue) {
-    if (iinValue.length !== 12) return "Введите 12-значный номер";
-    if (isNaN(iinValue)) return "ИИН должен содержать только цифры!";
-    if (iinValue.replace(iinValue[0], "").length === 0)
-      return "Все введенные цифры одинаковые! Введенный ИИН некорректен!";
-
-    const iin11 = iinValue.substring(0, 11);
-    const controlSum = parseInt(iinValue[11]);
-
-    let digitsSum = [...Array(11).keys()].reduce(
-      (acc, index) => acc + (index + 1) * parseInt(iin11[index]),
-      0
-    );
-
-    let calculatedControlSum = digitsSum % 11;
-
-    if (calculatedControlSum === 10) {
-      const weights = [3, 4, 5, 6, 7, 8, 9, 10, 11, 1, 2];
-      digitsSum = weights.reduce(
-        (acc, weight, index) => acc + weight * parseInt(iin11[index]),
-        0
-      );
-      calculatedControlSum = digitsSum % 11;
-    }
-
-    if (calculatedControlSum !== controlSum || digitsSum === 0)
-      return "Введенный ИИН некорректен!";
-    return null;
-  }
-
-
+/orders/?filter[orders][code]=293074953
 
 
 
