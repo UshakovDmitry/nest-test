@@ -154,3 +154,45 @@ js:97:9)
 e\injector\instance-loader.js:55:9)
 PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend>
 
+
+
+  import { Module } from '@nestjs/common';
+// import { RabbitMQService } from './rabbitmq/rabbitmq.service';
+import { DBModule } from './db/db.module';
+import { MessageSchema } from './schemas/message.shema';
+import { MongooseModule } from '@nestjs/mongoose';
+import { connectMongoose } from './connect-mongoose';
+import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
+import { TransportRequestsController } from './transportRequests/transportRequests.controller';
+import { TransportModule } from './transport/transport.module';
+import { LoadersModule } from './loaders/loaders.module';
+// import { YaModule } from './Ya/ya.module';
+import { GeliosModule } from './gelios/gelios.module';
+import { DriversModule } from './drivers/drivers.module';
+import { TransportRequestsModule} from './transportRequests/transportRequests.module';
+import { TransportRequestsService } from './transportRequests/transportRequests.service';
+import { CitiesModule } from './cities/cities.module';
+import { CouriersModule } from './couriers/couriers.module';
+import { AuthModule } from './auth/auth.module';
+
+@Module({
+  imports: [
+    RabbitMQModule,
+    DBModule,
+    MongooseModule.forRoot(connectMongoose()),
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
+    TransportModule,
+    LoadersModule,
+    // YaModule,
+    DriversModule,
+    TransportRequestsModule,
+    CitiesModule,
+    CouriersModule,
+    GeliosModule,
+    AuthModule
+  ],
+  controllers: [TransportRequestsController],
+  providers: [TransportRequestsService],
+})
+export class AppModule {}
+
