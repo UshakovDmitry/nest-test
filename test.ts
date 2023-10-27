@@ -3,39 +3,46 @@ ixiMAWaXXOQ4-ZCx-F4zmlTjLil2-iFqeL76NRK3
 
 f1h2ajZshnZu-m5GnMGYT9zhz-o2XS-k_e6XSsK4
 
+  @Post('correction')
+  async transportRequestcorrection(@Body() dto: TransportRequestCorrectionDto ) {
+    return this.transportRequestsService.transportRequestCorrection(dto: TransportRequestCorrectionDto);
+  }
 
+// DTO для корректировки транспортной заявки
+export class TransportRequestCorrectionDto {
+  @IsNotEmpty()
+  @IsString()
+  documentNumber: string;
 
-293074953 24.10.2023 6:46:56  Заказ не удалось выдать 293074953  
-View
+  @IsNotEmpty()
+  @IsString()
+  driver: string;
 
-293074953 24.10.2023 6:47:46  Заказ не удалось выдать 293074953  
-View
+  @IsNotEmpty()
+  @IsString()
+  timeDelivery: string;
 
-293392938 24.10.2023 14:52:25  Заказ не удалось выдать, № kaspi:293392938  
-View
+  @IsNotEmpty()
+  @IsString()
+  date: string;
 
-293392938 24.10.2023 14:57:22  Заказ не удалось выдать, № kaspi:293392938  
-View
+  @IsNotEmpty()
+  @IsString()
+  userIIN: string;
 
-293392938 24.10.2023 15:10:23  Заказ не удалось выдать, № kaspi:293392938  
-View
+  @IsNotEmpty()
+  @IsString()
+  userName: string;
 
-293392938 24.10.2023 15:4:34  Заказ не удалось выдать, № kaspi:293392938  
-View
+  @IsNotEmpty()
+  @IsString()
+  userPosition: string;
 
-293392938 24.10.2023 8:46:59  Заказ не удалось выдать 293392938  
-View
+  @IsNotEmpty()
+  @IsString()
+  carNumber: string;
 
-null 24.10.2023 14:52:27  Заказ выдан, № kaspi:null  
-View
-
-null 24.10.2023 14:52:32  Заказ не удалось выдать, № kaspi:null  
-View
-
-null 24.10.2023 14:57:22  Заказ выдан, № kaspi:null  
-View
-
-null 24.10.2023 15:10:23  Заказ выдан, № kaspi:null  
-View
-
-null 24.10.2023 15:11:49  Заказ не удалось выдать, № kaspi:null
+  @IsNotEmpty()
+  @IsString()
+  comment: string;
+}
