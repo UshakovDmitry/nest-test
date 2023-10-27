@@ -2,8 +2,11 @@ https://confirm-kaspi-order.alser2.workers.dev
 
 
 https://kaspi-proxy.alser.kz/
+import { HttpException, HttpStatus } from '@nestjs/common';
 
-  async transportRequestCorrection(dto): Promise<any> {
+// ...
+
+async transportRequestCorrection(dto): Promise<any> {
     // Сопоставление полей DTO с ожидаемыми полями в запросе
     const requestData = {
       DocNumber: dto.documentNumber,
@@ -15,18 +18,19 @@ https://kaspi-proxy.alser.kz/
       Сomment: dto.comment,
     };
 
-  // Проверка наличия и формата всех необходимых полей
-  const requiredFields = ['DocNumber', 'DateDoc', 'TimeDelivery', 'Driver', 'СarNumber', 'UserIIN', 'Сomment'];
-  
-  for (const field of requiredFields) {
-    if (!requestData[field]) {
-      throw new HttpException(`Missing required field: ${field}`, HttpStatus.BAD_REQUEST);
-    }
+    // Проверка наличия и формата всех необходимых полей
+    const requiredFields = ['DocNumber', 'DateDoc', 'TimeDelivery', 'Driver', 'СarNumber', 'UserIIN', 'Сomment'];
+    
+    for (const field of requiredFields) {
+      if (!requestData[field]) {
+        throw new HttpException(`Обязательное поле отсутствует: ${field}`, HttpStatus.BAD_REQUEST);
+      }
 
-    if (typeof requestData[field] !== 'string') {
-      throw new HttpException(`Invalid data type for field: ${field}. Expected a string.`, HttpStatus.BAD_REQUEST);
+      if (typeof requestData[field] !== 'string') {
+        throw new HttpException(`Неверный тип данных для поля: ${field}. Ожидалась строка.`, HttpStatus.BAD_REQUEST);
+      }
     }
-  }
+    
     console.log(requestData, 'корректировка ( отправляю Сане )');
 
     // http://10.0.1.20/1CHS/hs/TMS//ReplaceDriver  боевая
@@ -42,4 +46,4 @@ https://kaspi-proxy.alser.kz/
       console.error(error);
       throw error;
     }
-  }
+}
