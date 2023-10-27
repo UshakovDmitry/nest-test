@@ -6,7 +6,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 
 // ...
 
-async transportRequestCorrection(dto): Promise<any> {
+  async transportRequestCorrection(dto): Promise<any> {
     // Сопоставление полей DTO с ожидаемыми полями в запросе
     const requestData = {
       DocNumber: dto.documentNumber,
@@ -19,7 +19,7 @@ async transportRequestCorrection(dto): Promise<any> {
     };
 
     // Проверка наличия и формата всех необходимых полей
-    const requiredFields = ['DocNumber', 'DateDoc', 'TimeDelivery', 'Driver', 'СarNumber', 'UserIIN', 'Сomment'];
+    const requiredFields = ['DocNumber', 'DateDoc', 'TimeDelivery', 'Driver', 'UserIIN', 'Сomment'];
     
     for (const field of requiredFields) {
       if (!requestData[field]) {
@@ -43,7 +43,9 @@ async transportRequestCorrection(dto): Promise<any> {
       );
       return response.data;
     } catch (error) {
-      console.error(error);
-      throw error;
+      throw new HttpException(
+        `Ошибка при отправке запроса на корректировку транспортной заявки: ${error}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
 }
