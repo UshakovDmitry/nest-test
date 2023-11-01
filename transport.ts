@@ -21,9 +21,12 @@
         this.saveUser(transformDataToken);
         router.push('/dashboard');
         return true;
-      } else {
-        console.error('Ошибка HTTP: ' + response);
-  
+      }else {
+        const errorData = await response.json(); // Получение тела ответа в формате JSON
+        console.error('Ошибка HTTP: ' + response.status); // Вывод статуса ответа
+        console.error('Ошибка: ' + errorData.error); // Вывод свойства error
+        console.error('Описание ошибки: ' + errorData.errorDescription); // Вывод свойства errorDescription
+        
         return false;
       }
     } catch (error: Error | any) {
@@ -34,27 +37,13 @@
 
 
 
+  validateError = (error: any) => {
 
-мне возвращается 400 и 
-{
-    "error": "invalid_username_or_password",
-    "errorDescription": "invalid_username_or_password"
-}
-
-хочу выводлть это в консоль
+  };
 
 
-
-else {
-      const errorData = await response.json(); // Получение тела ответа в формате JSON
-      console.error('Ошибка HTTP: ' + response.status); // Вывод статуса ответа
-      console.error('Ошибка: ' + errorData.error); // Вывод свойства error
-      console.error('Описание ошибки: ' + errorData.errorDescription); // Вывод свойства errorDescription
-      
-      return false;
-    }
-
-
+реалуй валидацию ошибок 
+если  errorData.errorDescription равен invalid_username_or_password то верни строку "Не валидный логин или пароль"
 
 
 
