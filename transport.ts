@@ -47,3 +47,47 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+validateError = (errorData: any) => {
+  switch (errorData.errorDescription) {
+    case 'invalid_username_or_password':
+      return 'Не валидный логин или пароль';
+    
+    // Добавьте дополнительные case для обработки других возможных ошибок, если необходимо
+    
+    default:
+      return 'Произошла неизвестная ошибка'; // Сообщение по умолчанию для ошибок, которые не обрабатываются явно
+  }
+};
+
+
+
+
+
+
+
+
+
+else {
+      const errorData = await response.json(); // Получение тела ответа в формате JSON
+      
+      const errorMessage = this.validateError(errorData); // Получение сообщения об ошибке с помощью функции validateError
+      console.error(errorMessage); // Вывод сообщения об ошибке в консоль
+      
+      return false;
+    }
+
