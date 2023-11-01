@@ -45,6 +45,16 @@
 
 
 
+else {
+      const errorData = await response.json(); // Получение тела ответа в формате JSON
+      console.error('Ошибка HTTP: ' + response.status); // Вывод статуса ответа
+      console.error('Ошибка: ' + errorData.error); // Вывод свойства error
+      console.error('Описание ошибки: ' + errorData.errorDescription); // Вывод свойства errorDescription
+      
+      return false;
+    }
+
+
 
 
 
