@@ -1,47 +1,54 @@
-я создал модуль actionHistory
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { MessageSchema } from '../schemas/message.shema';
-import { ActionHistoryService } from './actionHistory.service';
-import { ActionHistoryController } from './actionHistory.controller';
-import { DBModule } from '../db/db.module';
+import { ActionHistory } from '../schemas/actionHistory.schema';
+
+// ... (остальной код модуля)
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
-    DBModule,
+    MongooseModule.forFeature([{ name: 'ActionHistory', schema: ActionHistorySchema }]),
+    // ... другие импортируемые модули
   ],
-  controllers: [ActionHistoryController],
-  providers: [ActionHistoryService],
+  // ... (контроллеры и провайдеры)
 })
 export class ActionHistoryModule {}
 
 
-import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { ActionHistoryService } from './actionHistory.service';
-
-@ApiTags('history')
-@Controller('api/history')
-export class ActionHistoryController {
-  constructor(private readonly historyService: ActionHistoryService) {}
-
-  @Get()
-  async getAllHistory() {
-    return this.historyService.getAllHistory();
-  }
-}
 
 
-import { Injectable } from '@nestjs/common';
+
+import { Injectable, InjectModel } from '@nestjs/common';
+import { Model } from 'mongoose';
+import { ActionHistoryDocument } from '../schemas/actionHistory.schema';
 
 @Injectable()
 export class ActionHistoryService {
-  constructor() {}
+  constructor(
+    @InjectModel('ActionHistory') private actionHistoryModel: Model<ActionHistoryDocument>
+  ) {}
 
   async getAllHistory() {
-   
+    return this.actionHistoryModel.find().exec();
   }
 }
 
-Реализуй функцию возврата всех действий из данной коллекции
+
+
+
+
+
+@Injectable()
+export class ActionHistoryService {
+  constructor(
+    @InjectModel('ActionHistory') private actionHistoryModel: Model<ActionHistoryDocument>
+  ) {}
+
+  async getAllHistory() {
+    try {
+      const historyActions = await this.actionHistoryModel.find().exec();
+      return historyActions;
+    } catch (error) {
+      // Обработка возможной ошибки при выполнении запроса к базе данных
+      throw new Error('Не удалось получить историю действий: ' + error.message);
+    }
+  }
+}
+
