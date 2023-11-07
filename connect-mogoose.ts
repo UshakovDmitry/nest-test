@@ -1,28 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { MessageDocument } from '../schemas/message.schema'; // Убедитесь, что путь к файлу верный
-import { HistoryDocument } from '../schemas/history.schema'; // Убедитесь, что путь к файлу верный
-import { DBService } from '../db/db.service';
-import { HttpService } from '@nestjs/axios';
+import { HttpException, HttpStatus } from '@nestjs/common';
+// ... другие импорты
 
 @Injectable()
 export class TransportRequestsService {
-  constructor(
-    @InjectModel('Message') private messageModel: Model<MessageDocument>,
-    @InjectModel('History') private historyModel: Model<HistoryDocument>, // Используйте корректное имя модели, если оно отличается
-    private readonly httpService: HttpService,
-    private readonly dbService: DBService,
-  ) {}
+  // ... конструктор и другие методы
 
-  // ... Остальные методы и логика сервиса
+  async recordHistoryAction({ name, time, comment }: { name: string; time: string; comment: string; }) {
+    const newHistoryEntry = new this.historyModel({
+      name,
+      time,
+      comment,
+    });
+
+    try {
+      const savedEntry = await newHistoryEntry.save();
+      return savedEntry;
+    } catch (error) {
+      // Здесь вы можете обработать ошибку более конкретно, если есть информация об ошибках
+      throw new HttpException('Не удалось сохранить запись в историю действий', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
-
-
-
-
-
-
 
   
 
