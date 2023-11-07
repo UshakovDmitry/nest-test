@@ -1,57 +1,48 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { firstValueFrom } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
-import { MessageDocument } from '../schemas/message.schema';
-import { HistoryDocument } from '../schemas/history.schema';
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
 
-@Injectable()
-export class TransportRequestsService {
-  constructor(
-    @InjectModel('Message') private messageModel: Model<MessageDocument>,
-    @InjectModel('History') private historyModel: Model<HistoryDocument>,
-    private readonly httpService: HttpService,
-    // ... возможно, другие зависимости
-  ) {}
+> tms-api@0.0.1 start
+> nest start
 
-  // ... другие методы сервиса
+[Nest] 15444  - 07.11.2023, 10:58:45     LOG [NestFactory] Starting Nest application...
+[Nest] 15444  - 07.11.2023, 10:58:45     LOG [InstanceLoader] MongooseModule dependencies initialized +32ms
+[Nest] 15444  - 07.11.2023, 10:58:45     LOG [InstanceLoader] HttpModule dependencies initialized +1ms
+[Nest] 15444  - 07.11.2023, 10:58:45   ERROR [ExceptionHandler] Nest can't resolve dependencies of the TransportRequestsService (MessageModel,
+ ?, HttpService, DBService). Please make sure that the argument DispatcherActionModel at index [1] is available in the AppModule context.
 
-  async recordHistoryAction({ name, time, comment }: { name: string; time: string; comment: string; }): Promise<HistoryDocument> {
-    const newHistoryEntry = new this.historyModel({ name, time, comment });
+Potential solutions:
+- Is AppModule a valid NestJS module?
+- If DispatcherActionModel is a provider, is it part of the current AppModule?
+- If DispatcherActionModel is exported from a separate @Module, is that module imported within AppModule?
+  @Module({
+    imports: [ /* the Module containing DispatcherActionModel */ ]
+  })
 
-    try {
-      return await newHistoryEntry.save();
-    } catch (error) {
-      throw new HttpException('Не удалось сохранить запись в историю действий', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
+Error: Nest can't resolve dependencies of the TransportRequestsService (MessageModel, ?, HttpService, DBService). Please make sure that the ar
+gument DispatcherActionModel at index [1] is available in the AppModule context.
 
-  async transportRequestCorrection(dto: any): Promise<any> {
-    // Подготовка данных из DTO
-    const requestData = {
-      // ... другие поля из dto
-    };
+Potential solutions:
+- Is AppModule a valid NestJS module?
+- If DispatcherActionModel is a provider, is it part of the current AppModule?
+- If DispatcherActionModel is exported from a separate @Module, is that module imported within AppModule?
+  @Module({
+    imports: [ /* the Module containing DispatcherActionModel */ ]
+  })
 
-    // Проверка полей DTO
-    // ... ваши проверки для requestData
-
-    try {
-      // Регистрация действия в истории перед отправкой запроса на корректировку
-      await this.recordHistoryAction({
-        name: dto.userName, 
-        time: dto.timeDelivery, 
-        comment: dto.comment
-      });
-
-      // Логика отправки запроса на корректировку
-      const response = await firstValueFrom(
-        this.httpService.post('http://10.0.1.20/1CHS/hs/TMS//ReplaceDriver', requestData)
-      );
-
-      return response.data;
-    } catch (error) {
-      throw new HttpException(`Ошибка при отправке запроса на корректировку транспортной заявки: ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-}
+    at Injector.lookupComponentInParentModules (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core
+\injector\injector.js:254:19)
+    at Injector.resolveComponentInstance (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injec
+tor\injector.js:207:33)
+    at resolveParam (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injector\injector.js:128:3
+8)
+    at async Promise.all (index 1)
+    at Injector.resolveConstructorParams (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injec
+tor\injector.js:143:27)
+    at Injector.loadInstance (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injector\injector
+.js:70:13)
+    at Injector.loadProvider (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injector\injector
+.js:97:9)
+    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at InstanceLoader.createInstancesOfProviders (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\co
+re\injector\instance-loader.js:55:9)
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend>
