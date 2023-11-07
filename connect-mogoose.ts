@@ -1,48 +1,47 @@
-PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
+я создал модуль actionHistory
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MessageSchema } from '../schemas/message.shema';
+import { ActionHistoryService } from './actionHistory.service';
+import { ActionHistoryController } from './actionHistory.controller';
+import { DBModule } from '../db/db.module';
 
-> tms-api@0.0.1 start
-> nest start
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }]),
+    DBModule,
+  ],
+  controllers: [ActionHistoryController],
+  providers: [ActionHistoryService],
+})
+export class ActionHistoryModule {}
 
-[Nest] 15444  - 07.11.2023, 10:58:45     LOG [NestFactory] Starting Nest application...
-[Nest] 15444  - 07.11.2023, 10:58:45     LOG [InstanceLoader] MongooseModule dependencies initialized +32ms
-[Nest] 15444  - 07.11.2023, 10:58:45     LOG [InstanceLoader] HttpModule dependencies initialized +1ms
-[Nest] 15444  - 07.11.2023, 10:58:45   ERROR [ExceptionHandler] Nest can't resolve dependencies of the TransportRequestsService (MessageModel,
- ?, HttpService, DBService). Please make sure that the argument DispatcherActionModel at index [1] is available in the AppModule context.
 
-Potential solutions:
-- Is AppModule a valid NestJS module?
-- If DispatcherActionModel is a provider, is it part of the current AppModule?
-- If DispatcherActionModel is exported from a separate @Module, is that module imported within AppModule?
-  @Module({
-    imports: [ /* the Module containing DispatcherActionModel */ ]
-  })
+import { Controller, Get } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { ActionHistoryService } from './actionHistory.service';
 
-Error: Nest can't resolve dependencies of the TransportRequestsService (MessageModel, ?, HttpService, DBService). Please make sure that the ar
-gument DispatcherActionModel at index [1] is available in the AppModule context.
+@ApiTags('history')
+@Controller('api/history')
+export class ActionHistoryController {
+  constructor(private readonly historyService: ActionHistoryService) {}
 
-Potential solutions:
-- Is AppModule a valid NestJS module?
-- If DispatcherActionModel is a provider, is it part of the current AppModule?
-- If DispatcherActionModel is exported from a separate @Module, is that module imported within AppModule?
-  @Module({
-    imports: [ /* the Module containing DispatcherActionModel */ ]
-  })
+  @Get()
+  async getAllHistory() {
+    return this.historyService.getAllHistory();
+  }
+}
 
-    at Injector.lookupComponentInParentModules (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core
-\injector\injector.js:254:19)
-    at Injector.resolveComponentInstance (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injec
-tor\injector.js:207:33)
-    at resolveParam (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injector\injector.js:128:3
-8)
-    at async Promise.all (index 1)
-    at Injector.resolveConstructorParams (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injec
-tor\injector.js:143:27)
-    at Injector.loadInstance (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injector\injector
-.js:70:13)
-    at Injector.loadProvider (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injector\injector
-.js:97:9)
-    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injector\instance-loader.js:56:13
-    at async Promise.all (index 3)
-    at InstanceLoader.createInstancesOfProviders (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\co
-re\injector\instance-loader.js:55:9)
-PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend>
+
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class ActionHistoryService {
+  constructor() {}
+
+  async getAllHistory() {
+   
+  }
+}
+
+Реализуй функцию возврата всех действий из данной коллекции
