@@ -1,20 +1,22 @@
-// dispatcher-action.schema.ts
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { MessageDocument } from '../schemas/message.shema';
+я добавил новую схему
+import { HistoryDocument } from '../schemas/history.schema';
+import { DBService } from '../db/db.service';
+import { map } from 'rxjs/operators';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
-export type DispatcherActionDocument = Document & DispatcherAction;
+@Injectable()
+export class TransportRequestsService {
+  constructor(
+    @InjectModel('Message') private messageModel: Model<MessageDocument>,
+    private readonly httpService: HttpService,
+    private readonly dbService: DBService,
+  ) {}
 
-@Schema({ timestamps: true })
-export class DispatcherAction {
-  @Prop({ required: true })
-  name: string;
-
-  @Prop({ required: true })
-  time: Date;
-
-  @Prop({ required: true })
-  comment: string;
-}
-
-export const DispatcherActionSchema = SchemaFactory.createForClass(DispatcherAction);
+добавь ее в конструктор
 
