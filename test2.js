@@ -1,262 +1,49 @@
-Request: <ref *2> Writable {
-  _writableState: WritableState {
-    state: 802924,
-    highWaterMark: 16384,
-    defaultEncoding: 'utf8',
-    length: 0,
-    corked: 0,
-    onwrite: [Function: bound onwrite],
-    writecb: null,
-    writelen: 0,
-    afterWriteTickInfo: null,
-    buffered: [],
-    bufferedIndex: 0,
-    pendingcb: 0,
-    errored: null,
-    [Symbol(kOnFinished)]: []
-  },
-  _events: [Object: null prototype] {
-    response: [Function: handleResponse],
-    error: [Function: handleRequestError],
-    socket: [Function: handleRequestSocket]
-  },
-  _eventsCount: 3,
-  _maxListeners: undefined,
-  _options: {
-    maxRedirects: 21,
-    maxBodyLength: Infinity,
-    protocol: 'https:',
-    path: '/sdk/?login=Alser&pass=18A85dw&svc=get_units&params={}',
-    method: 'GET',
-    headers: [Object: null prototype] {
-      Accept: 'application/json, text/plain, */*',
-      'User-Agent': 'axios/1.5.0',
-      'Accept-Encoding': 'gzip, compress, deflate, br'
-    },
-    agents: { http: undefined, https: undefined },
-    auth: undefined,
-    family: undefined,
-    beforeRedirect: [Function: dispatchBeforeRedirect],
-    beforeRedirects: { proxy: [Function: beforeRedirect] },
-    hostname: 'admin.geliospro.com',
-    port: '',
-    agent: undefined,
-    nativeProtocols: { 'http:': [Object], 'https:': [Object] },
-    pathname: '/sdk/',
-    search: '?login=Alser&pass=18A85dw&svc=get_units&params={}'
-  },
-  _ended: true,
-  _ending: true,
-  _redirectCount: 0,
-  _redirects: [],
-  _requestBodyLength: 0,
-  _requestBodyBuffers: [],
-  _onNativeResponse: [Function (anonymous)],
-  _currentRequest: <ref *1> ClientRequest {
-    _events: [Object: null prototype] {
-      response: [Function],
-      abort: [Function (anonymous)],
-      aborted: [Function (anonymous)],
-      connect: [Function (anonymous)],
-      error: [Function (anonymous)],
-      socket: [Function (anonymous)],
-      timeout: [Function (anonymous)]
-    },
-    _eventsCount: 7,
-    _maxListeners: undefined,
-    outputData: [],
-    outputSize: 0,
-    writable: true,
-    destroyed: false,
-    _last: true,
-    chunkedEncoding: false,
-    shouldKeepAlive: true,
-    maxRequestsOnConnectionReached: false,
-    _defaultKeepAlive: true,
-    useChunkedEncodingByDefault: false,
-    sendDate: false,
-    _removedConnection: false,
-    _removedContLen: false,
-    _removedTE: false,
-    strictContentLength: false,
-    _contentLength: 0,
-    _hasBody: true,
-    _trailer: '',
-    finished: true,
-    _headerSent: true,
-    _closed: false,
-    socket: TLSSocket {
-      _tlsOptions: [Object],
-      _secureEstablished: true,
-      _securePending: false,
-      _newSessionPending: false,
-      _controlReleased: true,
-      secureConnecting: true,
-      _SNICallback: null,
-      servername: 'admin.geliospro.com',
-      alpnProtocol: false,
-      authorized: false,
-      authorizationError: 'SELF_SIGNED_CERT_IN_CHAIN',
-      encrypted: true,
-      _events: [Object: null prototype],
-      _eventsCount: 10,
-      connecting: false,
-      _hadError: true,
-      _parent: null,
-      _host: 'admin.geliospro.com',
-      _closeAfterHandlingError: false,
-      _readableState: [ReadableState],
-      _maxListeners: undefined,
-      _writableState: [WritableState],
-      allowHalfOpen: false,
-      _sockname: null,
-      _pendingData: null,
-      _pendingEncoding: '',
-      server: undefined,
-      _server: null,
-      ssl: null,
-      _requestCert: true,
-      _rejectUnauthorized: true,
-      timeout: 5000,
-      parser: null,
-      _httpMessage: [Circular *1],
-      [Symbol(alpncallback)]: null,
-      [Symbol(res)]: [TLSWrap],
-      [Symbol(verified)]: false,
-      [Symbol(pendingSession)]: null,
-      [Symbol(async_id_symbol)]: 1847,
-      [Symbol(kHandle)]: null,
-      [Symbol(lastWriteQueueSize)]: 236,
-      [Symbol(timeout)]: Timeout {
-        _idleTimeout: -1,
-        _idlePrev: null,
-        _idleNext: null,
-        _idleStart: 8589,
-        _onTimeout: null,
-        _timerArgs: undefined,
-        _repeat: null,
-        _destroyed: true,
-        [Symbol(refed)]: false,
-        [Symbol(kHasPrimitive)]: false,
-        [Symbol(asyncId)]: 1849,
-        [Symbol(triggerId)]: 0
-      },
-      [Symbol(kBuffer)]: null,
-      [Symbol(kBufferCb)]: null,
-      [Symbol(kBufferGen)]: null,
-      [Symbol(kCapture)]: false,
-      [Symbol(kSetNoDelay)]: false,
-      [Symbol(kSetKeepAlive)]: true,
-      [Symbol(kSetKeepAliveInitialDelay)]: 60,
-      [Symbol(kBytesRead)]: 0,
-      [Symbol(kBytesWritten)]: 236,
-      [Symbol(connect-options)]: [Object]
-    },
-    _header: 'GET /sdk/?login=Alser&pass=18A85dw&svc=get_units&params={} HTTP/1.1\r\n' +
-      'Accept: application/json, text/plain, */*\r\n' +
-      'User-Agent: axios/1.5.0\r\n' +
-      'Accept-Encoding: gzip, compress, deflate, br\r\n' +
-      'Host: admin.geliospro.com\r\n' +
-      'Connection: keep-alive\r\n' +
-      '\r\n',
-    _keepAliveTimeout: 0,
-    _onPendingData: [Function: nop],
-    agent: Agent {
-      _events: [Object: null prototype],
-      _eventsCount: 2,
-      _maxListeners: undefined,
-      defaultPort: 443,
-      protocol: 'https:',
-      options: [Object: null prototype],
-      requests: [Object: null prototype] {},
-      sockets: [Object: null prototype],
-      freeSockets: [Object: null prototype] {},
-      keepAliveMsecs: 1000,
-      keepAlive: true,
-      maxSockets: Infinity,
-      maxFreeSockets: 256,
-      scheduling: 'lifo',
-      maxTotalSockets: Infinity,
-      totalSocketCount: 1,
-      maxCachedSessions: 100,
-      _sessionCache: [Object],
-      [Symbol(kCapture)]: false
-    },
-    socketPath: undefined,
-    method: 'GET',
-    maxHeaderSize: undefined,
-    insecureHTTPParser: undefined,
-    joinDuplicateHeaders: undefined,
-    path: '/sdk/?login=Alser&pass=18A85dw&svc=get_units&params={}',
-    _ended: false,
-    res: null,
-    aborted: false,
-    timeoutCb: [Function: emitRequestTimeout],
-    upgradeOrConnect: false,
-    parser: null,
-    maxHeadersCount: null,
-    reusedSocket: false,
-    host: 'admin.geliospro.com',
-    protocol: 'https:',
-    _redirectable: [Circular *2],
-    [Symbol(kCapture)]: false,
-    [Symbol(kBytesWritten)]: 0,
-    [Symbol(kNeedDrain)]: false,
-    [Symbol(corked)]: 0,
-    [Symbol(kOutHeaders)]: [Object: null prototype] {
-      accept: [Array],
-      'user-agent': [Array],
-      'accept-encoding': [Array],
-      host: [Array]
-    },
-    [Symbol(errored)]: null,
-    [Symbol(kHighWaterMark)]: 16384,
-    [Symbol(kRejectNonStandardBodyWrites)]: false,
-    [Symbol(kUniqueHeaders)]: null
-  },
-  _currentUrl: 'https://admin.geliospro.com/sdk/?login=Alser&pass=18A85dw&svc=get_units&params={}',
-  [Symbol(kCapture)]: false
+import { Injectable } from '@nestjs/common';
+import axios from 'axios';
+
+@Injectable()
+export class GeliosService {
+  async getCarLocations(login: string, pass: string) {
+    try {
+      const response = await axios.get(
+        `https://admin.geliospro.com/sdk/?login=${login}&pass=${pass}&svc=get_units&params={}`
+      );
+
+      const drivers = response.data.map((driver: any) => {
+        const {
+          name,
+          unit_icon,
+          lmsg: { lat, lon },
+          info,
+        } = driver;
+
+        const infoObject = JSON.parse(info);
+        
+        return {
+          name,
+          unit_icon,
+          latitude: lat,
+          longitude: lon,
+          info: infoObject,
+        };
+      });
+      
+      return drivers;
+    } catch (error) {
+      if (error.response) {
+        // Сервер вернул ответ с кодом статуса, который вышел из диапазона 2xx
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        console.error('Response headers:', error.response.headers);
+      } else if (error.request) {
+        // Запрос был сделан, но ответ не был получен
+        console.error('Request:', error.request);
+      } else {
+        // Что-то пошло не так при настройке запроса
+        console.error('Error message:', error.message);
+      }
+      console.error('Config:', error.config);
+      throw new Error('Не удалось получить данные о водителях');
+    }
+  }
 }
-Config: {
-  transitional: {
-    silentJSONParsing: true,
-    forcedJSONParsing: true,
-    clarifyTimeoutError: false
-  },
-  adapter: 'http',
-  transformRequest: [ [Function: transformRequest] ],
-  transformResponse: [ [Function: transformResponse] ],
-  timeout: 0,
-  xsrfCookieName: 'XSRF-TOKEN',
-  xsrfHeaderName: 'X-XSRF-TOKEN',
-  maxContentLength: -1,
-  maxBodyLength: -1,
-  env: {
-    FormData: [Function: FormData] {
-      LINE_BREAK: '\r\n',
-      DEFAULT_CONTENT_TYPE: 'application/octet-stream'
-    },
-    Blob: [class Blob]
-  },
-  validateStatus: [Function: validateStatus],
-  headers: Object [AxiosHeaders] {
-    Accept: 'application/json, text/plain, */*',
-    'Content-Type': undefined,
-    'User-Agent': 'axios/1.5.0',
-    'Accept-Encoding': 'gzip, compress, deflate, br'
-  },
-  method: 'get',
-  url: 'https://admin.geliospro.com/sdk/?login=Alser&pass=18A85dw&svc=get_units&params={}',
-  data: undefined
-}
-[Nest] 5724  - 08.11.2023, 15:22:36   ERROR [ExceptionsHandler] Не удалось получить данные о водителях
-Error: Не удалось получить данные о водителях
-    at GeliosService.getCarLocations (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\src\gelios\gelios.service.ts:46:13)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at DriversService.getDriversByDate (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\src\drivers\drivers.service.ts:23:24)
-    at DriversController.getDriversByDate (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\src\drivers\drivers.controller.ts:19:12)
-    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\router\router-execution-context.js:46:28
-    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\router\router-proxy.js:9:17
-
-
-
