@@ -1,3 +1,34 @@
+вся цепочка 
+
+  @Post('/correction') 
+  async setDutyDrivers(@Body() dto: CorrectionDto) {
+   const { cap, items, history } = dto;
+    this.dutydriversService.addHistory(history);
+    return this.dutydriversService.setDutyDrivers(cap, items);
+  }
+
+затем
+
+  async addHistory(history) {
+this.actionHistoryService.addCorrectionDutyDriversSHistory(history);
+}
+затем
+  async addCorrectionDutyDriversSHistory (data) {
+    console.log(data, 'data');
+    
+    let userAction = await this.historyModel.findOne({ name: data.userName }).exec();
+
+    if (!userAction) {
+      userAction = new this.historyModel({ name: data.userName, transportRequestHistory: [], callHistory: [] ,DutyDriversHistory: [] });
+    }
+
+    userAction.DutyDriversHistory.push({ userIIN:data.UserIIN, date:data.date });
+    await userAction.save();
+    return { status: 'success', message: 'Заявка успешно записана в историю' };
+  }
+
+
+
 [Nest] 9500  - 10.11.2023, 15:21:28     LOG [RouterExplorer] Mapped {/api/dutydrivers, POST} route +0ms
 [Nest] 9500  - 10.11.2023, 15:21:29     LOG [RouterExplorer] Mapped {/api/dutydrivers/correction, POST} route +1ms
 [Nest] 9500  - 10.11.2023, 15:21:29     LOG [NestApplication] Nest application successfully started +1ms
