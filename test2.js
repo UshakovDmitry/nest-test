@@ -1,32 +1,14 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+// Метод для добавления записи о коррекции
+  async recordHistoryAction({ name, time, comment }: { name: string; time: string; comment: string; }) {
+    const userAction = await this.historyModel.findOne({ name }).exec();
 
-export type DispatcherActionDocument = Document & DispatcherAction;
-
-@Schema({ versionKey: false })
-export class DispatcherAction {
-  @Prop({ required: true })
-  name: string;
-
-  @Prop({ required: true })
-  time: string;
-
-  @Prop({ required: true })
-  comment: string;
-
-  // История звонков
-  @Prop({ default: [] })
-  callHistory: {
-    date: string;
-    tel_number: string;
-  }[];
-
-  // История коррекций
-  @Prop({ default: [] })
-  correctionHistory: {
-    time: string;
-    comment: string;
-  }[];
-}
-
-export const DispatcherActionSchema = SchemaFactory.createForClass(DispatcherAction);
+    if (userAction) {
+      // Если пользователь найден, добавляем запись в correctionHistory
+      userAction.correctionHistory.push({ time, comment });
+      await userAction.save();
+      return { status: 'success', message: 'Коррекция успешно записана в историю' };
+    } else {
+      // Если пользователь не найден, можно выбросить исключение или вернуть статус ошибки
+      throw new Error('Пользователь не найден');
+    }
+  }
