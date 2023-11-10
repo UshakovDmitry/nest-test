@@ -1,24 +1,23 @@
-вот для этого запроса нужно описать dto
-  @Post('/correction') (@Body() dto:) {
+class CapDto {
+  DateDoc: string;
 }
 
-вот что он должен получать в body 
-{
-    "Сap": {
-        "DateDoc": "20231102"
-    },
-    "items": [
-        {
-            "Driver": "681012301869",
-            "Duty": true,
-            "Date": "2",
-            "Values": true
-        }
-    ],
-    "history" : {
-        "UserIIN": "681012301869",
-        "UserName" : "Абдуллин Р.Р.",
-        // Дата и время изменения
-        "date": "2023-11-02",
+class ItemDto {
+  Driver: string;
+  Duty: string;
+  Date: string;
+  Values: string;
+}
 
-    }
+class HistoryDto {
+  UserIIN: string;
+  UserName: string;
+  date: string;
+}
+
+export class CorrectionDto {
+  Сap: CapDto;
+  items: ItemDto[];
+  history: HistoryDto;
+}
+
