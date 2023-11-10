@@ -1,43 +1,33 @@
-import { InjectModel } from '@nestjs/mongoose';
-import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { DispatcherActionDocument } from '../schemas/history.schema';
-
 @Injectable()
 export class ActionHistoryService {
-  constructor(
-    @InjectModel('DispatcherAction')
-    private historyModel: Model<DispatcherActionDocument>,
-  ) {}
-
-  async getAllHistory() {
-    return this.historyModel.find().exec();
-  }
+  // ... существующий код ...
 
   async addCorrectionHistory({ name, time, comment }: { name: string; time: string; comment: string; }) {
-    const userAction = await this.historyModel.findOne({ name }).exec();
+    let userAction = await this.historyModel.findOne({ name }).exec();
 
-    if (userAction) {
-      // Если пользователь найден, добавляем запись в correctionHistory
-      userAction.correctionHistory.push({ time, comment });
-      await userAction.save();
-      return { status: 'success', message: 'Коррекция успешно записана в историю' };
-    } else {
-      // Если пользователь не найден, можно выбросить исключение или вернуть статус ошибки
-      throw new Error('Пользователь не найден');
+    if (!userAction) {
+      // Если пользователь не найден, создаем новый документ
+      userAction = new this.historyModel({ name, correctionHistory: [], callHistory: [] });
     }
+
+    // Добавляем запись в correctionHistory
+    userAction.correctionHistory.push({ time, comment });
+    await userAction.save();
+    return { status: 'success', message: 'Коррекция успешно записана в историю' };
   }
 
   async addCallHistory(name: string, callData: { date: string; tel_number: string }) {
-    const userAction = await this.historyModel.findOne({ name }).exec();
-    if (userAction) {
-      userAction.callHistory.push(callData);
-      await userAction.save();
-      return true; // Указываем, что операция прошла успешно
-    } else {
-      throw new Error('Пользователь не найден');
+    let userAction = await this.historyModel.findOne({ name }).exec();
+
+    if (!userAction) {
+      // Если пользователь не найден, создаем новый документ
+      userAction = new this.historyModel({ name, correctionHistory: [], callHistory: [] });
     }
+
+    // Добавляем запись в callHistory
+    userAction.callHistory.push(callData);
+    await userAction.save();
+    return { status: 'success', message: 'Звонок успешно записан в историю' };
   }
 }
-Добавь новую логику в addCorrectionHistory и addCallHistory
-Если пользователь не найден то создать его в бд
+
