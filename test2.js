@@ -45,4 +45,10 @@ defineProps<{
 }
 
 </style>
+NORMAL_TRUCK
 
+TAIL_LIFT
+
+TRUCK_SERVICE
+
+TRUCK_TRANSFER
