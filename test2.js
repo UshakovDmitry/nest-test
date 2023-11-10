@@ -32,3 +32,19 @@ this.actionHistoryService.addCorrectionDutyDriversSHistory(history);
 
 Я закоментировал логику пока что и посмотрел что приходит 
 не пойму почему до этого была ошибка
+
+
+
+
+
+
+
+[Nest] 13436  - 10.11.2023, 15:13:12     LOG [RouterExplorer] Mapped {/api/dutydrivers, POST} route +0ms
+[Nest] 13436  - 10.11.2023, 15:13:12     LOG [RouterExplorer] Mapped {/api/dutydrivers/correction, POST} route +0ms
+[Nest] 13436  - 10.11.2023, 15:13:12     LOG [NestApplication] Nest application successfully started +2ms
+Приложение запущено на порту 4000
+{
+  UserIIN: '681012301869',
+  UserName: 'Абдуллин Р.Р.',
+  date: '2023-11-02'
+} data
