@@ -35,3 +35,17 @@ export const DispatcherActionSchema = SchemaFactory.createForClass(DispatcherAct
 
 
 
+@Controller('api/history')
+export class ActionHistoryController {
+  // ... существующий код ...
+
+  @Post('call') // Используйте декоратор @Post для обработки POST-запросов
+  async addCall(@Body() callData: { name: string; date: string; tel_number: string }) {
+    return this.historyService.addCallHistory(callData.name, {
+      date: callData.date,
+      tel_number: callData.tel_number,
+    });
+  }
+}
+
+
