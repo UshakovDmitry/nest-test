@@ -1,62 +1,90 @@
-import { Injectable } from '@nestjs/common';
-import axios from 'axios';
-import https from 'https';
+У меня есть модуль для хранения истории действий пользователем написанный на NEST
 
-@Injectable()
-export class GeliosService {
-  private axiosInstance;
+import { Controller, Get } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { ActionHistoryService } from './actionHistory.service';
 
-  constructor() {
-    // Creating an Axios instance with custom configuration
-    this.axiosInstance = axios.create({
-      httpsAgent: new https.Agent({  
-        rejectUnauthorized: false // This will ignore unauthorized self-signed certificates, use with caution
-      }),
-      // You can add more custom configuration if necessary
-    });
-  }
+@ApiTags('history')
+@Controller('api/history')
+export class ActionHistoryController {
+  constructor(private readonly historyService: ActionHistoryService) {}
 
-  async getCarLocations() {
-    try {
-      const login = process.env.GELIOS_LOGIN;
-      const pass = process.env.GELIOS_PASSWORD;
-
-      // Check if login and password are available
-      if (!login || !pass) {
-        throw new Error('Login or password for Gelios is undefined.');
-      }
-
-      const response = await this.axiosInstance.get(
-        `https://admin.geliospro.com/sdk/?login=${login}&pass=${pass}&svc=get_units&params={}`
-      );
-
-      // Check if the data is present and is an array
-      if (!Array.isArray(response.data)) {
-        throw new Error('Response data is not an array.');
-      }
-
-      const drivers = response.data.map(driver => {
-        // Using optional chaining and nullish coalescing operator
-        const name = driver?.name ?? 'Unknown';
-        const unit_icon = driver?.unit_icon ?? 'Default Icon';
-        const lat = driver?.lmsg?.lat ?? 0;
-        const lon = driver?.lmsg?.lon ?? 0;
-        const info = driver?.info ? JSON.parse(driver.info) : {};
-
-        return {
-          name,
-          unit_icon,
-          latitude: lat,
-          longitude: lon,
-          info,
-        };
-      });
-      
-      return drivers;
-    } catch (error) {
-      // Error handling remains similar to your current implementation
-      // ...
-      throw new Error('Не удалось получить данные о водителях');
-    }
+  @Get()
+  async getAllHistory() {
+    return this.historyService.getAllHistory();
   }
 }
+
+import { InjectModel } from '@nestjs/mongoose';
+import { Injectable } from '@nestjs/common';
+import { Model } from 'mongoose';
+import { DispatcherActionDocument } from '../schemas/history.schema';
+
+@Injectable()
+export class ActionHistoryService {
+  constructor(
+    @InjectModel('DispatcherAction')
+    private historyModel: Model<DispatcherActionDocument>,
+  ) {}
+
+  async getAllHistory() {
+    return this.historyModel.find().exec();
+  }
+}
+
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { DispatcherActionSchema } from '../schemas/history.schema';
+import { ActionHistoryService } from './actionHistory.service';
+import { ActionHistoryController } from './actionHistory.controller';
+import { DBModule } from '../db/db.module';
+
+@Module({
+  imports: [
+    MongooseModule.forFeature([
+      { name: 'DispatcherAction', schema: DispatcherActionSchema },
+    ]),
+    DBModule,
+  ],
+  controllers: [ActionHistoryController],
+  providers: [ActionHistoryService],
+})
+export class ActionHistoryModule {}
+
+Вот в таком виде записываются данные 
+
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+
+export type DispatcherActionDocument = Document & DispatcherAction;
+
+@Schema({ versionKey: false })
+export class DispatcherAction {
+  @Prop({ required: true })
+  name: string;
+
+  @Prop({ required: true })
+  time: string;
+
+  @Prop({ required: true })
+  comment: string;
+}
+
+export const DispatcherActionSchema =
+  SchemaFactory.createForClass(DispatcherAction);
+
+
+Я хочу добавить новые эндпоинт CALL
+это будет POST
+фронт будет присылать мне 
+{
+name: "",
+date: "",
+tel_number: "",
+}
+
+Я хочу при получении этих данных искать в базе данных по name пользователя и добавлять в новый массив ему историю совершенных звонков
+
+
+
+
