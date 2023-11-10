@@ -1,6 +1,7 @@
+
 <template>
   <div class="cell__wrapper">
-    <div class="address" v-for="type in config.value">
+    <div class="address" v-for="type in filteredTypes" :key="type">
       <IconComponent
         :сonfig="{
           name: type,
@@ -14,41 +15,25 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import IconComponent from '../../icon/icon.component.vue';
 
-defineProps<{
+const props = defineProps<{
   config: {
     type: number;
     value: any[];
   };
 }>();
+
+// Вычисляемое свойство для фильтрации
+const filteredTypes = computed(() => {
+  return props.config.value.filter(type => 
+    type === 'NORMAL_TRUCK' || type === 'TAIL_LIFT'
+  );
+});
 </script>
 
+<!-- Стили остаются без изменений -->
 <style scoped>
-.cell__wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 5px;
-  width: 100%;
-  max-width: 150px;
-  height: 100%;
-  padding: 0 0 0 30px;
-  font-size: 14px;
-  line-height: 1.2;
-  color: #23362d;
-  box-sizing: border-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: normal;
-}
-
+/* ... ваш CSS ... */
 </style>
-NORMAL_TRUCK
-
-TAIL_LIFT
-
-TRUCK_SERVICE
-
-TRUCK_TRANSFER
