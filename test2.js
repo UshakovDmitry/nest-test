@@ -1,64 +1,31 @@
-dto
-
-import { IsNotEmpty, IsString } from 'class-validator';
-
-class CapDto {
-    @IsNotEmpty()
-    @IsString()
-    DateDoc: string;
-  }
-  
-  class ItemDto {
-    @IsNotEmpty()
-    @IsString()
-    Driver: string;
-
-    @IsNotEmpty()
-    @IsString()
-    Duty: string;
-
-    @IsNotEmpty()
-    @IsString()
-    Date: string;
-
-    @IsNotEmpty()
-    @IsString()
-    Values: string;
-  }
-  
-  class HistoryDto {
-    @IsNotEmpty()
-    @IsString()
-    UserIIN: string;
-
-    @IsNotEmpty()
-    @IsString()
-    UserName: string;
-    
-    @IsNotEmpty()
-    @IsString()
-    date: string;
-  }
-  
-  export class CorrectionDto {
-    Сap: CapDto;
-    items: ItemDto[];
-    history: HistoryDto;
-  } 
-
-Теперь нужно эти данные отправить на другой url внктри this.dutydriversService.setDutyDrivers
-передай туда все кроме HistoryDto
-
-и напиши сам метод 
-
- @Post('/correction') 
-  async setDutyDrivers(@Body() dto: CorrectionDto) {
-    return this.dutydriversService.setDutyDrivers(
-      {
-        
-      }
-    );
+async addHistory(history) {
+this.actionHistoryService.addCorrectionDutyDriversSHistory({history.userIIN, history.userName, history.date});
 }
 
 
 
+
+  async addCorrectionDutyDriversSHistory ({userIIN , userName, date}: {userIIN: string; userName: string; date: string; }) {
+    let userAction = await this.historyModel.findOne({ name: userName }).exec();
+
+    if (!userAction) {
+      userAction = new this.historyModel({ name: userName, transportRequestHistory: [], callHistory: [] ,DutyDriversHistory: [] });
+    }
+
+    userAction.DutyDriversHistory.push({ date, userIIN });
+    await userAction.save();
+    return { status: 'success', message: 'Заявка успешно записана в историю' };
+  }
+
+
+
+
+C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\mongoose\lib\document.js:3162
+    this.$__.validationError = new ValidationError(this);
+                               ^
+ValidationError: DispatcherAction validation failed: name: Path `name` is required.
+    at model.Document.invalidate (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\mongoose\lib\document.js:3162:32)
+    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\mongoose\lib\document.js:2955:17
+    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\mongoose\lib\schematype.js:1368:9
+    at processTicksAndRejections (node:internal/process/task_queues:77:11)
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend>
