@@ -1,65 +1,11 @@
-async transportRequestCorrection(dto): Promise<any> {
-  // Сопоставление полей DTO с ожидаемыми полями в запросе
-  const requestData = {
-    DocNumber: dto.documentNumber,
-    DateDoc: dto.date,
-    TimeDelivery: dto.timeDelivery,
-    Driver: dto.driver,
-    СarNumber: dto.carNumber,
-    UserIIN: dto.userIIN,
-    Сomment: dto.comment,
-  };
+Приложение запущено на порту 4000
 
-  // Проверка наличия и формата всех необходимых полей
-  const requiredFields = [
-    'DocNumber',
-    'DateDoc',
-    'TimeDelivery',
-    'Driver',
-    'UserIIN',
-    'Сomment',
-  ];
-
-  for (const field of requiredFields) {
-    if (!requestData[field]) {
-      throw new HttpException(
-        `Обязательное поле отсутствует: ${field}`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    if (typeof requestData[field] !== 'string') {
-      throw new HttpException(
-        `Неверный тип данных для поля: ${field}. Ожидалась строка.`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  // URL боевого сервера
-  const liveServerUrl = 'http://10.0.1.20/1CHS/hs/TMS//ReplaceDriver';
-
-  try {
-    // Отправка запроса на корректировку
-    const response = await firstValueFrom(
-      this.httpService.post(liveServerUrl, requestData),
-    );
-
-    // Проверка URL запроса и запись в БД в случае успеха
-    if (response.data && axios.getUri(response.config) === liveServerUrl) {
-      this.actionHistoryService.addCorrectionHistory({
-        name: dto.userName, 
-        time: dto.timeDelivery, 
-        comment: dto.comment
-      });
-    }
-
-    return response.data;
-  } catch (error) {
-    throw new HttpException(
-      `Ошибка при отправке запроса на корректировку транспортной заявки: ${error}`,
-      HttpStatus.INTERNAL_SERVER_ERROR,
-    );
-  }
-}
-
+C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\mongoose\lib\document.js:3162
+    this.$__.validationError = new ValidationError(this);
+                               ^
+ValidationError: DispatcherAction validation failed: name: Path `name` is required.
+    at model.Document.invalidate (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\mongoose\lib\document.js:3162:32)
+    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\mongoose\lib\document.js:2955:17
+    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\mongoose\lib\schematype.js:1368:9
+    at processTicksAndRejections (node:internal/process/task_queues:77:11)
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> 
