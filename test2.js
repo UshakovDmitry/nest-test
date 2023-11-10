@@ -1,16 +1,26 @@
+import { InjectModel } from '@nestjs/mongoose';
+import { Injectable } from '@nestjs/common';
+import { Model } from 'mongoose';
+import { DispatcherActionDocument } from '../schemas/history.schema';
+
 @Injectable()
 export class ActionHistoryService {
-  // ... существующий код ...
+  constructor(
+    @InjectModel('DispatcherAction')
+    private historyModel: Model<DispatcherActionDocument>,
+  ) {}
+
+  async getAllHistory() {
+    return this.historyModel.find().exec();
+  }
 
   async addCorrectionHistory({ name, time, comment }: { name: string; time: string; comment: string; }) {
     let userAction = await this.historyModel.findOne({ name }).exec();
 
     if (!userAction) {
-      // Если пользователь не найден, создаем новый документ
       userAction = new this.historyModel({ name, correctionHistory: [], callHistory: [] });
     }
 
-    // Добавляем запись в correctionHistory
     userAction.correctionHistory.push({ time, comment });
     await userAction.save();
     return { status: 'success', message: 'Коррекция успешно записана в историю' };
@@ -20,14 +30,13 @@ export class ActionHistoryService {
     let userAction = await this.historyModel.findOne({ name }).exec();
 
     if (!userAction) {
-      // Если пользователь не найден, создаем новый документ
       userAction = new this.historyModel({ name, correctionHistory: [], callHistory: [] });
     }
 
-    // Добавляем запись в callHistory
     userAction.callHistory.push(callData);
     await userAction.save();
     return { status: 'success', message: 'Звонок успешно записан в историю' };
   }
 }
 
+Если пользователь не найден, то его нужно создать и записать его действие 
