@@ -1,31 +1,34 @@
 async addHistory(history) {
-this.actionHistoryService.addCorrectionDutyDriversSHistory({history.userIIN, history.userName, history.date});
+this.actionHistoryService.addCorrectionDutyDriversSHistory(history);
 }
 
 
 
 
-  async addCorrectionDutyDriversSHistory ({userIIN , userName, date}: {userIIN: string; userName: string; date: string; }) {
-    let userAction = await this.historyModel.findOne({ name: userName }).exec();
+  async addCorrectionDutyDriversSHistory (data) {
+    console.log(data, 'data');
+    
+    // let userAction = await this.historyModel.findOne({ name: userName }).exec();
 
-    if (!userAction) {
-      userAction = new this.historyModel({ name: userName, transportRequestHistory: [], callHistory: [] ,DutyDriversHistory: [] });
-    }
+    // if (!userAction) {
+    //   userAction = new this.historyModel({ name: userName, transportRequestHistory: [], callHistory: [] ,DutyDriversHistory: [] });
+    // }
 
-    userAction.DutyDriversHistory.push({ date, userIIN });
-    await userAction.save();
-    return { status: 'success', message: 'Заявка успешно записана в историю' };
+    // userAction.DutyDriversHistory.push({ date, userIIN });
+    // await userAction.save();
+    // return { status: 'success', message: 'Заявка успешно записана в историю' };
   }
 
 
 
 
-C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\mongoose\lib\document.js:3162
-    this.$__.validationError = new ValidationError(this);
-                               ^
-ValidationError: DispatcherAction validation failed: name: Path `name` is required.
-    at model.Document.invalidate (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\mongoose\lib\document.js:3162:32)
-    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\mongoose\lib\document.js:2955:17
-    at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\mongoose\lib\schematype.js:1368:9
-    at processTicksAndRejections (node:internal/process/task_queues:77:11)
-PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend>
+Приложение запущено на порту 4000
+{
+  UserIIN: '681012301869',
+  UserName: 'Абдуллин Р.Р.',
+  date: '2023-11-02'
+} data
+
+
+Я закоментировал логику пока что и посмотрел что приходит 
+не пойму почему до этого была ошибка
