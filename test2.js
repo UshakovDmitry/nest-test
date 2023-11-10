@@ -1,27 +1,24 @@
-import { InjectModel } from '@nestjs/mongoose';
-import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { DispatcherActionDocument } from '../schemas/history.schema';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-@Injectable()
-export class ActionHistoryService {
-  constructor(
-    @InjectModel('DispatcherAction')
-    private historyModel: Model<DispatcherActionDocument>,
-  ) {}
+export type DispatcherActionDocument = Document & DispatcherAction;
+@Schema({ versionKey: false })
+export class DispatcherAction {
+  @Prop({ required: true })
+  name: string;
 
-  async getAllHistory() {
-    return this.historyModel.find().exec();
-  }
+  @Prop({ required: true })
+  time: string;
 
-  async addCallHistory(name: string, callData: { date: string; tel_number: string }) {
-    const userAction = await this.historyModel.findOne({ name }).exec();
-    if (userAction) {
-      userAction.callHistory.push(callData);
-      await userAction.save();
-      return true; // Указываем, что операция прошла успешно
-    } else {
-      throw new Error('Пользователь не найден');
-    }
-  }
+  @Prop({ required: true })
+  comment: string;
+  
+// История звонков
+  @Prop({ default: [] })
+  callHistory: {
+    date: string;
+    tel_number: string;
+  }[];
 }
+
+export const DispatcherActionSchema = SchemaFactory.createForClass(DispatcherAction);
