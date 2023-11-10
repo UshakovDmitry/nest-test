@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 export type DispatcherActionDocument = Document & DispatcherAction;
+
 @Schema({ versionKey: false })
 export class DispatcherAction {
   @Prop({ required: true })
@@ -12,12 +13,19 @@ export class DispatcherAction {
 
   @Prop({ required: true })
   comment: string;
-  
-// История звонков
+
+  // История звонков
   @Prop({ default: [] })
   callHistory: {
     date: string;
     tel_number: string;
+  }[];
+
+  // История коррекций
+  @Prop({ default: [] })
+  correctionHistory: {
+    time: string;
+    comment: string;
   }[];
 }
 
