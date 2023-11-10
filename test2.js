@@ -1,4 +1,58 @@
-[Nest] 7748  - 10.11.2023, 11:33:50   ERROR [ExceptionHandler] Nest can't resolve dependencies of the TransportRequestsService (MessageModel, DispatcherActionModel, HttpService, DBService, ?). Please make sure that the argument ActionHistoryService at index [4] is available in the TransportRequestsModule context.
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { DispatcherActionSchema } from '../schemas/history.schema';
+import { ActionHistoryService } from './actionHistory.service';
+import { ActionHistoryController } from './actionHistory.controller';
+import { DBModule } from '../db/db.module';
+
+@Module({
+  imports: [
+    MongooseModule.forFeature([
+      { name: 'DispatcherAction', schema: DispatcherActionSchema },
+    ]),
+    DBModule,
+  ],
+  controllers: [ActionHistoryController],
+  providers: [ActionHistoryService],
+})
+export class ActionHistoryModule {}
+
+import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MessageSchema } from '../schemas/message.shema';
+import { DispatcherActionSchema } from '../schemas/history.schema';
+import { ActionHistoryModule } from '../actionHistory/actionHistory.module';
+import { TransportRequestsService } from './transportRequests.service';
+import { TransportRequestsController } from './transportRequests.controller';
+import { DBModule } from '../db/db.module';  
+
+
+@Module({
+  imports: [
+    MongooseModule.forFeature([
+      { name: 'Message', schema: MessageSchema },
+      { name: 'DispatcherAction', schema: DispatcherActionSchema },
+    ]),
+    DBModule,
+    HttpModule,
+    ActionHistoryModule
+
+  ],
+  controllers: [TransportRequestsController],
+  providers: [TransportRequestsService],
+})
+export class TransportRequestsModule {}
+
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> npm run start
+
+> tms-api@0.0.1 start
+> nest start
+
+[Nest] 10036  - 10.11.2023, 11:36:57     LOG [NestFactory] Starting Nest application...
+[Nest] 10036  - 10.11.2023, 11:36:57     LOG [InstanceLoader] MongooseModule dependencies initialized +23ms
+[Nest] 10036  - 10.11.2023, 11:36:57     LOG [InstanceLoader] HttpModule dependencies initialized +1ms
+[Nest] 10036  - 10.11.2023, 11:36:57   ERROR [ExceptionHandler] Nest can't resolve dependencies of the TransportRequestsService (MessageModel, DispatcherActionModel, HttpService, DBService, ?). Please make sure that the argument ActionHistoryService at index [4] is available in the TransportRequestsModule context.
 
 Potential solutions:
 - Is TransportRequestsModule a valid NestJS module?
@@ -30,27 +84,3 @@ Potential solutions:
     at InstanceLoader.createInstancesOfProviders (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\@nestjs\core\injector\instance-loader.js:55:9)
 PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> 
 
-
-import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
-import { MongooseModule } from '@nestjs/mongoose';
-import { MessageSchema } from '../schemas/message.shema';
-import { DispatcherActionSchema } from '../schemas/history.schema'; // Убедитесь, что путь к файлу верный
-import { TransportRequestsService } from './transportRequests.service';
-import { TransportRequestsController } from './transportRequests.controller';
-import { DBModule } from '../db/db.module';  
-
-
-@Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: 'Message', schema: MessageSchema },
-      { name: 'DispatcherAction', schema: DispatcherActionSchema },
-    ]),
-    DBModule,
-    HttpModule,
-  ],
-  controllers: [TransportRequestsController],
-  providers: [TransportRequestsService],
-})
-export class TransportRequestsModule {}
