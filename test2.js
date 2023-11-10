@@ -49,3 +49,45 @@ ValidationError: DispatcherAction validation failed: name: Path `name` is requir
     at C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend\node_modules\mongoose\lib\schematype.js:1368:9
     at processTicksAndRejections (node:internal/process/task_queues:77:11)
 PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\backend> 
+
+
+вот схема 
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+
+export type DispatcherActionDocument = Document & DispatcherAction;
+
+@Schema({ versionKey: false })
+export class DispatcherAction {
+  @Prop({ required: true })
+  name: string;
+
+  @Prop()
+  time: string;
+
+  @Prop()
+  comment: string;
+
+  // История звонков
+  @Prop({ default: [] })
+  callHistory: {
+    date: string;
+    tel_number: string;
+  }[];
+
+  // История коррекций
+  @Prop({ default: [] })
+  transportRequestHistory: {
+    time: string;
+    comment: string;
+  }[];
+
+  // История дежурных водителей
+  @Prop({ default: [] })
+  DutyDriversHistory: {
+    date: string;
+    userIIN: string;
+  }[];
+}
+
+export const DispatcherActionSchema = SchemaFactory.createForClass(DispatcherAction);
