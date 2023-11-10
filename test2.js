@@ -22,4 +22,16 @@ export const DispatcherActionSchema = SchemaFactory.createForClass(DispatcherAct
 
 
 
+// Метод для добавления записи о звонке
+  async addCallHistory(name: string, callData: { date: string; tel_number: string }) {
+    const userAction = await this.historyModel.findOne({ name }).exec();
+    if (userAction) {
+      userAction.callHistory.push(callData);
+      await userAction.save();
+    } else {
+      // Обработка случая, когда пользователь не найден
+    }
+  }
+
+
 
