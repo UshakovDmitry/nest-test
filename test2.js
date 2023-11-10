@@ -7,7 +7,7 @@
     return this.dutydriversService.setDutyDrivers(cap, items);
   }
 
-затем
+затем 
 
   async addHistory(history) {
 this.actionHistoryService.addCorrectionDutyDriversSHistory(history);
