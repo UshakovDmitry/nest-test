@@ -1,3 +1,6 @@
+https://t.me/+te5IKguDpzE4OTli
+Источник: https://travelask.ru/questions/4020225_th_na-phukete-est-magazin-nike
+
 import { ActionHistory } from '../schemas/actionHistory.schema';
 
 // ... (остальной код модуля)
