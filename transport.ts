@@ -1,61 +1,30 @@
-// В файле actionHistory.controller.ts
-import { Controller, Post, Body, Res } from '@nestjs/common';
+        this.actionHistoryService.addCorrectionTransportRequestHistory({
+          name: dto.userName,
+          time: dto.timeDelivery,
+          comment: dto.comment,
+          date: dto.dateCreated
+        });
+  async addCorrectionTransportRequestHistory({ name, time, comment, date }: { name: string; time: string; comment: string; date: string; }) {
+    let userAction = await this.historyModel.findOne({ name }).exec();
 
-@Controller('api/history')
-export class ActionHistoryController {
-  // ... другие методы ...
-
-  @Post('by-date')
-  async getByDate(@Body() body: { date: string }, @Res() response) {
-    try {
-      const history = await this.historyService.getByDate(body.date);
-      return response.status(HttpStatus.OK).json(history);
-    } catch (error) {
-      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: "Произошла ошибка при получении истории",
-      });
+    if (!userAction) {
+      userAction = new this.historyModel({ name, transportRequestHistory: [], callHistory: [] , DutyDriversHistory: [] });
     }
+
+    userAction.transportRequestHistory.push({ time, comment, date });
+    await userAction.save();
+    return { status: 'success', message: 'Корректировка транспортной заявки успешно записана в историю' };
   }
-}
 
 
 
+Argument of type '{ time: string; comment: string; date: string; }' is not assignable to parameter of type '{ time: string; comment: string; }'.
+  Object literal may only specify known properties, and 'date' does not exist in type '{ time: string; comment: string; }'.ts(2345)
+Translation
+Argument of type '{ time: string; comment: string; date: string; }' is not assignable to parameter of type '{ time: string; comment: string; }'.
+I was expecting { time: string; comment: string; }, but you passed { time: string; comment: string; date: string; }.
 
+Object literal may only specify known properties, and 'date' does not exist in type '{ time: string; comment: string; }'.
+You can't pass property date to type { time: string; comment: string; }.
 
-// В файле actionHistory.service.ts
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { DispatcherActionDocument } from '../schemas/history.schema';
-
-@Injectable()
-export class ActionHistoryService {
-  // ... другие методы ...
-
-  async getByDate(date: string) {
-    const actions = await this.historyModel.find().exec();
-    return actions.map(action => ({
-      name: action.name,
-      callHistory: action.callHistory.filter(ch => ch.date === date),
-      transportRequestHistory: action.transportRequestHistory.filter(tr => tr.time.startsWith(date)),
-      DutyDriversHistory: action.DutyDriversHistory.filter(dd => dd.date === date),
-    }));
-  }
-}
-
-
-
-
-
-
-
-// В файле actionHistory.module.ts
-import { Module } from '@nestjs/common';
-// ... импорты ...
-
-@Module({
-  // ... другие настройки ...
-  controllers: [ActionHistoryController],
-  providers: [ActionHistoryService],
-})
-export class ActionHistoryModule {}
+(property) date: string
