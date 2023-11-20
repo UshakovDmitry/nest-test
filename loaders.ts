@@ -295,3 +295,66 @@ async updateDeliveryStatus(drivers) {
   }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async updateDeliveryStatus(drivers) {
+  const baseDate = new Date(0); // Базовая дата (1 января 1970 года)
+
+  drivers.forEach((driver) => {
+    driver.transportRequests.forEach((request) => {
+      let deliveryDateTime = new Date(baseDate);
+      let completedDateTime = new Date(baseDate);
+
+      if (request.completedDelivery) {
+        const [_, completedTime] = request.completedDelivery.split(' ');
+        const [completedHours, completedMinutes, completedSeconds] = completedTime.split(':').map(Number);
+        completedDateTime.setHours(completedHours, completedMinutes, completedSeconds);
+      }
+
+      if (request.distribution === true && request.documentStatus !== 'Помечено на удаление') {
+        request.orders.forEach((order) => {
+          if (order.Delivery_Time) {
+            const [_, deliveryTime] = order.Delivery_Time.split(' ');
+            const [deliveryHours, deliveryMinutes, deliverySeconds] = deliveryTime.split(':').map(Number);
+            deliveryDateTime.setHours(deliveryHours, deliveryMinutes, deliverySeconds);
+
+            if (deliveryDateTime > completedDateTime) {
+              request.documentStatus = 'Доставляется с опазданием';
+            } else {
+              request.documentStatus = 'Доставляется вовремя';
+            }
+          }
+        });
+
+        if (request.documentStatus === 'Доставлено') {
+          if (completedDateTime < deliveryDateTime) {
+            request.documentStatus = 'Доставлено вовремя';
+          } else {
+            request.documentStatus = 'Доставлено с опазданием';
+          }
+        }
+      }
+    });
+  });
+
+  return drivers;
+}
