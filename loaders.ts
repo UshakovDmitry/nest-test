@@ -469,3 +469,82 @@ async updateDeliveryStatus(drivers) {
     // Возвращение обновленного списка водителей
     return drivers;
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async updateDeliveryStatus(drivers) {
+  // Базовая дата для сравнения времени
+  const baseDate = new Date('1970-01-01');
+
+  drivers.forEach((driver) => {
+    driver.transportRequests.forEach((request) => {
+      let deliveryDateTime = new Date(baseDate); // Используем базовую дату
+      let completedDateTime = new Date(baseDate); // Используем базовую дату
+
+      // Обработка времени завершения доставки
+      if (request.completedDelivery) {
+        const [_, completedDeliveryTime] = request.completedDelivery.split(' ');
+        if (completedDeliveryTime) {
+          const [completedHours, completedMinutes, completedSeconds] = completedDeliveryTime.split(':').map(Number);
+          completedDateTime.setHours(completedHours, completedMinutes, completedSeconds);
+        }
+      }
+
+      // Проверка условий на наличие пометки на удаление
+      if (request.IsDelete === true) {
+        request.documentStatus = 'Помечено на удаление';
+        return; // Пропускаем дальнейшую обработку этого запроса
+      }
+
+      // Обработка времени доставки для каждого заказа
+      request.orders.forEach((order) => {
+        if (order.Delivery_Time) {
+          const [_, deliveryTime] = order.Delivery_Time.split(' ');
+          if (deliveryTime) {
+            const [deliveryHours, deliveryMinutes, deliverySeconds] = deliveryTime.split(':').map(Number);
+            deliveryDateTime.setHours(deliveryHours, deliveryMinutes, deliverySeconds);
+          }
+        }
+      });
+
+      // Сравнение времени доставки и завершения доставки
+      if (request.distribution === true && request.documentStatus === 'Доставлено') {
+        if (completedDateTime < deliveryDateTime) {
+          request.documentStatus = 'Доставлено вовремя';
+        } else {
+          request.documentStatus = 'Доставлено с опазданием';
+        }
+      }
+    });
+  });
+
+  return drivers;
+}
