@@ -105,3 +105,58 @@
     // Возвращение обновленного списка водителей
     return drivers;
   }
+
+
+
+
+
+
+
+async updateDeliveryStatus(drivers) {
+  const baseDate = new Date('1970-01-01'); // Фиксированная дата для сравнения времени
+  const currentTime = new Date(baseDate);
+  currentTime.setMinutes(currentTime.getMinutes() + 15);
+
+  drivers.forEach((driver) => {
+    driver.transportRequests.forEach((request) => {
+      let deliveryDateTime = new Date(baseDate);
+      let completedDateTime = new Date(baseDate);
+
+      if (request.completedDelivery) {
+        const [_, completedTime] = request.completedDelivery.split(' ');
+        if (completedTime) {
+          const [hours, minutes, seconds] = completedTime.split(':').map(Number);
+          completedDateTime.setHours(hours, minutes, seconds);
+        }
+      }
+
+      if (request.distribution === true && request.documentStatus !== 'Помечено на удаление') {
+        request.orders.forEach((order) => {
+          if (order.Delivery_Time) {
+            const [_, deliveryTime] = order.Delivery_Time.split(' ');
+            if (deliveryTime) {
+              const [hours, minutes, seconds] = deliveryTime.split(':').map(Number);
+              deliveryDateTime.setHours(hours, minutes, seconds);
+            }
+
+            if (deliveryDateTime && currentTime > deliveryDateTime) {
+              request.documentStatus = 'Доставляется с опазданием';
+            } else {
+              request.documentStatus = 'Доставляется вовремя';
+            }
+          }
+        });
+
+        if (request.documentStatus === 'Доставлено') {
+          if (completedDateTime > deliveryDateTime) {
+            request.documentStatus = 'Доставлено с опазданием';
+          } else {
+            request.documentStatus = 'Доставлено вовремя';
+          }
+        }
+      }
+    });
+  });
+
+  return drivers;
+}
