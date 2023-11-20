@@ -160,3 +160,138 @@ async updateDeliveryStatus(drivers) {
 
   return drivers;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+вот исходные данные
+{
+                "number": "№№00168364",
+                "IdYandex": "1534dddb-b6167af1-5fca2c62-55ae6d31",
+                "IsDelete": false,
+                "distribution": true,
+                "date": "17.11.2023 16:48:01",
+                "dateCreated": "20-11-2023",
+                "organization": "TOO Gulser Computers (Гулсер Компьютерс)",
+                "documentStatus": "Доставлено с опазданием",
+                "completedDelivery": "20.11.2023 10:55:35",
+                "ISR": "(701)0121426",
+                "informalDocument": "Заказ покупателя ППО",
+                "filterContractor": "B2B",
+                "loanAgreementStatus": "",
+}
+
+снова статус  "Доставлено с опазданием"
+
+хотя время фактическое  "completedDelivery": "20.11.2023 10:55:35" гораздо раньше чем заплпнированное  "date": "17.11.2023 16:48:01"
+Напоминаю что мы здесь сравниваем только время, дату не берем
+
+  async updateDeliveryStatus(drivers) {
+    // Установка текущего времени и добавление к нему 15 минут
+    const currentTime = new Date();
+    currentTime.setMinutes(currentTime.getMinutes() + 15);
+  
+    // Перебор массива drivers
+    drivers.forEach((driver) => {
+      // Перебор всех transportRequests каждого водителя
+      driver.transportRequests.forEach((request) => {
+        let deliveryDateTime = null; // Переменная для хранения времени доставки
+        let completedDateTime = null; // Переменная для хранения времени завершения доставки
+  
+        // Обработка времени завершения доставки на уровне request
+        if (request.completedDelivery) {
+          const [_, completedDeliveryTime] = request.completedDelivery?.split(' ') || ['', ''];
+          if (completedDeliveryTime) {
+            const [completedHours, completedMinutes, completedSeconds] =
+              completedDeliveryTime.split(':').map(Number);
+            completedDateTime = new Date();
+            completedDateTime.setHours(
+              completedHours,
+              completedMinutes,
+              completedSeconds,
+            );
+          }
+        }
+  
+        // Проверка условий для обновления статуса доставки
+        if (
+          request.distribution === true &&
+          (request.documentStatus === 'Доставляется' ||
+            request.documentStatus === 'Забран')
+        ) {
+          // Перебор всех заказов в запросе
+          request.orders.forEach((order) => {
+            if (order.Delivery_Time) {
+              const [_, deliveryTime] = order.Delivery_Time?.split(' ') || ['', ''];
+              if (deliveryTime) {
+                const [deliveryHours, deliveryMinutes, deliverySeconds] =
+                  deliveryTime.split(':').map(Number);
+                deliveryDateTime = new Date();
+                deliveryDateTime.setHours(
+                  deliveryHours,
+                  deliveryMinutes,
+                  deliverySeconds,
+                );
+              }
+  
+              // Сравнение времени доставки с текущим временем для установки статуса
+              if (deliveryDateTime && currentTime > deliveryDateTime) {
+                request.documentStatus = 'Доставляется с опазданием';
+              } else {
+                request.documentStatus = 'Доставляется вовремя';
+              }
+            }
+          });
+        }
+  
+        // Проверка статуса 'Доставлено'
+        if (request.distribution === true && request.documentStatus === 'Доставлено') {
+          // Сравнение времени завершения доставки с временем доставки для установки статуса
+          if (completedDateTime && completedDateTime > deliveryDateTime) {
+            request.documentStatus = 'Доставлено с опазданием';
+          } else {
+            request.documentStatus = 'Доставлено вовремя';
+          }
+        }
+      });
+    });
+  
+    // Возвращение обновленного списка водителей
+    return drivers;
+  }
+
+
