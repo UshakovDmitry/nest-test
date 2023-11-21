@@ -127,3 +127,18 @@ const isStatusActive = (status) => {
 </style>
 
 Теперь я хочу следующее, если props.statusTS === 'Доставлено' то делать активным "Сделка завершена"
+
+
+Но у меня ошибка 
+transport-requests-detail.component.vue:18 Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'status')
+    at Proxy._sfc_render (transport-requests-detail.component.vue:18:52)
+    at renderComponentRoot (chunk-J6475X5X.js?v=4f549da1:2224:17)
+    at ReactiveEffect.componentUpdateFn [as fn] (chunk-J6475X5X.js?v=4f549da1:7099:46)
+    at ReactiveEffect.run (chunk-J6475X5X.js?v=4f549da1:423:19)
+    at instance.update (chunk-J6475X5X.js?v=4f549da1:7212:52)
+    at setupRenderEffect (chunk-J6475X5X.js?v=4f549da1:7220:5)
+    at mountComponent (chunk-J6475X5X.js?v=4f549da1:7010:5)
+    at processComponent (chunk-J6475X5X.js?v=4f549da1:6963:9)
+    at patch (chunk-J6475X5X.js?v=4f549da1:6436:11)
+    at ReactiveEffect.componentUpdateFn [as fn] (chunk-J6475X5X.js?v=4f549da1:7106:11)
+
