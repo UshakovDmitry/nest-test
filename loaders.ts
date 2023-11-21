@@ -1,56 +1,57 @@
-async updateDeliveryStatus(drivers) {
-    // Установка текущего времени и добавление к нему 15 минут
-    const currentTime = new Date();
-    currentTime.setMinutes(currentTime.getMinutes() + 15);
+import { useGetApi } from '../../domain/services/getHTTP.service';
+import { type TransportComponentModel } from './transport.model';
 
-    // Перебор массива drivers
-    drivers.forEach((driver) => {
-        // Перебор всех transportRequests каждого водителя
-        driver.transportRequests.forEach((request) => {
-            // Создание объектов Date для времени доставки и завершения доставки
-            let deliveryDateTime = new Date('1970-01-01');
-            let completedDateTime = new Date('1970-01-01');
+export class TransportComponentViewModel {
+  model: TransportComponentModel;
 
-            // Обработка времени завершения доставки на уровне request
-            if (request.completedDelivery) {
-                const [_, completedTime] = request.completedDelivery.split(' ');
-                const [completedHours, completedMinutes, completedSeconds] = completedTime.split(':').map(Number);
-                completedDateTime.setHours(completedHours, completedMinutes, completedSeconds);
-            }
+  constructor(model: TransportComponentModel) {
+    this.model = model;
+    this.getData();
+  }
 
-            // Проверка условий на наличие пометки на удаление
-            if (request.IsDelete === true) {
-                request.documentStatus = 'Помечено на удаление';
-                return; // Пропускаем дальнейшую обработку этого запроса
-            }
 
-            // Проверка условий для обновления статуса доставки
-            if (request.distribution === true) {
-                // Перебор всех заказов в запросе
-                request.orders.forEach((order) => {
-                    if (order.Delivery_Time) {
-                        const [_, deliveryTime] = order.Delivery_Time.split(' ');
-                        const [deliveryHours, deliveryMinutes, deliverySeconds] = deliveryTime.split(':').map(Number);
-                        deliveryDateTime.setHours(deliveryHours, deliveryMinutes, deliverySeconds);
-                    }
-                });
 
-                // Сравнение времени доставки и завершения доставки
-                if (request.documentStatus === 'Доставлено') {
-                    if (completedDateTime < deliveryDateTime) {
-                        request.documentStatus = 'Доставлено вовремя';
-                    } else {
-                        request.documentStatus = 'Доставлено с опазданием';
-                    }
-                } else if (deliveryDateTime && currentTime > deliveryDateTime) {
-                    request.documentStatus = 'Доставляется с опазданием';
-                } else {
-                    request.documentStatus = 'Доставляется вовремя';
-                }
-            }
-        });
-    });
+  async getData() {
+    const response = await useGetApi('getTransport');
+    const data = await response;
+    this.model.transport = data;
+    this.model.filteredTransport = this.model.transport;
+    this.model.cities = this.model.transport.map((item) => item.city);
+  }
 
-    // Возвращение обновленного списка водителей
-    return drivers;
+  selectCity(city: string): void {
+    this.filterTableByCity(city);
+  }
+
+  filterTableByCity(city: string): void {
+    this.model.currentCity = city;
+    if (city === 'Все города') {
+      this.model.filteredTransport = this.model.transport;
+      return;
+    }
+    this.model.filteredTransport = this.model.transport.filter(
+      (item) => item.city === city,
+    );
+  }
+
+  setLoaders(): void {
+    this.model.isTransport = false;
+    this.model.isLoaders = true;
+  }
+
+  setTransport(): void {
+    this.model.isLoaders = false;
+    this.model.isTransport = true;
+  }
+
+  downloadLoadersAsXLSX(): void {
+    alert('Функционал в разработке');
+  }
 }
+
+
+
+
+Я хочу изменить логику присваения городов в this.model.cities = this.model.transport.map((item) => item.city);
+Они сейчас повторяются 
+Используй new Set
