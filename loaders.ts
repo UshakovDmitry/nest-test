@@ -1,108 +1,130 @@
-  async getTransportRequests(day: string): Promise<void> {
+ <template>
+  <div class="chronologies__wrapper">
+    <h3 class="chronologies__title">Хронология</h3>
+    <div class="chronologies">
+      <div
+        class="chronologies__item"
+        v-for="(status, index) in defaultStatusesPPO"
+        :key="index"
+      >
+        <div
+          class="item__border"
+          :class="{ done: chronologies.includes(status) }"
+        ></div>
+        <div class="item__status">
+          <div class="status__icon">
+            <IconComponent
+              :сonfig="{
+                name:   chronologies.includes(status) ?'doneWithBorder' : 'circle',
+                color: chronologies.includes(status) ? '#259451' : '#90a4ae',
+                width: 24,
+                height: 24,
+              }"
+           
+            >
+            </IconComponent>
+          </div>
+          <p>{{ status }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
-    const today = new Date();
+<script setup lang="ts">
+import IconComponent from '../../../components/global/icon/icon.component.vue';
 
-    if (day === 'tomorrow') {
-      today.setDate(today.getDate() + 1);
-      this.model.isTomorrow = true;
-      this.model.isToday = false;
-      this.model.isYesterday = false;
-    } else if (day === 'yesterday') {
-      today.setDate(today.getDate() - 1);
-      this.model.isTomorrow = false;
-      this.model.isToday = false;
-      this.model.isYesterday = true;
-    } else if (day === 'today') {
-      this.model.isTomorrow = false;
-      this.model.isToday = true;
-      this.model.isYesterday = false;
-    }
+  
+defineProps({
+  chronologies: {
+    type: Array,
+    required: true,
+  },
+  defaultStatusesPPO: {
+    type: Array,
+    required: true,
+  },
+});
+</script>
 
-    const formattedDate = `${today.getFullYear()}-${String(
-      today.getMonth() + 1,
-    ).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    const body = {
-      date: formattedDate,
-    };
-    
-    const response = await usePostApi('getTransportRequestsByDate', body);
-    console.log(response.length, 'кол-во заявок');
-    // console.log(response, 'response');
-    this.model.transportRequests = [];
-    this.model.filterContractors = {};
-    response.forEach((data: any) => {
-      const transformedData = this.transformToTransportRequest(data);
-      const city = this.setCitiesList(transformedData);
-      // Проверяем наличие города в списке и добавляем, если его нет
-      if (!this.model.cities.includes(city)) {
-        this.model.cities.push(city);
-      }
-      if (!this.model.cities.includes("Все города")) {
-        this.model.cities.unshift("Все города");
-      }
-    
-      
+<style scoped>
+.chronologies__wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  /* gap: 10px; */
+  width: 100%;
+}
 
-      const contractor = data.FilterContractor
-        ? data.FilterContractor
-        : 'Прочее';
-      if (this.model.filterContractors[contractor]) {
-        this.model.filterContractors[contractor] += 1;
-      } else {
-        this.model.filterContractors[contractor] = 1;
-      }
-      const transformedDataForTable =
-        this.transformToTransportForTable(transformedData);
+.chronologies__title {
+  color: var(--text-dark, #23362d);
+  text-align: center;
+  font-family: Rubik;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0.15px;
+}
+.chronologies {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 18px;
+  width: 100%;
+  height: 10px;
+  margin-top: 20px;
+}
+.chronologies__item {
 
-      this.model.transportRequests.unshift(transformedDataForTable);
-      this.model.filteredTransportRequests = this.model.transportRequests;
-    });
-    
-  }
+  height: 10px;
+  border-radius: 10px;
+  width: 192px;
+}
+.item__border {
+  height: 6px;
+  border-radius: 100px;
+  background: var(--blue-grey-blue-grey-300, #90a4ae);
+}
 
-вот в этом методе FilterContractor отрабатывает корректно
+.item__status {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--text-dark, #23362d);
+  font-family: Rubik;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+}
 
-а вот тут нет
+.done {
+  background-color: #259451;
+  border-radius: 100px;
+  /* background: #3a7869; */
+}
+</style>
 
-  async getTransportRequestsByDateRange(
-    dateStart: string,
-    dateEnd: string,
-  ): Promise<void> {
-    const body = {
-      startDate: dateStart,
-      endDate: dateEnd,
-    };
-    try {
-      const response = usePostApi(
-        'getTransportRequestsbyDateRange',
-        body,
-        'sendFormData',
-      );
+Есть вот такой компонент
+он принимает дефолтный массив вот такого вида
+    this.defaultStatusesPPO = [
+      'Оформлен',
+      'Доставляется до клиента (на складе отгрузки)',
+      'Доставляется',
+      'Сделка завершена',
+    ];
 
-      const data = await response;
+и сравнивает его с тем что приходит в chronologies
 
-      // Очистить текущие данные перед добавлением новых
-      this.model.transportRequests = [];
-      this.model.filterContractors = {};
-
-      data.forEach((dataItem: any) => {
-        const transformedData = this.transformToTransportRequest(dataItem);
-        const contractor = data.FilterContractor
-        ? data.FilterContractor
-        : 'Прочее';
-      if (this.model.filterContractors[contractor]) {
-        this.model.filterContractors[contractor] += 1;
-      } else {
-        this.model.filterContractors[contractor] = 1;
-      }
-        const transformedDataForTable =
-          this.transformToTransportForTable(transformedData);
-        this.model.transportRequests.push(transformedDataForTable);
-      });
-      this.model.filteredTransportRequests = this.model.transportRequests;
-      this.model.isToday = false;
-    } catch (error) {
-      console.error('Ошибка при получении данных:', error);
-    }
-  }
-тут они все попадают в ПРОЧЕЕ
+Я хочу немного изменить логику 
+Если в приходящем массиве есть "Оформлен" и в дефолтном тоже "Оформлен"
+тогда срабатывает includes и он делает его активным
+я хочу изменить логику именно для этого статуса 
+Если в chronologies есть "Оформлен" ИЛИ "Ожидает клиента" то делать активным
