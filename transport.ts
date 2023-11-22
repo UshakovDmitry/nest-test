@@ -1,3 +1,23 @@
+
+export class CouriersModel implements ICouriersComponentModel {
+
+searchInput: string;  
+
+
+  constructor() {
+    this.searchInput = '';
+  }
+
+я создал пустую строку 
+передаю ее в компонент поиска 
+      <search-field-component
+        :searchInput="searchInput"
+        :placeholder="placeholder"
+        @updateSearchValue="emits('search', $event)"
+      ></search-field-component>
+
+
+вот сам компонент
 <template>
   <!-- Контейнер для поля поиска и иконки -->
  
@@ -16,7 +36,7 @@
     <input
       type="text"
       data-test="search-input-PPO"
-      v-model="searchValue"
+      :value="searchValue"
       @input="updateSearch"
       :placeholder="props.placeholder"
       class="search-input"
@@ -26,23 +46,28 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import IconComponent from '../../../global/icon/icon.component.vue';
+const props = defineProps<{
+  placeholder: string;
+}>();
+// Определяем эмиттеры для событий
+const emits = defineEmits(['onSearch']);
 
-const props = defineProps({
-  searchValue: String,
-  placeholder: String
-});
-
-
-
-const emits = defineEmits(['updateSearchValue']);
+// Состояние для хранения значения поля поиска
+const searchValue = ref('');
 
 // Функция для обновления значения поиска
 const updateSearch = (event: Event) => {
-  // Отправляем новое значение обратно в родительский компонент
-  emits('updateSearchValue', (event.target as HTMLInputElement).value);
-};
+  // Получаем текущее значение из поля ввода
+  const value = (event.target as HTMLInputElement).value;
 
+  // Обновляем локальное состояние
+  searchValue.value = value;
+
+  // Эмитим событие с новым значением для родительского компонента
+  emits('onSearch', value);
+};
 </script>
 
 <style scoped>
@@ -82,30 +107,12 @@ const updateSearch = (event: Event) => {
 </style>
 
 
-      <search-field-component
-        :search-value="'=)'"
-        :placeholder="placeholder"
-        @updateSearchValue="emits('search', $event)"
-      ></search-field-component>
+а теперь в родительском компоненте я хочу реализовать функцию очистки формы 
 
-[plugin:vite:vue] v-model cannot be used on a prop, because local prop bindings are not writable.
-Use a v-bind binding combined with a v-on listener that emits update:x event instead.
-C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/src/components/global/fields/search-field/search-field.vue:19:16
-17 |        type="text"
-18 |        data-test="search-input-PPO"
-19 |        v-model="searchValue"
-   |                  ^
-20 |        @input="updateSearch"
-21 |        :placeholder="props.placeholder"
-    at createCompilerError (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:18:17)
-    at Object.transformModel (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:5046:21)
-    at transformModel (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\frontend\node_modules\@vue\compiler-dom\dist\compiler-dom.cjs.js:2529:35)
-    at buildProps (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:4487:48)
-    at Array.postTransformElement (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:4109:32)
-    at traverseNode (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:2057:15)
-    at traverseChildren (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:2009:5)
-    at traverseNode (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:2051:7)
-    at traverseChildren (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:2009:5)
-    at traverseNode (C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:2051:7
-Click outside, press Esc key, or fix the code to dismiss.
-You can also disable this overlay by setting server.hmr.overlay to false in vite.config.js.
+searchClear(): void {
+  this.model.searchInput = '';
+}
+
+но ничего не работает
+
+сделай так чтобы работало
