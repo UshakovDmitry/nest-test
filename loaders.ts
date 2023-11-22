@@ -1,81 +1,58 @@
-Вот функция которая вызывается при нажатии на кнопки
+PS C:\Users\ushakov.dmitriy\Desktop\alser.dispatcherworkplaceui\frontend> npm run dev
 
-  async getCouriersByDate(day: string) {
-    const today = new Date();
-
-    if (day === 'tomorrow') {
-      today.setDate(today.getDate() + 1); 
-      this.model.date.isTomorrow = true;
-      this.model.date.isToday = false;
-      this.model.date.isYesterday = false;
-    } else if (day === 'yesterday') {
-      today.setDate(today.getDate() - 1);
-      this.model.date.isTomorrow = false;
-      this.model.date.isToday = false;
-      this.model.date.isYesterday = true;
-    } else if (day === 'today') {
-      this.model.date.isTomorrow = false;
-      this.model.date.isToday = true;
-      this.model.date.isYesterday = false;
-    }
-    const formattedDate = `${today.getFullYear()}-${String(
-      today.getMonth() + 1,
-    ).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    const body = {
-      date: formattedDate,
-    };
-    this.model.currentDate = formattedDate;
-    this.model.couriers = [];
-    this.model.filteredCouriers = [];
-    this.model.cities = [];
-    this.model.currentCity = 'Все города';
-    try {
-      const response = await usePostApi('getCouriersByDate', body);
-      const couriers: ICourier[] = response.map(
-        (item: any): ICourier => ({
-          courierFullName: item.Drivers,
-          carNumber: item.carNumber,
-          hiringType: item.HiringType,
-          schedule: item.TimeWindow,
-          hardWindow: item.HardTimeWindow,
-          returnToWarehouse: item.ReturnWarehouse,
-          city: item.City,
-          goToDetail: '',
-        }),
-      );
-      this.model.couriers = couriers;
-      this.model.filteredCouriers = this.model.couriers;
-      this.model.sortState = 'none';
-      this.model.cities = [
-        ...new Set(this.model.couriers.map((item) => item.city)),
-      ].sort((a, b) => a.localeCompare(b, 'ru'));
-    } catch (error) {
-      throw error;
-    }
-  }
+> alser.dispatcherworkplaceui@0.0.0 dev
+> vite
 
 
-вот компонент поиска
-<template>
-  <!-- Контейнер для поля поиска и иконки -->
- 
-  <search class="search-container">
-    <div class="icon-wrapper">
-      <IconComponent
-        :сonfig="{
-          name: 'search',
-          color: '#23362D4D',
-          width: 24,
-          height: 24,
-        }"
-      ></IconComponent>
-    </div>
-    <!-- Поле ввода -->
-    <input
-      type="text"
-      data-test="search-input-PPO"
-      :value="searchValue"
-      @input="updateSearch"
+  VITE v4.4.9  ready in 348 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+  ➜  press h to show help
+Failed to resolve import "moment" from "src\components\calendar\Calendar\Calendar.vue". Does the file exist?
+Failed to resolve import "moment" from "src\components\calendar\Calendar\components\CalendarHeader.vue". Does the file exist?
+Failed to resolve import "moment" from "src\components\calendar\Calendar\helpers\index.js". Does the file exist?
+16:38:45 [vite] Internal server error: Failed to resolve import "moment" from "src\components\calendar\Calendar\Calendar.vue". Does the file exist?
+  Plugin: vite:import-analysis
+  File: C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/src/components/calendar/Calendar/Calendar.vue:34:19
+  3  |  import CalendarHeader from "./components/CalendarHeader.vue";
+  4  |  import HeaderInfo from "./components/HeaderInfo.vue";
+  5  |  import moment from "moment";
+     |                      ^
+  6  |  import { ref } from "vue";
+  7  |  const totalDays = 42;
+      at formatError (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:43993:46)
+      at TransformContext.error (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:43989:19)
+      at normalizeUrl (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:41801:33)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:41945:47
+      at async Promise.all (index 4)
+      at async TransformContext.transform (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:41870:13)
+      at async Object.transform (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:44283:30)
+      at async loadAndTransform (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:54950:29)
+      at async viteTransformMiddleware (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:64345:32)  
+Failed to resolve import "moment" from "src\components\calendar\Calendar\components\CalendarHeader.vue". Does the file exist?
+16:38:46 [vite] Internal server error: Failed to resolve import "moment" from "src\components\calendar\Calendar\Calendar.vue". Does the file exist?
+  Plugin: vite:import-analysis
+  File: C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/src/components/calendar/Calendar/Calendar.vue:34:19
+  3  |  import CalendarHeader from "./components/CalendarHeader.vue";
+  4  |  import HeaderInfo from "./components/HeaderInfo.vue";
+  5  |  import moment from "moment";
+     |                      ^
+  6  |  import { ref } from "vue";
+  7  |  const totalDays = 42;
+      at formatError (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:43993:46)
+      at TransformContext.error (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:43989:19)
+      at normalizeUrl (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:41801:33)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:41945:47
+      at async Promise.all (index 4)
+      at async TransformContext.transform (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:41870:13)
+      at async Object.transform (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:44283:30)
+      at async loadAndTransform (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:54950:29)
+      at async viteTransformMiddleware (file:///C:/Users/ushakov.dmitriy/Desktop/alser.dispatcherworkplaceui/frontend/node_modules/vite/dist/node/chunks/dep-df561101.js:64345:32)  
+Failed to resolve import "moment" from "src\components\calendar\Calendar\components\CalendarHeader.vue". Does the file exist?
+
       :placeholder="props.placeholder"
       class="search-input"
     />
