@@ -22,9 +22,14 @@ amqp.connect(
       channel.consume(
         queue,
         function (msg: any) {
-          const messageObj = JSON.parse(msg.content.toString());
-          console.log('Сообщение из TmsQueue', messageObj);
-          messageSubject.notifyObservers(messageObj);
+          try {
+            const messageObj = JSON.parse(msg.content.toString());
+            console.log('Сообщение из TmsQueue', messageObj);
+            messageSubject.notifyObservers(messageObj);
+          } catch (error) {
+            console.error('Ошибка при обработке сообщения:', error.message);
+            // Возможная дополнительная обработка ошибок
+          }
         },
         {
           noAck: true,
