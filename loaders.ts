@@ -1,40 +1,95 @@
-const amqp = require('amqplib/callback_api');
-import { Subject } from './observer';
+<template>
+  <!-- Контейнер для поля поиска и иконки -->
+ 
+  <search class="search-container">
+    <div class="icon-wrapper">
+      <IconComponent
+        :сonfig="{
+          name: 'search',
+          color: '#23362D4D',
+          width: 24,
+          height: 24,
+        }"
+      ></IconComponent>
+    </div>
+    <!-- Поле ввода -->
+    <input
+      type="text"
+      data-test="search-input-PPO"
+      :value="searchValue"
+      @input="updateSearch"
+      :placeholder="props.placeholder"
+      class="search-input"
+    />
+  </search>
 
-export const messageSubject = new Subject();
+</template>
 
-amqp.connect(
-  'amqp://tms:26000567855499290979@rabbitmq.next.local',
-  function (errorConnect, connection) {
-    if (errorConnect) {
-      throw 'Ошибка подключения к rabbitMQ: ' + errorConnect;
-    }
-    connection.createChannel(function (errorCreateChannel, channel) {
-      if (errorCreateChannel) {
-        throw 'Ошибка создания канала: ' + errorCreateChannel;
-      }
-      const queue = 'TmsQueue';
+<script setup lang="ts">
+import { ref } from 'vue';
+import IconComponent from '../../../global/icon/icon.component.vue';
 
-      channel.assertQueue(queue, {
-        durable: true,
-      });
+const props = defineProps<{
+  placeholder: string;
+  isClearSearch? : boolean;
+  
+}>();
 
-      channel.consume(
-        queue,
-        function (msg: any) {
-          try {
-            const messageObj = JSON.parse(msg.content.toString());
-            console.log('Сообщение из TmsQueue', messageObj);
-            messageSubject.notifyObservers(messageObj);
-          } catch (error) {
-            console.error('Ошибка при обработке сообщения:', error.message);
-            // Возможная дополнительная обработка ошибок
-          }
-        },
-        {
-          noAck: true,
-        },
-      );
-    });
-  },
-);
+
+// Определяем эмиттеры для событий
+const emits = defineEmits(['onSearch']);
+
+// Состояние для хранения значения поля поиска
+const searchValue = ref('');
+
+// Функция для обновления значения поиска
+const updateSearch = (event: Event) => {
+  // Получаем текущее значение из поля ввода
+  const value = (event.target as HTMLInputElement).value;
+
+  // Обновляем локальное состояние
+  searchValue.value = value;
+
+  // Эмитим событие с новым значением для родительского компонента
+  emits('onSearch', value);
+};
+</script>
+
+<style scoped>
+.search-container {
+  /* Расположение иконки и поля ввода в одной строке */
+  display: flex;
+  align-items: center;
+  position: relative;
+  border: 1px solid var(--tertiary-light-mode-border, rgba(35, 54, 45, 0.12));
+  border-radius: 80px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.icon-wrapper {
+  /* Позиционирование иконки внутри поля ввода */
+  position: absolute;
+  left: 8px; /* Расстояние от левого края поля ввода */
+  z-index: 1; /* Поверх поля ввода */
+}
+
+.search-input {
+  border-radius: 58px;
+  border: 1px solid var(--tertiary-light-mode-border, rgba(35, 54, 45, 0.12));
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px 16px;
+  padding-left: 40px; /* Добавляем отступ слева, чтобы текст не перекрывал иконку */
+  font-size: 14px;
+  border: none;
+  outline: transparent;
+  color: hsl(152, 21%, 17%);
+  width: 100%;
+  position: relative;
+  z-index: 0; /* Под иконкой */
+}
+</style>
+
+у меня есть вот такой компонень поисковой строки 
+я хочу его очищать когда isClearSearch  true
