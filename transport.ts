@@ -32,16 +32,7 @@ export class TransportRequestsViewModel {
   }
 
 
-  // async getTransportRequestByDate(): Promise<void> {
-  //   const today = new Date();
-  //   const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-  //   const body = {
-  //     date: formattedDate,
-  //   };
-  //   const response = await usePostApi('getTransportRequestsByDate', body);
-  //   console.log(response, 'заявки');
-
-  // }
+  
   async getTransportRequests(day: string): Promise<void> {
     const today = new Date();
 
@@ -119,69 +110,6 @@ export class TransportRequestsViewModel {
     }  
   }
   
-//   filterRequestsByContractor(contractor: string): void {
-//     console.log(contractor, 'contractor');
-    
-//     if (contractor === "Прочее") {
-//         this.model.filteredTransportRequests = this.model.transportRequests.filter(
-//             request => !request.filterContractor || request.filterContractor.trim() === ""
-//         );
-//     } else {
-//         this.model.filteredTransportRequests = this.model.transportRequests.filter(
-//             request => request.filterContractor === contractor
-//         );
-//     }  
-    
-//     console.log(this.model.filteredTransportRequests, 'filteredTransportRequests');
-    
-// }
-
-  // async getTransportRequests(): Promise<void> {
-  //   console.log('getTransportRequests');
-
-  //   const today = new Date();
-  //   const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-  //   const body = {
-  //     date: formattedDate,
-  //   };
-  //   const response = await usePostApi('getTransportRequestsByDate', body);
-  //   console.log(response.length, 'кол-во заявок');
-  //   // console.log(response, 'response');
-  //   response.forEach((data: any) => {
-  //     const transformedData = this.transformToTransportRequest(data);
-  //     const city = this.setCitiesList(transformedData);
-  //     // Проверяем наличие города в списке и добавляем, если его нет
-  //     if (!this.model.cities.includes(city)) {
-  //       this.model.cities.push(city);
-  //     }
-  //     const transformedDataForTable =
-  //       this.transformToTransportForTable(transformedData);
-
-  //     this.model.transportRequests.unshift(transformedDataForTable);
-  //     this.model.filteredTransportRequests = this.model.transportRequests;
-  //   });
-  //   this.model.isToday = true;
-  // }
-
-  // async getTransportRequests(): Promise<void> {
-  //   const response = await useGetApi('getTransportRequests');
-  //   console.log(response.length, 'кол-во заявок');
-
-  //   // Перезаписываем массив transportRequests с новыми данными
-  //   this.model.transportRequests = response.map((data: any) => {
-  //     const transformedData = this.transformToTransportRequest(data);
-  //     return this.transformToTransportForTable(transformedData);
-  //   });
-
-  //   // Обновляем список городов
-  //   this.model.cities = [];
-  //   response.forEach((data: any) => {
-  //     const city = this.setCitiesList(this.transformToTransportRequest(data));
-  //     if (!this.model.cities.includes(city)) {
-  //       this.model.cities.push(city);
-  //     }
-  //   });
-  // }
 
   setTimeRange(timeRange) {
     this.getTransportRequestsByDateRange(timeRange[0], timeRange[1]);
@@ -299,10 +227,7 @@ export class TransportRequestsViewModel {
       ISR: data.ISR,
       document: String(data.document),
       filterContractor: String(data.filterContractor),
-      // shippingAddress: {
-      //   address: `${data.contactInformation.City}, ${data.contactInformation.Street}, ${data.contactInformation.Home}, ${data.contactInformation.Apartment}`,
-      //   coordinates: `${data.contactInformation.Latitude}, ${data.contactInformation.Longitude}`,
-      // },
+
       recipient: {
         name: String(data.contactInformation.Contractor),
         phone: String(data.contactInformation.Phone),
