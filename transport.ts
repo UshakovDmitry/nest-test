@@ -198,3 +198,71 @@ const updateSearch = (event: Event) => {
   z-index: 0; /* Под иконкой */
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <template>
+  <!-- Контейнер для поля поиска и иконки -->
+  <search class="search-container">
+    <div class="icon-wrapper">
+      <IconComponent
+        :сonfig="{
+          name: 'search',
+          color: '#23362D4D',
+          width: 24,
+          height: 24,
+        }"
+      ></IconComponent>
+    </div>
+    <!-- Поле ввода -->
+    <input
+      type="text"
+      data-test="search-input-PPO"
+      :value="config.input.value"
+      @input="updateSearch" <!-- Используйте функцию updateSearch здесь -->
+      :placeholder="config.input.placeholder"
+      class="search-input"
+    />
+  </search>
+</template>
+
+<script setup lang="ts">
+import IconComponent from '../../../global/icon/icon.component.vue';
+
+// Получение props и определение событий
+const { config } = defineProps({
+  config: Object
+});
+
+const emits = defineEmits(['input', 'onSearch']);
+
+// Функция для обновления значения поиска и эмита события в родительский компонент
+const updateSearch = (event: Event) => {
+  const inputElement = event.target as HTMLInputElement;
+  if (inputElement) {
+    emits('input', inputElement.value);
+  }
+};
+</script>
+
+<style scoped>
+/* Ваши стили */
+</style>
