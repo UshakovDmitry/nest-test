@@ -1,22 +1,8 @@
-<script setup lang="ts">
-import { watch } from 'vue';
-import IconComponent from '../../../global/icon/icon.component.vue';
+  isYesterday: Boolean,
+  isTomorrow: Boolean,
 
-const props = defineProps({
-  config: Object,
-  isToday: Boolean,
-});
-
-// Используйте props.config для доступа к объекту config
-watch(() => props.isToday, (newValue) => {
-  if (newValue) {
-    props.config.input.value = ''; // Очистка поля поиска
-  }
-});
-
-const emits = defineEmits(['input', 'onSearch']);
-</script>
-
+добавил еще белевых значений 
+сделай так что если и они меняются то очищаю поиск
 
 
 
