@@ -1,16 +1,17 @@
 <template>
   <div class="cell__wrapper">
     <div>{{ config.value.name }}</div>
-    <a :href=`sip:${formattedPhone}`>
-      <div class="coordinates"> 
+    <a :href="formattedPhone">
+      <div class="coordinates">
         <IconComponent
-          :config="{
+          :сonfig="{
             name: 'call',
             color: '#4caf50',
             width: 25,
             height: 25,
-          }"></IconComponent>
-        {{ formattedPhone }}
+          }"
+        ></IconComponent>
+        <p class="coordinates__phone">{{ config.value.phone }}</p>
       </div>
     </a>
   </div>
@@ -33,12 +34,47 @@ const formattedPhone = computed(() => {
   phone = phone.replace(/[()\-\s]/g, '');
   // Заменяем первую цифру на 8, если она начинается с 7
   if (phone.startsWith('7')) {
-    phone = '8' + phone.substring(1);
+    phone = 'sip:' + '8' + phone.substring(1);
   }
   return phone;
 });
 </script>
 
 <style scoped>
-  /* Ваши стили */
+.cell__wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 0 0 30px;
+  font-size: 14px;
+  line-height: 1.2;
+  color: #23362d;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.coordinates {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  cursor: pointer;
+  color: black;
+  text-decoration: none;
+}
+.coordinates__phone {
+  font-size: 14px;
+  color: #23362d;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-decoration: none;
+}
 </style>
+
+
+  номер телефона все равно подчеркивается синей полосой
