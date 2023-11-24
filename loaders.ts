@@ -1,7 +1,27 @@
 const props = defineProps({
-  config: Object,
-  isToday: Boolean,
-  isYesterday: Boolean,
-  isTomorrow: Boolean,
-  currentCity: String,
+  config: {
+    type: Object,
+    required: false,
+    default: () => ({})
+  },
+  isToday: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  isYesterday: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  isTomorrow: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  currentCity: {
+    type: String,
+    required: false,
+    default: ''
+  }
 });
