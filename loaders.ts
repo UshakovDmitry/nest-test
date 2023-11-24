@@ -6,131 +6,121 @@ export type MessageDocument = Document & Message;
 
 @Schema()
 class ArrayStrings {
-  @Prop()
+  @Prop({ trim: true })
   Shipping_Point: string;
-  @Prop()
+  @Prop({ trim: true })
   Goods: string;
-  @Prop()
+  @Prop({ trim: true })
   Quantity: string;
-  @Prop()
+  @Prop({ trim: true })
   Item_Status: string;
-  @Prop()
+  @Prop({ trim: true })
   Pickup_Point: string;
-  @Prop()
+  @Prop({ trim: true })
   Delivery_Point: string;
-  @Prop()
+  @Prop({ trim: true })
   Pickup_Latitude: string;
-  @Prop()
+  @Prop({ trim: true })
   Pickup_Longitude: string;
-  @Prop()
+  @Prop({ trim: true })
   Delivery_Latitude: string;
-  @Prop()
+  @Prop({ trim: true })
   Delivery_Longitude: string;
-  @Prop()
+  @Prop({ trim: true })
   Pickup_Time: string;
-  @Prop()
+  @Prop({ trim: true })
   Delivery_Time: string;
 }
 
 @Schema()
 class ContactInformation {
-  @Prop()
+  @Prop({ trim: true })
   City: string;
-  @Prop()
+  @Prop({ trim: true })
   Delivery_Condition: string;
-  @Prop()
+  @Prop({ trim: true })
   Date_Time_delivery: string;
-  // @Prop()
-  // Date_delivery: string;
-  // @Prop()
-  // Time_delivery: number;
-  @Prop()
+  @Prop({ trim: true })
   Time_Window: string;
-  // @Prop()
-  // Time_Window_Start: number;
-  // @Prop()
-  // Time_Window_Stop: number;
-  @Prop()
+  @Prop({ trim: true })
   Latitude: string;
-  @Prop()
+  @Prop({ trim: true })
   Longitude: string;
-  @Prop()
+  @Prop({ trim: true })
   Street: string;
-  @Prop()
+  @Prop({ trim: true })
   Home: string;
-  @Prop()
+  @Prop({ trim: true })
   Phone: string;
-  @Prop()
+  @Prop({ trim: true })
   Apartment: string;
-  @Prop()
+  @Prop({ trim: true })
   Contractor: string;
 }
 
 @Schema({ versionKey: false })
 class StructureQuantities {
-  @Prop()
+  @Prop({ trim: true })
   TotalWeight: string;
-  @Prop()
+  @Prop({ trim: true })
   TotalAmount: string;
 }
 
 @Schema()
 class Chronology {
-  @Prop()
+  @Prop({ trim: true })
   TypeOperation: string;
-
-  @Prop({ type: [String] })
+  @Prop({ type: [String], trim: true })
   statuses: string[];
 }
 
 @Schema({ versionKey: false })
 class ArrayChronologies {
-  @Prop()
+  @Prop({ trim: true })
   PPO: string;
-
   @Prop({ type: [Chronology] })
   Chronology: Chronology[];
 }
 
 @Schema({ versionKey: false })
 export class Message {
-  @Prop()
+  @Prop({ trim: true })
   Number: string;
-  @Prop()
+  @Prop({ trim: true })
   Date: string;
-  @Prop()
+  @Prop({ trim: true })
   City: string;
-  @Prop()
+  @Prop({ trim: true })
   DateCreated: string;
-  @Prop()
+  @Prop({ trim: true })
   Organization: string;
-  @Prop()
+  @Prop({ trim: true })
   DocumentStatus: string;
-  @Prop()
+  @Prop({ trim: true })
   CarModel: string;
-  @Prop()
+  @Prop({ trim: true })
   NumberCar: string;
-  @Prop()
+  @Prop({ trim: true })
   Driver: string;
-  @Prop()
+  @Prop({ trim: true })
   DriverIIN: string;
-  @Prop()
+  @Prop({ trim: true })
   PhoneDriver: string;
-  @Prop()
+  @Prop({ trim: true })
   ISR: string;
-  @Prop()
+  @Prop({ trim: true })
   NumberPPO: string;
-  @Prop()
+  @Prop({ trim: true })
   TypePayment: string;
-  @Prop()
+  @Prop({ trim: true })
   loanAgreementStatus: string;
-  @Prop()
+  @Prop({ trim: true })
   IdYandex: string;
   @Prop()
   distribution: boolean;
-  @Prop()
+  @Prop({ trim: true })
   Informal_Document: string;
-  @Prop()
+  @Prop({ trim: true })
   FilterContractor: string;
   @Prop()
   IsDelete: boolean;
@@ -142,8 +132,9 @@ export class Message {
   StructureQuantities: StructureQuantities;
   @Prop({ type: mongoose.Schema.Types.Array })
   ArrayChronologies: ArrayChronologies[];
-  @Prop()
+  @Prop({ trim: true })
   CompletedDelivery: string;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);
+
