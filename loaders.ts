@@ -1,34 +1,3 @@
-"ArrayChronologies": [
-        {
-            "PPO": "8761863",
-            "Chronology": [
-                {
-                    "TypeOperation": "Доставка",
-                    "statuses": [
-                        "Доставляется до клиента (на складе отгрузки)",
-                        "Доставляется"
-                    ]
-                },
-                {
-                    "TypeOperation": "Самовывоз",
-                    "statuses": [
-                        "Ожидает клиента",
-                        "Доставляется",
-                        "Оформлен",
-                        "Сделка завершена"
-                    ]
-                }
-            ]
-        }
-    ]
-
-
-
-
-
-
-
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
@@ -71,16 +40,8 @@ class ContactInformation {
   Delivery_Condition: string;
   @Prop()
   Date_Time_delivery: string;
-  // @Prop()
-  // Date_delivery: string;
-  // @Prop()
-  // Time_delivery: number;
   @Prop()
   Time_Window: string;
-  // @Prop()
-  // Time_Window_Start: number;
-  // @Prop()
-  // Time_Window_Stop: number;
   @Prop()
   Latitude: string;
   @Prop()
@@ -105,14 +66,25 @@ class StructureQuantities {
   TotalAmount: string;
 }
 
+// Начало изменений для соответствия новому формату ArrayChronologies
+@Schema()
+class Chronology {
+  @Prop()
+  TypeOperation: string;
+
+  @Prop({ type: [String] })
+  statuses: string[];
+}
+
 @Schema({ versionKey: false })
 class ArrayChronologies {
   @Prop()
   PPO: string;
 
-  @Prop([String])
-  Chronology: string[];
+  @Prop({ type: [Chronology] })
+  Chronology: Chronology[];
 }
+// Конец изменений
 
 @Schema({ versionKey: false })
 export class Message {
