@@ -13,7 +13,7 @@
             <ul class="default__chronologies">
               <li class="default__chronologies-status" :class="{ 'status--active': isStatusInChronology(status, item.statuses) }" v-for="status in defaultStatusesPPO" :key="status">
                 {{ status }}
-                <div class="status-bar"></div>
+                <div class="status-bar" :class="{ 'bar--active': isStatusInChronology(status, item.statuses) }"></div>
               </li>
             </ul>
           </div>
@@ -58,7 +58,7 @@ const isStatusInChronology = (status, statuses) => {
   .default__chronologies-status {
     color: grey; /* Серый цвет по умолчанию */
     position: relative; /* Для позиционирования полоски */
-    padding-bottom: 4px; /* Отступ для полоски */
+    padding-bottom: 16px; /* Отступ для полоски */
   }
 
   .default__chronologies-status.status--active {
@@ -70,8 +70,12 @@ const isStatusInChronology = (status, statuses) => {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 2px;
+    height: 12px;
     background-color: grey; /* Серый цвет полоски */
-    border-radius: 1px; /* Закругленные углы */
+    border-radius: 6px; /* Закругленные углы */
+  }
+
+  .status-bar.bar--active {
+    background-color: #259451; /* Зеленый цвет для активной полоски */
   }
 </style>
