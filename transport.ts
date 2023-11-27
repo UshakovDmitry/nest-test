@@ -6,18 +6,18 @@
       <div class="chronologies__item" v-for="(statusPPO, index) in chronologies" :key="index">
         <p class="numberPPO">{{ statusPPO.PPO }}</p>
 
-        <div class="chronologies-wrapper" v-if="statusPPO.Chronology.length">
-          <div class="item__border">
-            <p>{{ statusPPO.Chronology[statusPPO.Chronology.length - 1].TypeOperation }}</p>
+        <div class="chronologies-wrapper">
+          <div class="item__border" v-if="statusPPO.Chronology.length">
+            <p>{{ findDeliveryOperation(statusPPO.Chronology).TypeOperation }}</p>
 
             <ul class="default__chronologies">
               <li class="default__chronologies-status" 
-                  :class="{ 'status--active': isStatusInChronology(status, statusPPO.Chronology[statusPPO.Chronology.length - 1].statuses) }" 
+                  :class="{ 'status--active': isStatusActive(status, statusPPO.Chronology) }" 
                   v-for="status in defaultStatusesPPO" 
                   :key="status">
                 {{ status }}
                 <div class="status-bar" 
-                     :class="{ 'bar--active': isStatusInChronology(status, statusPPO.Chronology[statusPPO.Chronology.length - 1].statuses) }">
+                     :class="{ 'bar--active': isStatusActive(status, statusPPO.Chronology) }">
                 </div>
               </li>
             </ul>
@@ -48,14 +48,20 @@ const props = defineProps({
     type: Array as PropType<string[]>,
     required: true,
   },
-  currentStatusTR: {
-    type: String,
-    required: true,
-  },
 });
 
-const isStatusInChronology = (status, statuses) => {
-  return statuses.includes(status);
+const findDeliveryOperation = (chronology) => {
+  return chronology.find((item) => item.TypeOperation === "Доставка") || {};
+};
+
+const isStatusActive = (status, chronology) => {
+  const delivery = findDeliveryOperation(chronology);
+  const hasPickup = chronology.some(item => item.TypeOperation === "Самовывоз");
+  
+  if (status === "доставляется" && hasPickup) {
+    return true;
+  }
+  return delivery.statuses && delivery.statuses.includes(status);
 };
 </script>
 
