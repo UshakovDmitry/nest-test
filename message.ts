@@ -1,246 +1,282 @@
 <template>
-  <div class="pagination">
+  <div class="filters">
+    <FilterContractorsButtonsComponent
+      :key="Object.keys(filterContractors).length"
+      :filterContractors="filterContractors"
+      :currentCity="currentCity"
+      @filterRequestsByContractor="emits('filterRequestsByContractor', $event)"
+    ></FilterContractorsButtonsComponent>
+
     <div
-      class="first-page-btn"
-      data-test="first-page-btn"
-      @click="goToFirstPage"
+      class="yesterday"
+      :class="{ 'yesterday--active': isYesterday }"
+      @click="emits('getTransportRequests', 'yesterday')"
     >
-      <IconComponent
-        :сonfig="{
-          name: 'doubleArrowRight',
-          color: '#23362D4D',
-          width: 28,
-          height: 28,
-        }"
-      ></IconComponent>
+      <span>Вчера</span>
     </div>
-    <div class="prev-page-btn" data-test="prev-page-btn" @click="goToPrevPage">
-      <IconComponent
-        :сonfig="{
-          name: 'keyboardLeft',
-          color: '#23362D4D',
-          width: 24,
-          height: 24,
-        }"
-      ></IconComponent>
+    <div
+      class="today"
+      :class="{ 'today--active': isToday }"
+      @click="emits('getTransportRequests', 'today')"
+    >
+      <span>Сегодня</span>
+    </div>
+    <div
+      class="tomorrow"
+      :class="{ 'tomorrow--active': isTomorrow }"
+      @click="emits('getTransportRequests', 'tomorrow')"
+    >
+      <span>Завтра</span>
     </div>
 
-    <button
-      v-for="page in displayedPages"
-      :key="page"
-      class="page-btn"
-      data-test="page-btn"
-      @click="goToPage(page)"
-      :class="{ active: (currentPage as any) === page }"
-    >
-      {{ page }}
-    </button>
+    <div class="search">
+      <search-field-component
+        :config="config"
+        :isToday="isToday"
+        :isYesterday="isYesterday"
+        :isTomorrow="isTomorrow"
+        :currentCity="currentCity"
+        :placeholder="placeholder"
+        @search="emits('search', $event)"
+      ></search-field-component>
 
-    <div class="next-page-btn" data-test="next-page-btn" @click="goToNextPage">
-      <IconComponent
-        :сonfig="{
-          name: 'keyboardRight',
-          color: '#23362D4D',
-          width: 24,
-          height: 24,
-        }"
-      ></IconComponent>
+
+
+      <VueDatePicker
+        v-model="dateSelection"
+        locale="ru"
+        range
+        :format="'dd.MM'"
+        :placeholder="'Выберите диапазон дат'"
+        class="date_picker"
+        @update:model-value="emits('setDateSelection' , dateSelection)"
+      ></VueDatePicker>
+
+
+
+
+
     </div>
-    <div class="last-page-btn" data-test="last-page-btn" @click="goToLastPage">
-      <IconComponent
-        :сonfig="{
-          name: 'doubleArrowRight',
-          color: '#23362D4D',
-          width: 28,
-          height: 28,
-        }"
-      ></IconComponent>
+
+    <div class="set-city">
+      <dropdown-component
+        :items="cities"
+        :width="350"
+        :isToday="isToday"
+        :isYesterday="isYesterday"
+        :isTomorrow="isTomorrow"
+        :currentValue="'Выберите город'"
+        @onSelect="emits('selectCity', $event)"
+      ></dropdown-component>
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
-import { ref, watch ,computed } from 'vue';
-import IconComponent from '../icon/icon.component.vue';
+import { ref, watch } from 'vue';
 
-const props = defineProps({
-  totalPages: {
-    type: Number,
-    required: true,
-  },
-  initialPage: {
-    type: Number,
-    required: true,
-  },
-  currentCity: {
-    type: String,
-    required: false,
-  },
-  filterContractors: {
-    type: Object,
-    required: false,
-  },
-}); 
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 
-const emit = defineEmits<{
-  (e: 'page-change', value: number): void;
+import DropdownComponent from '../../../../components/global/dropdown/dropdown.vue';
+import SearchFieldComponent from '../../../../components/global/fields/search-field/search-field.vue';
+import IconComponent from '../../../../components/global/icon/icon.component.vue';
+import FilterContractorsButtonsComponent from './filter-contractors-buttons.vue';
+import ButtonComponent from '../../../../components/global/button/button.vue';
+
+const props = defineProps<{
+  cities: any[];
+  placeholder: string;
+  isToday?: boolean;
+  isYesterday?: boolean;
+  isTomorrow?: boolean;
+  filterContractors: Object;
+  config: any;
+  currentCity: string;
+  // dateSelection: any;
 }>();
 
-const currentPage = ref(props.initialPage);
-const centerPage = ref(props.initialPage);
+const dateSelection = ref();
 
-const displayedPages = computed(() => {
-  const start = Math.max(centerPage.value - 2, 1);
-  const end = Math.min(centerPage.value + 2, props.totalPages);
 
-  const pages = [];
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-  return pages;
-});
 
-const goToPage = (page: number) => {
-  currentPage.value = page;
-  centerPage.value = page;
-  emit('page-change', page);
-};
-
-const goToPrevPage = () => {
-  if (currentPage.value > 1) {
-    goToPage(currentPage.value - 1);
-  }
-};
-
-const goToNextPage = () => {
-  if (currentPage.value < props.totalPages) {
-    goToPage(currentPage.value + 1);
-  }
-};
-
-const goToFirstPage = () => {
-  goToPage(1);
-};
-
-const goToLastPage = () => {
-  goToPage(props.totalPages);
-};
-
-watch(
-  () => props.currentCity,
-  () => {
-    goToPage(1);
-  },
-);
+const emits = defineEmits([
+  'selectCity',
+  'downloadLoadersAsXLSX',
+  'search',
+  'setTimeRange',
+  'getTransportRequests',
+  'filterRequestsByContractor',
+  'clearDays',
+  'setDateSelection',
+]);
 </script>
-
 <style scoped>
-.pagination {
+.filters {
+  width: 100%;
+  height: 104px;
   display: flex;
+  justify-content: space-between;
+  gap: 20px;
+
   align-items: center;
-  justify-content: center;
-  gap: 6px;
+  flex-direction: row;
+  margin-top: 5px;
 }
-.first-page-btn {
+
+.sort-by-contractor {
+  width: 100%;
+  border: 1px solid var(--tertiary-light-mode-border, rgba(35, 54, 45, 0.12));
+  height: 100%;
   display: flex;
-  width: 34px;
-  height: 34px;
   justify-content: center;
   align-items: center;
-  border-radius: 80px;
-    /* КОСТЫЛЬ */
-  padding: 4px 0px 0px 6px;
+  gap: 8px;
+  /* border-radius: 80px; */
   box-sizing: border-box;
-  outline: none;
-  border: none;
+  background: #fff;
+}
+
+.set-city {
+  width: 25%;
+}
+
+.date_picker {
+  --dp-border-radius: 16px;
+  /* --dp-cell-border-radius: 4px;  */
+  width: 590px;
+}
+
+.date_picker .dp__outer_menu_wrap .dp--menu-wrapper {
+  --dp-border-radius: 4px;
+  --dp-cell-border-radius: 4px;
+}
+
+.search {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.download {
+  /* width: 25%; */
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.download-btn {
+  border-radius: 100px;
+  border: 1px solid var(--tertiary-light-mode-border, rgba(35, 54, 45, 0.12));
+  background: #fff;
+  width: 155px;
+  cursor: pointer;
   box-sizing: border-box;
-  rotate: 180deg;
-  color: var(--text-dark, #23362d);
-  cursor: pointer;
-  background: var(--secondary-grey, #F2F3F5);
-}
-.last-page-btn {
+  height: 38px;
   display: flex;
-  width: 34px;
-  height: 34px;
-  /* КОСТЫЛЬ */
-  padding: 4px 0px 0px 6px;
   justify-content: center;
   align-items: center;
-  border-radius: 80px;
-  padding-top: 5px;
-  outline: none;
-  border: none;
-  color: var(--text-dark, #23362d);
-  cursor: pointer;
-  background: var(--secondary-grey, #F2F3F5);
+  gap: 8px;
 }
-.page-btn {
+.set-date {
   display: flex;
-  width: 34px;
-  height: 34px;
-  /* padding: 4px; */
-  /* flex-direction: column; */
-  justify-content: center;
+  width: 222px;
+  height: 42px;
+  padding: 6px 16px;
   align-items: center;
+  gap: 8px;
   border-radius: 80px;
-  outline: none;
-  border: none;
-  color: var(--text-dark, #23362d);
-/* background: var(--secondary-grey, #F2F3F5); */
-background-color: white;
-  cursor: pointer;
-  /* border: 1px solid #813909; */
-}
-.page-btn:hover {
-  background-color: var(--secondary-grey, #F2F3F5);
+  box-sizing: border-box;
+  border: 1px solid var(--tertiary-light-mode-border, rgba(35, 54, 45, 0.12));
+  background: #fff;
 }
 
-.next-page-btn {
+.today {
   display: flex;
-  width: 34px;
-  height: 34px;
-  /* padding: 4px; */
-  /* flex-direction: column; */
   justify-content: center;
   align-items: center;
+  width: 122px;
+  height: 42px;
+  padding: 6px 16px;
+  align-items: center;
+  gap: 8px;
   border-radius: 80px;
-  outline: none;
-  border: none;
-  color: var(--text-dark, #23362d);
-background: var(--secondary-grey, #F2F3F5);
+  box-sizing: border-box;
+  border: 1px solid var(--tertiary-light-mode-border, rgba(35, 54, 45, 0.12));
+  background: #fff;
   cursor: pointer;
-  /* border: 1px solid #813909; */
 }
 
-.prev-page-btn {
+.today--active {
+  background: #f8f9fd;
+  border: 1px solid #00a153;
+  color: #00a153;
+}
+.today:hover {
+  border: 1px solid #00a153;
+  color: #00a153;
+  transition: all 0.3s ease-in-out;
+}
+
+.yesterday {
   display: flex;
-  width: 34px;
-  height: 34px;
-  /* padding: 4px; */
-  /* flex-direction: column; */
   justify-content: center;
   align-items: center;
+  width: 122px;
+  height: 42px;
+  padding: 6px 16px;
+  align-items: center;
+  gap: 8px;
   border-radius: 80px;
-  outline: none;
-  border: none;
-  color: var(--text-dark, #23362d);
-background: var(--secondary-grey, #F2F3F5);
+  box-sizing: border-box;
+  border: 1px solid var(--tertiary-light-mode-border, rgba(35, 54, 45, 0.12));
+  background: #fff;
   cursor: pointer;
-  /* border: 1px solid #813909; */
-}
-button.active {
-  border-radius: 80px;
-  background: var(--overlay-activated, rgba(0, 161, 83, 0.12));
-  color: var(--primary-light-mode-dark, #006f39);
-  text-align: center;
 }
 
-button:disabled {
-  /* background-color: #ccc; */
-  cursor: not-allowed;
+.yesterday--active {
+  background: #f8f9fd;
+  border: 1px solid #00a153;
+  color: #00a153;
+}
+.yesterday:hover {
+  border: 1px solid #00a153;
+  color: #00a153;
+  transition: all 0.3s ease-in-out;
+}
+
+.tomorrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 122px;
+  height: 42px;
+  padding: 6px 16px;
+  align-items: center;
+  gap: 8px;
+  border-radius: 80px;
+  box-sizing: border-box;
+  border: 1px solid var(--tertiary-light-mode-border, rgba(35, 54, 45, 0.12));
+  background: #fff;
+  cursor: pointer;
+}
+
+.tomorrow--active {
+  background: #f8f9fd;
+  border: 1px solid #00a153;
+  color: #00a153;
+}
+.tomorrow:hover {
+  border: 1px solid #00a153;
+  color: #00a153;
+
+  /* border-radius: 12px; */
+  transition: all 0.3s ease-in-out;
 }
 </style>
 
+Добавь вотчер
+если  isToday
+  isYesterday
+  isTomorrow
 
-Я хочу также добавить внутрь watch отслеживание изменения filterContractors
+что то из этого стало в ntrue то нужно сбрасывать диапазон дат (dateSelection)
