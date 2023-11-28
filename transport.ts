@@ -1,44 +1,32 @@
 <template>
-  <article class="cell__wrapper">
-    <!-- Заголовок, представляющий имя, для улучшения семантики -->
-    <h2 class="name">{{ config.value.name }}</h2>
-    <div class="coordinates"> 
-      <!-- Иконка телефона для визуального представления контактной информации -->
-      <IconComponent
-        :config="{
-          name: 'call',
-          color: '#4caf50',
-          width: 20,
-          height: 20,
-        }">
-      </IconComponent>
-      <!-- Номер телефона для связи -->
-      <span>{{ config.value.phone }}</span>
-    </div>
-  </article>
-</template>
-  
-<script setup lang="ts">
-import IconComponent from '../../icon/icon.component.vue';
+  <div class="cell__wrapper">
+    <p class="address">{{ config.value.document }}</p>
+    <div class="coordinates">
 
-// Определение props для компонента
+      {{ config.value.numberPPO }}
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+
 defineProps<{
   config: {
-    type: number;
-    value: any; // 'value' содержит информацию, такую как имя и номер телефона
+    document: String;
+    numberPPO: String;
   };
 }>();
 </script>
-  
+
 <style scoped>
 .cell__wrapper {
-  /* Стили для обертки */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 5px;
   justify-content: center;
+  gap: 5px;
   width: 100%;
+  max-width: 250px;
   height: 100%;
   padding: 0 0 0 30px;
   font-size: 14px;
@@ -47,22 +35,29 @@ defineProps<{
   box-sizing: border-box;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  /* background-color: aquamarine; */
 }
 
-.name {
-  /* Ограничение ширины для переноса текста на новую строку */
-  max-width: 200px; /* Пример ширины, настраивайте по потребности */
-  white-space: normal; /* Позволяет переносить текст на новую строку */
-  overflow-wrap: break-word; /* Перенос слов при достижении границы элемента */
+.address {
+  word-break: break-word; /* Переносит строку на любом символе */
+  max-height: 2.4em; /* Максимальная высота для двух строк, основываясь на вашем line-height */
+  overflow: hidden; /* Скрывает все, что выходит за пределы */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Отображает максимум 2 строки */
+  -webkit-box-orient: vertical;
 }
-
 .coordinates {
-  /* Стили для блока с координатами */
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 5px;
 }
 </style>
+
+Property 'value' does not exist on type '{ document: String; numberPPO: String; }'.ts(2339)
+any
+Translation
+Property 'value' does not exist on type '{ document: String; numberPPO: String; }'.
+You're trying to access value on an object that doesn't contain it. Learn more.
 
