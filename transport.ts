@@ -1,56 +1,68 @@
 <template>
-    <div class="cell__wrapper">
-     <p> {{ config.value.name }}</p>
-     <div class="coordinates"> 
-        <IconComponent
-          :сonfig="{
-            name: 'call',
-            color: '#4caf50',
-            width: 20,
-            height: 20,
-          }"></IconComponent>
-        {{ config.value.phone }}</div>
+  <article class="cell__wrapper">
+    <!-- Заголовок, представляющий имя, для улучшения семантики -->
+    <h2 class="name">{{ config.value.name }}</h2>
+    <div class="coordinates"> 
+      <!-- Иконка телефона для визуального представления контактной информации -->
+      <IconComponent
+        :config="{
+          name: 'call',
+          color: '#4caf50',
+          width: 20,
+          height: 20,
+        }">
+      </IconComponent>
+      <!-- Номер телефона для связи -->
+      <span>{{ config.value.phone }}</span>
     </div>
-  </template>
+  </article>
+</template>
   
-  <script setup lang="ts">
+<script setup lang="ts">
 import IconComponent from '../../icon/icon.component.vue';
 
-  defineProps<{
-    config: {
-      type: number;
-      value: any;
-    };
-  }>();
-  </script>
+// Определение props для компонента
+defineProps<{
+  config: {
+    type: number;
+    value: any; // 'value' содержит информацию, такую как имя и номер телефона
+  };
+}>();
+</script>
   
-  <style scoped>
-  .cell__wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    padding: 0 0 0 30px;
-    font-size: 14px;
-    line-height: 1.2;
-    color: #23362d;
-    box-sizing: border-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .coordinates {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 5px;
-  }
-  </style>
-  
+<style scoped>
+.cell__wrapper {
+  /* Стили для обертки */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 0 0 30px;
+  font-size: 14px;
+  line-height: 1.2;
+  color: #23362d;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-Сделай с помощью ccs так чтобы  <p> {{ config.value.name }}</p> более двух слов в строке перенослось на следующую строку
-также добавь семантики в компонент
-с объяснениями в комментария в коде
+.name {
+  /* Ограничение ширины для переноса текста на новую строку */
+  max-width: 200px; /* Пример ширины, настраивайте по потребности */
+  white-space: normal; /* Позволяет переносить текст на новую строку */
+  overflow-wrap: break-word; /* Перенос слов при достижении границы элемента */
+}
+
+.coordinates {
+  /* Стили для блока с координатами */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+}
+</style>
+
