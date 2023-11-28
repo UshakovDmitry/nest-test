@@ -1,31 +1,56 @@
-async getDriversByDate(date: string) {
-  const drivers = await this.dbService.getDriversByDate(date);
-  const geliosCars = await this.geliosService.getCarLocations(
-    GELIOS_PRO_LOGIN,
-    GELIOS_PRO_PASSWORD,
-  );
+<template>
+    <div class="cell__wrapper">
+     <p> {{ config.value.name }}</p>
+     <div class="coordinates"> 
+        <IconComponent
+          :сonfig="{
+            name: 'call',
+            color: '#4caf50',
+            width: 20,
+            height: 20,
+          }"></IconComponent>
+        {{ config.value.phone }}</div>
+    </div>
+  </template>
+  
+  <script setup lang="ts">
+import IconComponent from '../../icon/icon.component.vue';
 
-  // Инициализация координат водителей
-  drivers.forEach(driver => {
-    driver.coordinates = {
-      latitude: '',
-      longitude: '',
+  defineProps<{
+    config: {
+      type: number;
+      value: any;
     };
-  });
+  }>();
+  </script>
+  
+  <style scoped>
+  .cell__wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0 0 0 30px;
+    font-size: 14px;
+    line-height: 1.2;
+    color: #23362d;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .coordinates {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+  }
+  </style>
+  
 
-  geliosCars.forEach(geliosCar => {
-    const { latitude, longitude } = geliosCar;
-    const carNumberWithoutSpaces = geliosCar.info.numberPlate.replace(/\s+/g, '');
-
-    drivers.forEach(driver => {
-      if (driver.carNumber.replace(/\s+/g, '') === carNumberWithoutSpaces) {
-        driver.coordinates = {
-          latitude,
-          longitude,
-        };
-      }
-    });
-  });
-
-  return drivers;
-}
+Сделай с помощью ccs так чтобы  <p> {{ config.value.name }}</p> более двух слов в строке перенослось на следующую строку
+также добавь семантики в компонент
+с объяснениями в комментария в коде
