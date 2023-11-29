@@ -1,26 +1,35 @@
-async updateDriversWithExternalData(drivers) {
-  try {
-    const response = await axios.get('http://10.0.1.20/1CHS/hs/Yandex_Go/ListDiliveryBlocked');
-    const externalData = response.data.data;
+  async getDriversByDate(date: string) {
+    console.log('date', date);
+    
+    const allDrivers = await this.getAllDrivers()
+    const drivers = await this.updateDriversWithExternalData(allDrivers)
 
-    drivers.forEach(driver => {
-      const matchedDriver = externalData.find(externalDriver => 
-        externalDriver.DriverName.trim() === driver.driver.trim()
-      );
+    const filteredDrivers = drivers
+      .map((driver) => {
+        const filteredRequests = driver.transportRequests.filter(
+          (transportRequest) => {
+            return (
+              transportRequest.contactInformation.Date_Time_delivery.split(
+                ' ',
+              )[0] === date
+            );
+          },
+        );
 
-      if (matchedDriver && matchedDriver.CarModel && matchedDriver.RegistrationNumber) {
-        driver.carModel = matchedDriver.CarModel;
-        driver.carNumber = matchedDriver.RegistrationNumber;
-      } 
-      // Если водителя нет в externalData, оставляем его данные без изменений
-      else {
-        driver.carModel = driver.carModel || '';
-        driver.carNumber = driver.carNumber || '';
-      }
-    });
-  } catch (error) {
-    console.error('Ошибка при получении данных из внешнего источника:', error);
+        return { ...driver, transportRequests: filteredRequests };
+      })
+      .filter((driver) => driver.transportRequests.length > 0);
+
+    const updatedDrivers = this.setCountOrdersStatus(filteredDrivers, date);
+    return updatedDrivers;
   }
 
-  return drivers;
-}
+мне нужно кое-что поменять 
+мне приходит дата в функцию 
+я хочу выполнять  const drivers = await this.updateDriversWithExternalData(allDrivers)
+только тогда когда дата равна сегодняшнему дню
+во всех остальных случаях я не хочу выполнять updateDriversWithExternalData 
+
+вот в таком виде приходит дата год-месяц-число
+date 2023-11-30
+
