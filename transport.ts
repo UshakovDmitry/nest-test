@@ -7,6 +7,7 @@ import { GeliosService } from '../gelios/gelios.service';
 import { GELIOS_PRO_LOGIN, GELIOS_PRO_PASSWORD } from '../config';
 import axios from 'axios';
 
+
 @Injectable()
 export class DriversService {
   constructor(
@@ -15,7 +16,9 @@ export class DriversService {
     private readonly geliosService: GeliosService,
   ) {}
 
-  // ... Остальные методы ...
+  async getDrivers() {
+    return await this.dbService.getAllDrivers();
+  }
 
   async getDriversByDate(date: string) {
     let drivers = await this.dbService.getDriversByDate(date);
@@ -33,6 +36,45 @@ export class DriversService {
     this.setDriversCoordinates(drivers, geliosCars);
 
     return drivers;
+  }
+
+
+  async getDriversByName(name: string, date: string) {
+    const drivers = await this.dbService.getDriversByName(name, date);
+    const geliosCars = await this.geliosService.getCarLocations(
+      GELIOS_PRO_LOGIN,
+      GELIOS_PRO_PASSWORD,
+    );
+
+    // Устанавливаем пустые координаты для каждого водителя
+    drivers.forEach((driver) => {
+      driver.coordinates = {
+        latitude: '',
+        longitude: '',
+      };
+    });
+
+    geliosCars.forEach((geliosCar) => {
+      const { latitude, longitude } = geliosCar;
+      const carNumberWithoutSpaces = geliosCar.info.numberPlate.replace(
+        /\s+/g,
+        '',
+      );
+
+      drivers.forEach((driver) => {
+        if (driver.carNumber === carNumberWithoutSpaces) {
+          driver.coordinates = {
+            latitude,
+            longitude,
+          };
+        }
+      });
+    });
+    return drivers;
+  }
+
+  async getDriversStatsByDate(date: string, city: string) {
+    return await this.dbService.getDriversStatsByDate(date, city);
   }
 
   async updateDriversWithExternalData(drivers) {
@@ -80,3 +122,8 @@ export class DriversService {
     });
   }
 }
+
+
+измени updateDriversWithExternalData
+если водителя нет в externalData 
+то оставляем его поля carModel и carNumber такие же как и были в drivers
