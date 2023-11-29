@@ -1,24 +1,59 @@
-<script setup lang="ts">
-import { ref, watch } from 'vue';
-// ... (остальные импорты)
+  async getAllDrivers() {
+    const aggregation = [
+      {
+        $sort: { Driver: 1 },
+      },
+      {
+        $group: {
+          _id: '$Driver',
+          сarNumber: { $first: '$NumberCar' },
+          carModel: { $first: '$CarModel' },
+          // TODO: Когда дропну базу, нужно будет поменять на $first для driverIIN и phoneDriver
+          driverIIN: { $max: '$DriverIIN' },
+          phoneDriver: { $max: '$PhoneDriver' },
+          transportRequests: {
+            $push: {
+              number: '$Number',
+              IdYandex: '$IdYandex',
+              IsDelete: '$IsDelete',
+              distribution: '$distribution',
+              date: '$Date',
+              dateCreated: '$DateCreated',
+              organization: '$Organization',
+              documentStatus: '$DocumentStatus',
+              completedDelivery: '$CompletedDelivery',
+              ISR: '$ISR',
+              numberPPO: '$NumberPPO',
+              informalDocument: '$Informal_Document',
+              filterContractor: '$FilterContractor',
+              loanAgreementStatus: '$loanAgreementStatus',
+              typePayment: '$TypePayment',
+              chronologies: '$ArrayChronologies',
+              contactInformation: '$ContactInformation',
+              orders: '$ArrayStrings',
+            },
+          },
+        },
+      },
+    ];
 
-const props = defineProps<{
-  // ... (ваши пропсы)
-}>();
+    const driversAggregated = await this.messageModel
+      .aggregate(aggregation as any)
+      .exec();
 
-const dateSelection = ref();
+    const drivers = driversAggregated.map((driverData) => ({
+      driver: driverData._id,
+      carNumber: driverData.сarNumber,
+      carModel: driverData.carModel,
+      driverIIN: driverData.driverIIN,
+      phoneDriver: driverData.phoneDriver,
+      transportRequests: driverData.transportRequests.map((request) => ({
+        ...request,
+        orders: request.orders.flat(),
+      })),
+    }));
+    const updatedDrivers = this.setCountOrdersStatus(drivers);
 
-// ... (остальная логика)
-
-// Отслеживание изменений в isToday, isYesterday, и isTomorrow
-watch(
-  [() => props.isToday, () => props.isYesterday, () => props.isTomorrow],
-  ([newIsToday, newIsYesterday, newIsTomorrow]) => {
-    // Проверка, стало ли одно из свойств true
-    if (newIsToday || newIsYesterday || newIsTomorrow) {
-      dateSelection.value = null; // Сбрасываем выбор дат
-      emits('clearDateSelection'); // Вызываем событие для сброса даты в viewModel, если необходимо
-    }
+    const testDrivers = await this.updateDeliveryStatus(updatedDrivers);
+    return testDrivers;
   }
-);
-</script>
