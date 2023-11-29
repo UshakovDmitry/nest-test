@@ -1,4 +1,4 @@
-async getDriversByDate(date: string) {
+ async getDriversByDate(date: string) {
   console.log('date', date);
   
   const allDrivers = await this.getAllDrivers();
