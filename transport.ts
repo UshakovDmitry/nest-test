@@ -15,10 +15,13 @@ export class DriversService {
     private readonly geliosService: GeliosService,
   ) {}
 
-  // Остальные методы...
+  // ... Остальные методы ...
 
   async getDriversByDate(date: string) {
     let drivers = await this.dbService.getDriversByDate(date);
+
+    // Обновление данных водителей на основе внешнего API
+    drivers = await this.updateDriversWithExternalData(drivers);
 
     // Получение данных о местоположении автомобилей
     const geliosCars = await this.geliosService.getCarLocations(
@@ -26,35 +29,12 @@ export class DriversService {
       GELIOS_PRO_PASSWORD,
     );
 
-    // Инициализация координат водителей
-    drivers.forEach(driver => {
-      driver.coordinates = {
-        latitude: '',
-        longitude: '',
-      };
-    });
-
-    geliosCars.forEach(geliosCar => {
-      const { latitude, longitude } = geliosCar;
-      const carNumberWithoutSpaces = geliosCar.info.numberPlate.replace(/\s+/g, '');
-
-      drivers.forEach(driver => {
-        if (driver.carNumber.replace(/\s+/g, '') === carNumberWithoutSpaces) {
-          driver.coordinates = {
-            latitude,
-            longitude,
-          };
-        }
-      });
-    });
-
-    // Получение и обновление данных водителей из внешнего источника
-    drivers = await this.updateDriversWithExternalData(drivers);
+    // Установка координат для водителей
+    this.setDriversCoordinates(drivers, geliosCars);
 
     return drivers;
   }
 
-  // Добавленная функция
   async updateDriversWithExternalData(drivers) {
     try {
       const response = await axios.get('http://10.0.1.20/1CHS/hs/Yandex_Go/ListDiliveryBlocked');
@@ -75,5 +55,28 @@ export class DriversService {
     }
 
     return drivers;
+  }
+
+  setDriversCoordinates(drivers, geliosCars) {
+    drivers.forEach(driver => {
+      driver.coordinates = {
+        latitude: '',
+        longitude: '',
+      };
+    });
+
+    geliosCars.forEach(geliosCar => {
+      const { latitude, longitude } = geliosCar;
+      const carNumberWithoutSpaces = geliosCar.info.numberPlate.replace(/\s+/g, '');
+
+      drivers.forEach(driver => {
+        if (driver.carNumber.replace(/\s+/g, '') === carNumberWithoutSpaces) {
+          driver.coordinates = {
+            latitude,
+            longitude,
+          };
+        }
+      });
+    });
   }
 }
