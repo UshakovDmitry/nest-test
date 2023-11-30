@@ -1,24 +1,33 @@
-функуия которая отображает только те заявке которые совпадают с тем что выбрал позьзователь
+// В модели данных
+lastFilteredCity: string = 'Все города';
 
-  filterTableByCity(city: string): void {
 
-    this.model.currentCity = city;
-    if (city === 'Все города') {
-      this.model.filteredCouriers = this.model.couriers;
-      return;
-    }
-    this.model.filteredCouriers = this.model.couriers.filter(
-      (item) => item.city === city,
-    );
+
+filterTableByCity(city: string): void {
+  this.model.lastFilteredCity = city; // Обновление последнего фильтра города
+  this.model.currentCity = city;
+
+  if (city === 'Все города') {
+    this.model.filteredCouriers = this.model.couriers;
+    return;
   }
 
-также есть функция для поиска 
-  search(value: string): void {
-    this.model.filteredCouriers = this.model.couriers.filter((item) => {
-      return item.courierFullName.toLowerCase().includes(value.toLowerCase());
-    });
+  this.model.filteredCouriers = this.model.couriers.filter(
+    (item) => item.city === city,
+  );
+}
+
+
+search(value: string): void {
+  let baseList = this.model.couriers;
+
+  // Фильтрация базового списка по последнему выбранному городу
+  if (this.model.lastFilteredCity !== 'Все города') {
+    baseList = baseList.filter((item) => item.city === this.model.lastFilteredCity);
   }
 
-
-и проблема в том что когда я выбираю город и отображается только те данные которые совпадают с городо
-а поиск осуществляется по всем данным и не учитывает 
+  // Поиск по отфильтрованному списку
+  this.model.filteredCouriers = baseList.filter((item) => {
+    return item.courierFullName.toLowerCase().includes(value.toLowerCase());
+  });
+}
