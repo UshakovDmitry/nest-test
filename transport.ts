@@ -1,28 +1,54 @@
-sortRequests(index) {
-  const propertyToSortBy = this.getPropertyByIndex(index);
-
-  if (this.model.sortState === 'none' || this.model.sortState === 'descending') {
-    this.model.sortState = 'ascending';
-    // Логика сортировки по возрастанию
-  } else if (this.model.sortState === 'ascending') {
-    this.model.sortState = 'descending';
-    // Логика сортировки по убыванию
+  @Post('byDateRange')
+  async getTransportRequestsByDateRange(
+    @Body() dto: GetTransportRequestsByDateRangeDto,
+  ) {
+    return this.transportRequestsService.getTransportRequestsByDateRange(
+      dto.startDate,
+      dto.endDate,
+    );
   }
-  
-  // Осуществление сортировки в зависимости от состояния
-  this.model.filteredTransportRequests.sort((a, b) => {
-    if (propertyToSortBy === 'request.status') {
-      if (this.model.sortState === 'ascending') {
-        return (a.request.status === b.request.status) ? 0 : a.request.status ? 1 : -1;
-      } else {
-        return (a.request.status === b.request.status) ? 0 : a.request.status ? -1 : 1;
-      }
-    } else {
-      if (this.model.sortState === 'ascending') {
-        return (a[propertyToSortBy] < b[propertyToSortBy]) ? -1 : (a[propertyToSortBy] > b[propertyToSortBy]) ? 1 : 0;
-      } else {
-        return (a[propertyToSortBy] > b[propertyToSortBy]) ? -1 : (a[propertyToSortBy] < b[propertyToSortBy]) ? 1 : 0;
-      }
-    }
-  });
+
+export class GetTransportRequestsByDateRangeDto {
+  @IsNotEmpty()
+  @IsString()
+  startDate: string;
+
+  @IsNotEmpty()
+  @IsString()
+  endDate: string;
 }
+
+  async getTransportRequestsByDateRange(
+    startDate: string,
+    endDate: string,
+  ): Promise<any[]> {
+    return await this.dbService.getTransportRequestsByDateRange(
+      startDate,
+      endDate,
+    );
+  }
+
+  async getTransportRequestsByDateRange(
+    startDate: string,
+    endDate: string,
+  ): Promise<any[]> {
+    // Преобразование дат из строки в объект Date
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Поиск заявок в базе данных, где Date_Time_delivery находится в диапазоне между startDate и endDate
+    return await this.messageModel
+      .find({
+        'ContactInformation.Date_Time_delivery': {
+          $gte: start.toISOString(),
+          $lte: end.toISOString(),
+        },
+      })
+      .exec();
+  }
+
+
+Этот эндпоинт возвращает данные за период времени
+проблема в том что если я пришлю startDate: 2023-11-22
+endDate: 2023-11-24 то он не учитывает 22 число
+я хочу чтобы он включал эту дату (startDate) в логику поиска данных
