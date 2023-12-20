@@ -1,115 +1,145 @@
-async getDriversByDate(date: string) {
-  const drivers = await this.dbService.getDriversByDate(date);
-console.log(drivers, 'drivers');
+<script setup lang="ts">
+  import { ref } from 'vue'
+  defineProps({
+    placeholder: {
+      type: String,
+      required: false,
+    },
+    required: {
+      type: Boolean,
+      required: false,
+    },
+    minLength: {
+      type: Number,
+      required: false,
+    },
+    maxLength: {
+      type: Number,
+      required: false,
+    },
+    disabled: {
+      type: Boolean,
+      required: false,
+    },
+    readonly: {
+      type: Boolean,
+      required: false,
+    },
+  })
+  const emits = defineEmits(['onChange'])
 
+  const value = ref('')
 
-
-  const geliosCars = await this.geliosService.getCarLocations(
-    GELIOS_PRO_LOGIN,
-    GELIOS_PRO_PASSWORD,
-  );
-
-  // Инициализация координат водителей
-  drivers.forEach(driver => {
-    driver.coordinates = {
-      latitude: '',
-      longitude: '',
-    };
-  });
-
-  geliosCars.forEach(geliosCar => {
-    const { latitude, longitude } = geliosCar;
-    const carNumberWithoutSpaces = geliosCar.info.numberPlate.replace(/\s+/g, '');
-
-    drivers.forEach(driver => {
-      if (driver.carNumber.replace(/\s+/g, '') === carNumberWithoutSpaces) {
-        driver.coordinates = {
-          latitude,
-          longitude,
-        };
-      }
-    });
-  });
-
-  return drivers;
-}
-
-[ {
-    driver: 'Белая Екатерина Сергеевна',
-    carNumber: '',
-    carModel: '',
-    driverIIN: '881013400626',
-    phoneDriver: '87474030983',
-    transportRequests: [ [Object] ],
-    count_completed_orders: '0',
-    count_pending_orders: '0',
-    count_all_orders: '1',
-    count_delivery_late_orders: '0',
-    count_delivery_in_time_orders: '0',
-    count_rejected_orders: '1',
-    count_transferred_orders: '0'
-  },
-  {
-    driver: 'Абдрахимов Таир Нурланович',
-    carNumber: 'C814402',
-    carModel: 'Gazel',
-    driverIIN: '970825351060',
-    phoneDriver: '87006898560',
-    transportRequests: [ [Object] ],
-    count_completed_orders: '0',
-    count_pending_orders: '0',
-    count_all_orders: '1',
-    count_delivery_late_orders: '1',
-    count_delivery_in_time_orders: '0',
-    count_rejected_orders: '0',
-    count_transferred_orders: '0'
+  const onChange = () => {
+    emits('onChange', { value })
   }
-] drivers
+</script>
+<template>
+  <input
+    class="alser-ui-library-input"
+    v-model="value"
+    type="text"
+    :placeholder="placeholder"
+    autofocus
+    :required="required"
+    :minLength="minLength"
+    :maxlength="maxLength"
+    :disabled="disabled"
+    :readonly="readonly"
+    @input="onChange"
+  />
+</template>
+
+<style scoped>
+  .alser-ui-library-input {
+    --input-padding: 0.5rem 1rem;
+    --input-border-width: 1px;
+    --input-border-radius: var(--radius-small);
+    --input-border-color: var(--dark-100);
+    --input-padding: 0.5rem 1rem;
+    --width: auto;
+    --height: auto;
+
+    --outline-color: 0, 0, 0;
+    --outline-primary-color: 0, 255, 0;
+
+    padding: var(--input-padding);
+    color: var(--input-color);
+    cursor: text;
+    transition: all 0.2s ease-in-out;
+    font-size: inherit;
+    width: 100%;
+    border-radius: var(--input-border-radius);
+  }
+
+  .alser-ui-library-input.outlined {
+    border: none;
+    outline: none;
+  }
+
+  .alser-ui-library-input.outlined:disabled {
+    border: var(--input-border-width) solid var(--disabled-element);
+    border-radius: var(--input-border-radius);
+    background-color: var(--disabled-element);
+    outline: none;
+    cursor: not-allowed;
+  }
+
+  .alser-ui-library-input.outlined.simple {
+    border: var(--input-border-width) solid var(--input-border-color);
+    background-color: var(--input-background-color);
+    outline: none;
+  }
+  .alser-ui-library-input.outlined.simple:focus,
+  .alser-ui-library-input.outlined.simple inpt:active {
+    box-shadow: 0 0 0 0.05em var(--disabled-content);
+  }
+
+  .alser-ui-library-input.outlined.primary {
+    border: var(--input-border-width) solid var(--primary-main);
+  }
+  .alser-ui-library-input.outlined.primary:focus,
+  .alser-ui-library-input.outlined.primary:active {
+    box-shadow: 0 0 0 0.05em var(--primary-light);
+  }
+
+  .alser-ui-library-input.outlined.info {
+    border: var(--input-border-width) solid var(--info-main);
+  }
+  .alser-ui-library-input.outlined.info:focus,
+  .alser-ui-library-input.outlined.info:active {
+    box-shadow: 0 0 0 0.05em var(--info-light);
+  }
+
+  .alser-ui-library-input.outlined.warning {
+    border: var(--input-border-width) solid var(--warning-main);
+  }
+  .alser-ui-library-input.outlined.warning:focus,
+  .alser-ui-library-input.outlined.warning:active {
+    box-shadow: 0 0 0 0.05em var(--warning-middle);
+  }
+
+  .alser-ui-library-input.outlined.error {
+    border: var(--input-border-width) solid var(--error-main);
+  }
+  .alser-ui-library-input.outlined.error:focus,
+  .alser-ui-library-input.outlined.error:active {
+    box-shadow: 0 0 0 0.05em var(--error-middle);
+  }
+
+  .alser-ui-library-input.outlined.simple:disabled,
+  .alser-ui-library-input.outlined.primary:disabled,
+  .alser-ui-library-input.outlined.info:disabled,
+  .alser-ui-library-input.outlined.warning:disabled,
+  .alser-ui-library-input.outlined.error:disabled {
+    border: var(--input-border-width) solid var(--disabled-element);
+    background-color: var(--disabled-element);
+    outline: none;
+    cursor: not-allowed;
+  }
+</style>
 
 
-у меня есть функция которая получает два массива и сравнивает их и выполняет какую то логику 
-я хочу немного изменить логику и транчформировать массив drivers
-
-после его получения я хочу делать запрос на http://10.0.1.20/1CHS/hs/Yandex_Go/ListDiliveryBlocked
-
-вот что он возвращает 
-{
-"code": 0,
-"message": "Р—Р°Р±СЂРѕРЅРёСЂРѕРІР°РЅРЅС‹Р№ С‚СЂР°РЅСЃРїРѕСЂС‚: ",
-"data": [
-{
-"id": "58efb4b3-27b3-4b15-9adf-396384a1f106",
-"driver": "851120302593",
-"NumberCar": "M124239",
-"imei": "866562062035094",
-"CarModel": "Largus",
-"DriverName": "РЎУ™РєРµРЅР±Р°РµРІ Р”Р°РЅРёСЏСЂ Р‘РµРєРµРЅТ±Р»С‹",
-"RegistrationNumber": "M124239"
-},
-{
-"id": "77fe202e-ceea-433d-b458-e3d61d204b44",
-"driver": "900327302459",
-"NumberCar": "M124186",
-"imei": "866562062035177",
-"CarModel": "Largus",
-"DriverName": "РђР±СѓРЅР°Р·Р°СЂРѕРІ РђСЂС‚СѓСЂ РђС…РјРµРґРѕРІРёС‡ ",
-"RegistrationNumber": "M124186"
-},
-{
-"id": "58afbec3-216e-4051-bafe-d475b53066e3",
-"driver": "780530302009",
-"NumberCar": "M121137",
-"imei": "860906040556406",
-"CarModel": "Largus",
-"DriverName": "РРІР°РЅРѕРІ Р’СЏС‡РµСЃР»Р°РІ РЎРµСЂРіРµРµРІРёС‡",
-"RegistrationNumber": "M121137"
-},
-]
-}
-
-сравнивать массив divers 
-мне нужно вытащить из http://10.0.1.20/1CHS/hs/Yandex_Go/ListDiliveryBlocked массив data 
-сравнивать водителей ( сделай trim при сравнении ) DriverName и  driver
-если в приходящем массиве есть CarModel и RegistrationNumber и это не пустые строки то присваивать эти данные в carNumber и carModel массива drivers
-
-Сделай это преобразование отдельной функцией и и спользуй ее внуктри getDriversByDate
+  Я не могу понять что такое outlined в стилях 
+в проекте нигде не найден этот класс
+как это работает?
