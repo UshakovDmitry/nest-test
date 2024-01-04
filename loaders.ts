@@ -1,23 +1,51 @@
-const url = 'http://b2b-api.backend.dev.next.local:8920/catalog/categories';
-const token = '229Lnvyghujiok454tnj'; // Ваш Bearer токен
-const requestBody = {
-  brand_id: 186,    // Значение brand_id
-  category_id: 8    // Значение category_id
+export interface IMeta {
+  [key: string]: [string, ((value: any) => any)?];
+}
+
+export const projection = <IMeta>(meta: IMeta) => {
+  const keys = Object.keys(meta as any);
+  return (obj: { [key: string]: any }) => {
+    const hash: { [key: string]: any } = {};
+    for (const key of keys) {
+      const def = (meta as any)[key];
+      const [name, fn] = def;
+      let val = obj[name];
+      if (val) {
+        if (fn) val = fn(val);
+        hash[key] = val;
+      }
+    }
+    return hash;
+  }
+}
+
+const data = {
+  id: 1,
+  name: 'test',
+  age: 10,
+  email: 'fsR'
 };
 
-fetch(url, {
-  method: 'POST', // Предполагаемый метод запроса (исходя из вашего описания)
-  headers: {
-    'Authorization': `Bearer ${token}`, // Добавление токена в заголовок
-    'Content-Type': 'application/json'   // Указание типа содержимого запроса
-  },
-  body: JSON.stringify(requestBody) // Конвертация объекта запроса в строку JSON
-})
-.then(response => {
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+
+
+export class BasketMapper {
+  static mapping(data: any): any {
+    const newdata: any = projection({
+      ID: ["id"],
+      NAME: ["name"],
+      AGE: ["age"],
+      EMAIL: ["email"],
+    })(data);
+    return newdata;
   }
-  return response.json(); // Разбор JSON-ответа
-})
-.then(data => console.log(data)) // Обработка данных
-.catch(error => console.error('Error:', error)); // Обработка ошибок
+}
+
+const result = BasketMapper.mapping(data);
+
+console.log(result);
+
+
+это реализация преобрахзования данных на фронтенде
+
+ОЧЕНЬ ПОДРОБНО РАССКАЖИ ЧТО ТУТ ПРОИСХОДИТ
+ОСОБЕННО ЧТО ДЕЛАЕТ projection
