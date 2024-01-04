@@ -58,3 +58,34 @@ export class BasketMapper {
 // Преобразование данных и вывод результата в консоль
 const result = BasketMapper.mapping(data);
 console.log(result);
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    fdgbz
+    <script src="./test.ts"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+Refused to execute script from 'http://127.0.0.1:5501/test.ts' because its MIME type ('video/mp2t') is not executable.
