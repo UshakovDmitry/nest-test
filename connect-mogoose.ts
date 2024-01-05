@@ -1,11 +1,18 @@
-function cantBeatSoJoin(numbers) {
-  // Проходим по каждому подмассиву, изменяя порядок его элементов на обратный
-  const reversedSubarrays = numbers.map(subarray => subarray.reverse());
-
-  // Объединяем все подмассивы в один массив
-  const result = [].concat(...reversedSubarrays);
-
-  return result;
-}
-
-// Теперь вы можете проверить эту функцию с вашими тестами
+Fixed tests
+Testing for [[1, 2], [3, 4], [5, 6], [7, 8], [9]]
+expected [ 2, 1, 4, 3, 6, 5, 8, 7, 9 ] to deeply equal [ 7, 8, 5, 6, 9, 3, 4, 1, 2 ]
+Completed in 3ms
+Testing for [[5, 1], [9, 14], [17, 23], [4, 1], [0, 1]]
+expected [ 1, 5, 14, 9, 23, 17, 1, 4, 1, +0 ] to deeply equal [ 17, 23, 9, 14, 5, 1, 4, 1, +0, 1 ]
+Completed in 1ms
+Testing for [[13, 37], [43, 17], [2, 3], [45, 64], [1, 9]]
+expected [ 37, 13, 17, 43, 3, 2, 64, 45, 9, 1 ] to deeply equal [ 45, 64, 43, 17, 13, 37, 1, 9, 2, 3 ]
+Testing for [[52, 11, 33, 222], [582, 192, 442, 512, 41], [23912], [2314], [2491, 2412, 84828]]
+expected [ 222, 33, 11, 52, 41, 512, 442, 192, 582, 23912, 2314, 84828, 2412, 2491 ] to deeply equal [ 2491, 2412, 84828, 23912, 2314, 582, 192, 442, 512, 41, 52, 11, 33, 222 ]
+Completed in 1ms
+Testing for [[], [], [], []]
+Testing for [[], [], [0], []]
+Testing for [[1, 0, 1, 0, 1, 0], [0, 1, 0, 0, 1, 0, 0, 1], [0], []]
+expected [ +0, 1, +0, 1, +0, 1, 1, +0, +0, 1, +0, +0, 1, +0, +0 ] to deeply equal [ 1, +0, 1, +0, 1, +0, +0, 1, +0, +0, 1, +0, +0, 1, +0 ]
+Completed in 6ms
+Random tests
