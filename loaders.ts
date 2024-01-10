@@ -1,91 +1,27 @@
-export const projection = <IMeta>(meta: IMeta) => {
-  // Получение ключей из объекта meta
-  const keys = Object.keys(meta as any);
-
-  // Возвращаемая функция, принимающая объект данных
-  return (obj: { [key: string]: any }) => {
-    const hash: { [key: string]: any } = {}; // Новый объект для хранения результатов
-
-    // Перебор ключей объекта meta
-    for (const key of keys) {
-      const def = (meta as any)[key]; // Получение определения для текущего ключа
-      const [name, fn] = def; // Деструктуризация определения на имя и функцию
-      let val = obj[name]; // Получение значения из объекта данных
-
-      // Применение функции преобразования, если она есть
-      if (val !== undefined && fn) {
-        val = fn(val);
-      }
-
-      // Добавление значения в новый объект, если оно определено
-      if (val !== undefined) {
-        hash[key] = val;
-      }
-    }
-
-    return hash; // Возвращение нового объекта
+{
+  "name": "b2b-alser",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "alser.vue.library": "^1.0.5",
+    "vue": "^3.3.11",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.2",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
+    "vue-tsc": "^1.8.25"
   }
 }
 
 
 
-// Определение интерфейса IMeta
-export interface IMeta {
-  [key: string]: [string, ((value: any) => any)?];
-}
-
-// Исходный объект данных
-const data = {
-  id: 1,
-  name: 'test',
-  age: 10,
-  email: 'example@example.com'
-};
-
-// Класс BasketMapper с методом mapping
-export class BasketMapper {
-  static mapping(data: any): any {
-    const newdata: any = projection({
-      ID: ["id"],
-      NAME: ["name"],
-      AGE: ["age", (value: number) => value.toString()], // Преобразование числа в строку
-      EMAIL: ["email"]
-    })(data);
-    return newdata;
-  }
-}
-
-// Преобразование данных и вывод результата в консоль
-const result = BasketMapper.mapping(data);
-console.log(result);
 
 
-
-
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    fdgbz
-    <script src="./test.ts"></script>
-</body>
-</html>
-
-
-
-
-
-
-
-
-
-
-
-Refused to execute script from 'http://127.0.0.1:5501/test.ts' because its MIME type ('video/mp2t') is not executable.
