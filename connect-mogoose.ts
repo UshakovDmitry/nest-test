@@ -1,13 +1,20 @@
-function cantBeatSoJoin(numbers) {
-  // Объединяем все подмассивы в один массив
-  const flattened = numbers.reduce((acc, val) => acc.concat(val), []);
+router.beforeEach(async (to, from, next) => {
+  const tokenLocalStorage: string | null = localStorage.getItem('token')
+  const tokenSessionStorage: string | null = sessionStorage.getItem('token')
 
-  // Сортируем массив в соответствии с требованиями задачи
-  const result = [];
-  while (flattened.length) {
-    const pair = flattened.splice(-2, 2); // Берем последние два элемента
-    result.push(...pair.reverse()); // Переворачиваем и добавляем в результат
+  if (to.name !== 'login' && !tokenLocalStorage) {
+    return next({
+      name: 'login'
+    })
+  }
+  
+
+  if (to.name === 'login' && (tokenLocalStorage || tokenSessionStorage) )
+    return next({
+      name: 'orders'
+    })
+  else {
+    next()
   }
 
-  return result;
-}
+})
