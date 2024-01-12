@@ -1,20 +1,16 @@
 router.beforeEach(async (to, from, next) => {
-  const tokenLocalStorage: string | null = localStorage.getItem('token')
-  const tokenSessionStorage: string | null = sessionStorage.getItem('token')
+  const tokenLocalStorage = localStorage.getItem('token');
+  const tokenSessionStorage = sessionStorage.getItem('token');
 
-  if (to.name !== 'login' && !tokenLocalStorage) {
-    return next({
-      name: 'login'
-    })
-  }
-  
+  const isAuthenticated = tokenLocalStorage || tokenSessionStorage;
 
-  if (to.name === 'login' && (tokenLocalStorage || tokenSessionStorage) )
-    return next({
-      name: 'orders'
-    })
-  else {
-    next()
+  if (to.name !== 'login' && !isAuthenticated) {
+    return next({ name: 'login' });
   }
 
-})
+  if (to.name === 'login' && isAuthenticated) {
+    return next({ name: 'orders' });
+  }
+
+  next();
+});
