@@ -1,6 +1,1 @@
-export const methodsMapEnum = {
-    GET: "get",
-    SET: "set",
-    REMOVE: "remove",
-    CLEAR: "clear",
-} as const;
+https://yandex.kz/jobs/services/alice?text=frontend
