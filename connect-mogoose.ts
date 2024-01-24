@@ -1,25 +1,35 @@
 <template>
-  <AsyncLayoutComponent></AsyncLayoutComponent>
-  <div class="app">
+  <component :is="currentLayout">
     <router-view></router-view>
-  </div>
+  </component>
   <footer-component></footer-component>
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue';
+import { ref, onBeforeRouteUpdate, onBeforeRouteEnter } from 'vue';
 import { useRoute } from 'vue-router';
+import Layout from "./ui/layout/layout.vue";
+import NotAuthorizedLayout from "./ui/layout/not-authorized/not-authorized-layout.vue";
+import FooterComponent from "./ui/layout/footer.vue";
 
 const route = useRoute();
+const currentLayout = ref(Layout); // Инициализируем с основным layout
 
-const AsyncLayoutComponent = defineAsyncComponent(() => new Promise(resolve => {
-  // Ожидаем, пока роут будет полностью готов
-  route.meta.loaded.then(() => {
-    const layout = route.meta.layout === 'not-authorized' ? 
-      import('./ui/layout/not-authorized/not-authorized-layout.vue') :
-      import('./ui/layout/layout.vue');
-    resolve(layout);
-  });
-}));
+// Функция обновления layout
+function updateLayout() {
+  currentLayout.value = route.meta.layout === "not-authorized" ? NotAuthorizedLayout : Layout;
+}
 
+// Обновляем layout при изменении маршрута
+onBeforeRouteUpdate(updateLayout);
+onBeforeRouteEnter(updateLayout);
+
+// Вызываем функцию обновления при инициализации
+updateLayout();
 </script>
+
+<style scoped>
+.app {
+  /* Ваши стили... */
+}
+</style>
