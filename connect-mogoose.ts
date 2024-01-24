@@ -1,5 +1,5 @@
 <template>
-  <component :is="layout"> </component>
+  <component :is="layoutComponent"></component>
   <div class="app">
     <router-view></router-view>
   </div>
@@ -7,28 +7,22 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import Layout from "./ui/layout/layout.vue";
-import NotAuthorizedLayout from "./ui/layout/not-authorized/not authorized-layout.vue";
+import NotAuthorizedLayout from "./ui/layout/not-authorized/not-authorized-layout.vue";
 import FooterComponent from "./ui/layout/footer.vue";
-import { computed,onMounted } from "vue";
-import { useRoute } from "vue-router";
 
 const route = useRoute();
-onMounted(() => {
-  
-  const layout = computed(() => {
-  return route.meta.layout === "not-authorized" ? NotAuthorizedLayout : Layout;
-});
-}),
+const layoutComponent = ref();
 
+watch(route, (newRoute) => {
+  layoutComponent.value = newRoute.meta.layout === "not-authorized" ? NotAuthorizedLayout : Layout;
+}, { immediate: true });
 </script>
 
 <style scoped>
 .app {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 100vh;
-  background-color: #fbfbfb;
+  /* Стили для .app */
 }
 </style>
