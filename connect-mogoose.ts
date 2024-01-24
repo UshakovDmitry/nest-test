@@ -1,5 +1,5 @@
 <template>
-  <component :is="layoutComponent"></component>
+  <AsyncLayoutComponent></AsyncLayoutComponent>
   <div class="app">
     <router-view></router-view>
   </div>
@@ -7,26 +7,19 @@
 </template>
 
 <script setup lang="ts">
-import Layout from "./ui/layout/layout.vue";
-import NotAuthorizedLayout from "./ui/layout/not-authorized/not authorized-layout.vue";
-import FooterComponent from "./ui/layout/footer.vue";
-import { watch, ref } from "vue";
-import { useRoute } from "vue-router";
+import { defineAsyncComponent } from 'vue';
+import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const layoutComponent = ref();
 
-watch(route, (newRoute) => {
-  layoutComponent.value = newRoute.meta.layout === "not-authorized" ? NotAuthorizedLayout : Layout;
-}, { immediate: true });
+const AsyncLayoutComponent = defineAsyncComponent(() => new Promise(resolve => {
+  // Ожидаем, пока роут будет полностью готов
+  route.meta.loaded.then(() => {
+    const layout = route.meta.layout === 'not-authorized' ? 
+      import('./ui/layout/not-authorized/not-authorized-layout.vue') :
+      import('./ui/layout/layout.vue');
+    resolve(layout);
+  });
+}));
+
 </script>
-
-<style scoped>
-.app {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 100vh;
-  background-color: #fbfbfb;
-}
-</style>
