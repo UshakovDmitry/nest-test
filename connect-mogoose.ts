@@ -1,43 +1,37 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import BaseLayout from './layouts/BaseLayout.vue'; // Основной layout
-import SimpleLayout from './layouts/SimpleLayout.vue'; // Простой layout для signup и login
-import HomePage from './pages/HomePage.vue';
-import LoginPage from './pages/LoginPage.vue';
-import SignupPage from './pages/SignupPage.vue';
-import ProfilePage from './pages/ProfilePage.vue';
-import OtherPage from './pages/OtherPage.vue'; // Пример другой страницы
+<template>
+  <not-authorized-layout
+    v-if="
+      $router.currentRoute.value.name === 'login' ||
+      $router.currentRoute.value.name === 'signup'
+    "
+  ></not-authorized-layout>
 
-const routes: Array<RouteRecordRaw> = [
-  {
-    path: '/',
-    component: BaseLayout,
-    children: [
-      { path: '', component: HomePage },
-      { path: 'profile', component: ProfilePage },
-      { path: 'other', component: OtherPage } // Пример другой страницы внутри BaseLayout
-      // Другие маршруты, которые должны использовать BaseLayout...
-    ]
-  },
-  {
-    path: '/login',
-    component: SimpleLayout,
-    children: [
-      { path: '', component: LoginPage }
-    ]
-  },
-  {
-    path: '/signup',
-    component: SimpleLayout,
-    children: [
-      { path: '', component: SignupPage }
-    ]
-  },
-  // Любые другие маршруты, требующие SimpleLayout, можно добавить здесь...
-];
+  <layout
+    v-if="
+      $router.currentRoute.value.name !== 'login' &&
+      $router.currentRoute.value.name !== 'signup'
+    "
+  ></layout>
+  <div class="app">
+    <router-view></router-view>
+  </div>
+  <footer-component></footer-component>
+</template>
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-});
+<script setup lang="ts">
+import Layout from "./ui/layout/layout.vue";
+import NotAuthorizedLayout from "./ui/layout/not-authorized/not authorized-layout.vue";
+import FooterComponent from "./ui/layout/footer.vue";
+</script>
 
-export default router;
+<style scoped>
+.app {
+  /* border: 1px solid green; */
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: #fbfbfb;
+}
+</style>
+
