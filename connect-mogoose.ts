@@ -7,11 +7,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
 import Layout from "./ui/layout/layout.vue";
-import NotAuthorizedLayout from "./ui/layout/not-authorized/not-authorized-layout.vue";
+import NotAuthorizedLayout from "./ui/layout/not-authorized/not authorized-layout.vue";
 import FooterComponent from "./ui/layout/footer.vue";
+import { watch, ref } from "vue";
+import { useRoute } from "vue-router";
 
 const route = useRoute();
 const layoutComponent = ref();
@@ -23,6 +23,10 @@ watch(route, (newRoute) => {
 
 <style scoped>
 .app {
-  /* Стили для .app */
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: #fbfbfb;
 }
 </style>
