@@ -1,10 +1,43 @@
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import BaseLayout from './layouts/BaseLayout.vue'; // Основной layout
+import SimpleLayout from './layouts/SimpleLayout.vue'; // Простой layout для signup и login
+import HomePage from './pages/HomePage.vue';
+import LoginPage from './pages/LoginPage.vue';
+import SignupPage from './pages/SignupPage.vue';
+import ProfilePage from './pages/ProfilePage.vue';
+import OtherPage from './pages/OtherPage.vue'; // Пример другой страницы
 
- FAIL  src/components/fields/AlserFieldButton.test.ts [ src/components/fields/AlserFieldButton.test.ts ]
-Error: Failed to resolve import "@/path/to/YourComponent.vue" from "src\components\fields\AlserFieldButton.test.ts". Does the file exist?
- ❯ formatError node_modules/vite/dist/node/chunks/dep-V3BH7oO1.js:63765:46
- ❯ TransformContext.error node_modules/vite/dist/node/chunks/dep-V3BH7oO1.js:63759:19
- ❯ normalizeUrl node_modules/vite/dist/node/chunks/dep-V3BH7oO1.js:62034:33
- ❯ async file:/C:/Users/ushakov.dmitriy/Desktop/lib-alser/alser.ui.library/node_modules/vite/dist/node/chunks/dep-V3BH7oO1.js:62188:47
- ❯ TransformContext.transform node_modules/vite/dist/node/chunks/dep-V3BH7oO1.js:62109:13
- ❯ Object.transform node_modules/vite/dist/node/chunks/dep-V3BH7oO1.js:64060:30
- ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-V3BH7oO1.js:49741:29
+const routes: Array<RouteRecordRaw> = [
+  {
+    path: '/',
+    component: BaseLayout,
+    children: [
+      { path: '', component: HomePage },
+      { path: 'profile', component: ProfilePage },
+      { path: 'other', component: OtherPage } // Пример другой страницы внутри BaseLayout
+      // Другие маршруты, которые должны использовать BaseLayout...
+    ]
+  },
+  {
+    path: '/login',
+    component: SimpleLayout,
+    children: [
+      { path: '', component: LoginPage }
+    ]
+  },
+  {
+    path: '/signup',
+    component: SimpleLayout,
+    children: [
+      { path: '', component: SignupPage }
+    ]
+  },
+  // Любые другие маршруты, требующие SimpleLayout, можно добавить здесь...
+];
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
+
+export default router;
