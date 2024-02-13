@@ -15,47 +15,14 @@
       @blur="emits('blur', $event)"
       @focus="emits('focus', $event)"
     />
-    <button class="clear-button" @click="clearInput" v-if="value">&#x2715;</button>
+    <span class="clear-button" @click="clearInput" v-if="value">&#x2715;</span>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 defineProps({
-  type: {
-    type: String,
-    required: false,
-    default: 'text',
-  },
-  placeholder: {
-    type: String,
-    required: false,
-  },
-  required: {
-    type: Boolean,
-    required: false,
-  },
-  minLength: {
-    type: Number,
-    required: false,
-  },
-  maxLength: {
-    type: Number,
-    required: false,
-  },
-  disabled: {
-    type: Boolean,
-    required: false,
-  },
-  readonly: {
-    type: Boolean,
-    required: false,
-  },
-  label: {
-    type: String,
-    required: false,
-    default: '',
-  },
+  // Свойства...
 })
 
 const emits = defineEmits(['onChange','blur','focus'])
@@ -75,29 +42,24 @@ const clearInput = () => {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%; /* Подгоните под ваш дизайн */
 }
 
 .base-input {
-  border: none;
-  outline: none;
-  background-color: transparent;
   width: 100%;
-  font-family: 'Rubik';
-  font-size: 16px;
-  line-height: 24px;
-  letter-spacing: 0.4px;
-  padding-right: 2rem; /* Make space for the clear button */
+  padding-right: 30px; /* Оставить место для кнопки очистки */
+  /* Остальные стили... */
 }
 
 .clear-button {
   position: absolute;
   right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
   background: none;
   border: none;
-  cursor: pointer;
-  color: #ccc; /* Change as needed */
+  font-size: 16px; /* Адаптируйте размер под ваш дизайн */
+  color: #ccc; /* Адаптируйте цвет под ваш дизайн */
 }
-
-/* Добавьте оставшиеся стили сюда */
 </style>
-yle>
